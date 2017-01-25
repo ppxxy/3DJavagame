@@ -10,22 +10,25 @@ import org.lwjgl.opengl.GL11;
 public class ViewRenderer {
 
 	private AnimatedModelRenderer animatedModelRenderer;
-	
+	private TerrainRenderer terrainRenderer;
+
 	protected ViewRenderer(){
 		animatedModelRenderer = new AnimatedModelRenderer();
+		terrainRenderer = new TerrainRenderer();
 	}
-	
+
 	public void renderView(View view){
 		prepare();
+		terrainRenderer.render(view.getTerrain(), view.getCamera());
 		for(AnimatedModel model : view.getAnimatedModels()){
 			animatedModelRenderer.render(model, view.getCamera(), view.getLightDirection());
 		}
 	}
-	
+
 	public void cleanUp(){
 		animatedModelRenderer.cleanUp();
 	}
-	
+
 	private void prepare(){
 		GL11.glClearColor(1, 1, 1, 1);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
