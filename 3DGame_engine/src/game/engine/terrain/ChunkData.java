@@ -11,7 +11,7 @@ import java.io.InputStreamReader;
  */
 public class ChunkData {
 
-	private static final int WIDTH = 64, HEIGHT = 64;
+	public static final int WIDTH = 5, HEIGHT = 5;
 	private final int x, y;
 	private final SurfacePoint[][] points;
 

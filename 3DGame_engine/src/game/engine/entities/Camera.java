@@ -1,6 +1,7 @@
 package game.engine.entities;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
@@ -9,18 +10,19 @@ public class Camera {
 
 	private Vector3f position = new Vector3f(0, 5, 5);
 	private float pitch, yaw, roll;
-	
+
 	private static final float FOV = 70;
 	private static final float NEAR_PLANE = 0.2f;
 	private static final float FAR_PLANE = 400;
-	
+	static final private float sensitivity = 0.05f;
+
 	private Matrix4f projectionMatrix;
 	private Matrix4f viewMatrix = new Matrix4f();
-	
+
 	public Camera(){
 		this.projectionMatrix = createProjectionMatrix();
 	}
-	
+
 	private static Matrix4f createProjectionMatrix() {
 		Matrix4f projectionMatrix = new Matrix4f();
 		float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();
@@ -36,7 +38,7 @@ public class Camera {
 		projectionMatrix.m33 = 0;
 		return projectionMatrix;
 	}
-	
+
 	private void updateViewMatrix() {
 		viewMatrix.setIdentity();
 		Matrix4f.rotate((float) Math.toRadians(pitch), new Vector3f(1, 0, 0), viewMatrix, viewMatrix);
@@ -44,23 +46,52 @@ public class Camera {
 		Vector3f negativeCameraPos = new Vector3f(-position.x, -position.y, -position.z);
 		Matrix4f.translate(negativeCameraPos, viewMatrix, viewMatrix);
 	}
-	
+
 	public Matrix4f getProjectionViewMatrix(){
 		return Matrix4f.mul(projectionMatrix, viewMatrix, null);
 	}
-	
+
 	public void move(){
+		if(Mouse.isButtonDown(0)){
+			float yChange = -(Mouse.getDX())*sensitivity%360;
+			float xChange = (Mouse.getDY())*sensitivity%360;
+			float xRotation = (pitch + (xChange > 0 ? xChange : 360+xChange))%360;
+			yaw = (yaw + (yChange > 0 ? yChange : 360+yChange))%360;
+			pitch = xRotation < 90 ? xRotation : (xRotation > 270 ? xRotation : (xRotation < 180 ? 90 : 270));
+		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_W)){
-			position.z-=0.02f;
+			float length = (pitch < 180 ? -1*(pitch/90)+1 : (pitch/90)-3);
+			float zcalcs = (yaw < 180 ? -1*(yaw/90)+1 : (yaw/90)-3);
+			float xcalcs = (yaw < 90 ? (yaw/90) : (yaw < 270 ? (-1*(yaw/90) +2) : (yaw/90)-4));
+			//System.out.println(yaw +", " +zcalcs);
+			position.z-= zcalcs*length*0.2f;
+			position.x+= xcalcs*length*0.2f;
+			position.y-= (pitch < 90 ? (pitch/90) : (pitch < 270 ? (-1*(pitch/90) +2) : (pitch/90)-4))*0.2f;
+			//System.out.println(position.x +", " +position.y +", " +position.z);
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_D)){
-			position.x+=0.02f;
+			float xcalcs = (yaw < 180 ? -1*(yaw/90)+1 : (yaw/90)-3);
+			float zcalcs = (yaw < 90 ? (yaw/90) : (yaw < 270 ? (-1*(yaw/90) +2) : (yaw/90)-4));
+			position.z+= zcalcs*0.2f;
+			position.x+= xcalcs*0.2f;
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_A)){
-			position.x-=0.02f;
+			float xcalcs = (yaw < 180 ? -1*(yaw/90)+1 : (yaw/90)-3);
+			float zcalcs = (yaw < 90 ? (yaw/90) : (yaw < 270 ? (-1*(yaw/90) +2) : (yaw/90)-4));
+			//System.out.println(yaw +", " +zcalcs);
+			position.z-= zcalcs*0.2f;
+			position.x-= xcalcs*0.2f;
+			//System.out.println(position.x +", " +position.y +", " +position.z);
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_S)){
-			position.z+=0.02f;
+			float length = (pitch < 180 ? -1*(pitch/90)+1 : (pitch/90)-3);
+			float zcalcs = (yaw < 180 ? -1*(yaw/90)+1 : (yaw/90)-3);
+			float xcalcs = (yaw < 90 ? (yaw/90) : (yaw < 270 ? (-1*(yaw/90) +2) : (yaw/90)-4));
+			//System.out.println(yaw +", " +zcalcs);
+			position.z+= zcalcs*length*0.2f;
+			position.x-= xcalcs*length*0.2f;
+			position.y+= (pitch < 90 ? (pitch/90) : (pitch < 270 ? (-1*(pitch/90) +2) : (pitch/90)-4))*0.2f;
+			//System.out.println(position.x +", " +position.y +", " +position.z);
 		}
 		updateViewMatrix();
 	}
@@ -80,5 +111,5 @@ public class Camera {
 	public float getRoll() {
 		return roll;
 	}
-	
+
 }

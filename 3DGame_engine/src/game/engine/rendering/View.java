@@ -5,6 +5,7 @@ import game.engine.entities.Camera;
 import game.engine.entities.Entity;
 import game.engine.models.AnimatedModel;
 import game.engine.terrain.Terrain;
+import game.engine.terrain.TerrainModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,12 +16,13 @@ public class View {
 
 	private final List<Entity> entities = new ArrayList<Entity>();
 	private final Camera camera;
-	private Terrain terrain;
+	private TerrainModel terrain;
 	private Vector3f lightDirection = new Vector3f(0, -1, 0);
 	private final List<AnimatedModel> animatedModels = new ArrayList<AnimatedModel>();
 
 	public View(Camera camera){
 		this.camera = camera;
+		this.terrain = new Terrain(0, 0).loadModel();
 	}
 
 	public void addEntity(Entity entity){
@@ -54,7 +56,7 @@ public class View {
 		}
 	}
 
-	public Terrain getTerrain() {
+	public TerrainModel getTerrain() {
 		return this.terrain;
 	}
 }

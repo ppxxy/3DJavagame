@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL20;
 public abstract class ShaderProgram {
 
 	private int programID;
-	
+
 	public ShaderProgram(String vertexFile, String fragmentFile, String... inVariables){
 		int vertexShaderID = loadShader(vertexFile, GL20.GL_VERTEX_SHADER);
 		int fragmentShaderID = loadShader(fragmentFile, GL20.GL_FRAGMENT_SHADER);
@@ -26,22 +26,22 @@ public abstract class ShaderProgram {
 		GL20.glDeleteShader(vertexShaderID);
 		GL20.glDeleteShader(fragmentShaderID);
 	}
-	
+
 	protected void storeUniformLocations(Uniform... uniforms){
 		for(Uniform uniform : uniforms){
 			uniform.storeUniformLocation(programID);
 		}
 		GL20.glValidateProgram(programID);
 	}
-	
+
 	protected int getUniformLocation(String uniformName){
 		return GL20.glGetUniformLocation(programID, uniformName);
 	}
-	
+
 	public void start(){
 		GL20.glUseProgram(programID);
 	}
-	
+
 	public void stop(){
 		GL20.glUseProgram(0);
 	}
@@ -49,13 +49,13 @@ public abstract class ShaderProgram {
 		stop();
 		GL20.glDeleteProgram(programID);
 	}
-	
+
 	private void bindAttributes(String[] inVariables){
 		for(int i = 0; i < inVariables.length; i++){
 			GL20.glBindAttribLocation(programID, i, inVariables[i]);
 		}
 	}
-	
+
 	private static int loadShader(String file, int type){
 		StringBuilder shaderSource = new StringBuilder();
 		BufferedReader reader = null;
@@ -78,7 +78,7 @@ public abstract class ShaderProgram {
 				e.printStackTrace();
 			}
 		}
-		
+
 		int shaderID = GL20.glCreateShader(type);
 		GL20.glShaderSource(shaderID, shaderSource);
 		GL20.glCompileShader(shaderID);
