@@ -22,7 +22,9 @@ public class View {
 
 	public View(Camera camera){
 		this.camera = camera;
-		this.terrain = new Terrain(0, 0).loadModel();
+		Terrain terrain = new Terrain(0, 0);
+		terrain.loadChunks();
+		this.terrain = terrain.loadModel();
 	}
 
 	public void addEntity(Entity entity){
