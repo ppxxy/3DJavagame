@@ -12,9 +12,9 @@ import game.engine.models.collada.SkinningData.VertexSkinData;
 import game.engine.models.xml.XmlNode;
 
 public class Mesh{
-	
+
 	private static final int DIMENSIONS = 3;
-	
+
 	private float[] vertices, textureCoords, normals, vertexWeights;
 	private int[] indices, jointIds;
 	private float furthestPoint;
@@ -31,7 +31,6 @@ public class Mesh{
 	 */
 	public Mesh(float[] vertices, float[] textureCoords, float[] normals, int[] indices, int[] jointIds, float[] vertexWeights, int furthestPoint){
 		this.vertices = vertices;
-		System.out.println(vertices.length);
 		this.textureCoords = textureCoords;
 		this.normals = normals;
 		this.indices = indices;
@@ -67,7 +66,7 @@ public class Mesh{
 	public float getFurthestPoint() {
 		return furthestPoint;
 	}
-	
+
 	public int getVertexCount(){
 		return vertices.length / DIMENSIONS;
 	}
@@ -76,17 +75,17 @@ public class Mesh{
 
 		private final XmlNode meshNode;
 		private final List<VertexSkinData> vertexWeights;
-		
+
 		private float[] verticesArray, normalsArray, texturesArray, weightsArray;
 		private int[] indicesArray, jointIdsArray;
-		
+
 		private List<Vertex> vertices = new ArrayList<Vertex>();
 		private List<Vector3f> normals = new ArrayList<Vector3f>();
 		private List<Vector2f> textures = new ArrayList<Vector2f>();
 		private List<Integer> indices = new ArrayList<Integer>();
-		
+
 		private Matrix4f correction = new Matrix4f().rotate((float) Math.toRadians(-90), new Vector3f(1, 0,0));
-		
+
 		/**
 		 * Creates mesh loader using the given node and VertexSkinData.
 		 * @param geometryNode Node containing mesh geometry.
@@ -110,7 +109,7 @@ public class Mesh{
 			convertIndicesListToArray();
 			return new Mesh(verticesArray, texturesArray, normalsArray, indicesArray, jointIdsArray, weightsArray, 1);
 		}
-		
+
 		/**
 		 * Reads model's vertices, normals and texture coordinates.
 		 */
@@ -119,7 +118,7 @@ public class Mesh{
 			readNormals();
 			readTextureCoords();
 		}
-		
+
 		/**
 		 * Reads vertice data of the mesh, creates Vertice objects and adds them to vertices -list.
 		 */
@@ -137,7 +136,7 @@ public class Mesh{
 				vertices.add(new Vertex(vertices.size(), new Vector3f(position.x, position.y, position.z), vertexWeights.get(vertices.size())));
 			}
 		}
-		
+
 		/**
 		 * Reads normals data of the mesh, creates normal vectors and adds them to normals -list.
 		 */
@@ -164,13 +163,13 @@ public class Mesh{
 			int count = Integer.parseInt(textCoordsData.getAttribute("count"));
 			String[] textData = textCoordsData.getData().split(" ");
 			//Textures are 2Dimensional so final variable DIMENSIONS can't be used here.
-			for(int i = 0; i < count/2; i++){ 
+			for(int i = 0; i < count/2; i++){
 				float u = Float.parseFloat(textData[i * 2]);
 				float v = Float.parseFloat(textData[i * 2 + 1]);
 				textures.add(new Vector2f(u, v));
 			}
 		}
-		
+
 		/**
 		 * Method assembles vertices, normals and texture coordinates.
 		 */
@@ -185,7 +184,7 @@ public class Mesh{
 				processVertex(positionIndex, normalIndex, textCoordIndex);
 			}
 		}
-		
+
 		/**
 		 * Link normal data and texture data to this vertex. If vertex already has texture and normal data linked to it, calls processAgain.
 		 * @param posIndex Index of vertex to process.
@@ -202,12 +201,12 @@ public class Mesh{
 				indices.add(posIndex);
 				return vertex;
 			}
-			//Atleast one vertex at those coordinates has texture & norm data. 
+			//Atleast one vertex at those coordinates has texture & norm data.
 			else{
 				return processAgain(vertex, normIndex, textIndex);
 			}
 		}
-		
+
 		/**
 		 * Converts indices list into primitive type int array.
 		 * @return Created array.
@@ -219,7 +218,7 @@ public class Mesh{
 			}
 			return indicesArray;
 		}
-		
+
 		/**
 		 * Saves vertices data into arrays.
 		 * @return Distance of furthest vertex.
@@ -251,7 +250,7 @@ public class Mesh{
 			}
 			return furthestPoint;
 		}
-		
+
 		/**
 		 * Process vertex that has already been processed. Goes through all the duplicateVertices in recursive loop to see if
 		 * vertice with same normData and textData exists. If not, creates new duplicateVertice. Note: Recursive method.
@@ -285,7 +284,7 @@ public class Mesh{
 				}
 			}
 		}
-		
+
 		/**
 		 * Initializes arrays according to amount of vertices.
 		 */
@@ -296,7 +295,7 @@ public class Mesh{
 			this.jointIdsArray = new int[vertices.size() * 3];
 			this.weightsArray = new float[vertices.size() * 3];
 		}
-		
+
 		/**
 		 * Updates average tangents of each vertex and resets unused vertices.
 		 */
@@ -309,6 +308,6 @@ public class Mesh{
 				}
 			}
 		}
-		
+
 	}
 }

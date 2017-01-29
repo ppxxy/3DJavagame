@@ -11,10 +11,12 @@ public class ViewRenderer {
 
 	private AnimatedModelRenderer animatedModelRenderer;
 	private TerrainRenderer terrainRenderer;
+	private InterfaceRenderer interfaceRenderer;
 
 	protected ViewRenderer(){
 		animatedModelRenderer = new AnimatedModelRenderer();
 		terrainRenderer = new TerrainRenderer();
+		interfaceRenderer = new InterfaceRenderer();
 	}
 
 	public void renderView(View view){
@@ -23,6 +25,7 @@ public class ViewRenderer {
 		for(AnimatedModel model : view.getAnimatedModels()){
 			animatedModelRenderer.render(model, view.getCamera(), view.getLightDirection());
 		}
+		interfaceRenderer.render(view.getInterfaces(), view.getCamera());
 	}
 
 	public void cleanUp(){

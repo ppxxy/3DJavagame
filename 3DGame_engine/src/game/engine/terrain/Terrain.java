@@ -38,7 +38,6 @@ public class Terrain{
 		for(int x = 0; x < CHUNKS_WIDTH; x++){
 			for(int z = 0; z < CHUNKS_HEIGHT; z++){
 				try {
-					System.out.println(x +", " +z);
 					ObjectInputStream chunkLoader = new ObjectInputStream(Class.class.getResourceAsStream("/res/chunks/" +(x+10*z) +".chk"));
 					chunks[x][z] = (ChunkData) chunkLoader.readObject();
 				} catch (IOException e) {

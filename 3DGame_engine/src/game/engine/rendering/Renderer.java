@@ -17,29 +17,33 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 
 public abstract class Renderer {
-	
+
 	private static final float FIELD_OF_VIEW = 70, NEAR_PLANE = 0.1f, FAR_PLANE = 1000;
-	
+
 	private Matrix4f projectionMatrix;
 	protected ShaderProgram shader;
 
 	public Renderer(){
-		
+
 	}
-	
+
 	/*public Renderer(StaticShader shader){
 		createProjectionMatrix();
 		shader.start();
 		shader.loadProjectionMatrix(projectionMatrix);
 		shader.stop();
 	}*/
-	
+
 	public void prepare(){
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glClearColor(1, 0, 0, 1);
 	}
-	
+
+	protected void finish(){
+		shader.stop();
+	}
+
 	/*public void render(StableEntity entity, StaticShader shader){
 		TexturedModel texturedModel = entity.getModel();
 		RawModel model = texturedModel.getRawModel();
@@ -55,13 +59,13 @@ public abstract class Renderer {
 		GL20.glDisableVertexAttribArray(1);
 		GL30.glBindVertexArray(0);
 	}*/
-	
+
 	private void createProjectionMatrix(){
         float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();
         float y_scale = (float) ((1f / Math.tan(Math.toRadians(FIELD_OF_VIEW / 2f))) * aspectRatio);
         float x_scale = y_scale / aspectRatio;
         float frustum_length = FAR_PLANE - NEAR_PLANE;
- 
+
         projectionMatrix = new Matrix4f();
         projectionMatrix.m00 = x_scale;
         projectionMatrix.m11 = y_scale;
@@ -70,5 +74,5 @@ public abstract class Renderer {
         projectionMatrix.m32 = -((2 * NEAR_PLANE * FAR_PLANE) / frustum_length);
         projectionMatrix.m33 = 0;
     }
-	
+
 }

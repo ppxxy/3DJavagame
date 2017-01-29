@@ -53,13 +53,6 @@ public class TerrainRenderer extends Renderer{
 	}
 
 	/**
-	 * Stops the shader.
-	 */
-	private void finish(){
-		shader.stop();
-	}
-
-	/**
 	 * TerrainShader is used to set shader variables.
 	 * @author Kim
 	 *
