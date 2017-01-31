@@ -20,7 +20,7 @@
 			Toinen Vector2f kuvaa interfacen kokoa suhteessa näytön kokoon. 1f, 1f vastaisi siis siis kooltaan koko näytön peittävää interfacea.
 
 		4. Lopuksi lisäämme luomamme Interfacen haluamaamme Viewiin.
-			View.addInterface(interface);
+			view.addInterface(interface);
 
 	- Mikäli kyseessä taas on aktiivinen interface:
 		1. Tässä tapauksessa meidän on mahdollista luoda interfaceja BufferedImage -olioista. Tämä on hyvin lähellä Swingin graafisia ominaisuuksia.
