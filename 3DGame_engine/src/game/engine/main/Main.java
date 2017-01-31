@@ -1,30 +1,19 @@
 package game.engine.main;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.File;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
-
 import game.engine.animation.Animation;
 import game.engine.entities.AnimatedEntity;
 import game.engine.entities.Camera;
-import game.engine.entities.Entity;
-import game.engine.entities.StableEntity;
 import game.engine.interfaces.Interface;
-import game.engine.models.RawModel;
-import game.engine.models.TexturedModel;
-import game.engine.models.collada.AnimationData;
-import game.engine.models.collada.AnimationData.AnimationLoader;
 import game.engine.models.collada.ModelLoader;
-import game.engine.rendering.AnimatedModelRenderer;
 import game.engine.rendering.DisplayManager;
-import game.engine.rendering.Loader;
 import game.engine.rendering.RenderEngine;
-import game.engine.rendering.Renderer;
 import game.engine.rendering.View;
-import game.engine.shader.StaticShader;
-import game.engine.textures.ModelTexture;
 import game.engine.textures.Texture;
 
 public class Main {
@@ -45,9 +34,14 @@ public class Main {
 		String textureFile = "/res/diffuse.png";
 		AnimatedEntity e = AnimatedEntity.loadEntity(modelFile, textureFile);
 		Animation animation = ModelLoader.loadColladaAnimation(modelFile);
-		e.getModel().doAnimation(animation);;
+		e.getModel().doAnimation(animation);
 		view.addEntity(e);
-		view.addInterface(new Interface(Texture.loadTexture("/res/icon.png").load(), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f)));
+		BufferedImage image = new BufferedImage(11, 11, BufferedImage.TYPE_INT_ARGB);
+		java.awt.Graphics g = image.getGraphics();
+		g.setColor(new Color(0, 255, 0, 255));
+		g.fillOval(0, 0, image.getWidth(), image.getHeight());
+		g.dispose();
+		view.addInterface(new Interface(Texture.loadTexture(image).nearestFiltering().load(), new Vector2f(0.5f, 0.5f), new Vector2f(0.2f, 0.2f)));
 
 		while(!Display.isCloseRequested()){
 			camera.move();

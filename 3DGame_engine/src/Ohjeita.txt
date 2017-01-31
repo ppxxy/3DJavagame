@@ -1,0 +1,39 @@
+1. Interfacen luonti:
+	- Ensin päätetään onko kyseessä staattinen interface (pysyy muuttumattomana) Esimerkiksi Inventoryn avaus nappula - (Erikoistehosteita hyvin niukasti)
+		vai
+	aktiivinen interface (muuttuva) Esimerkiksi Chat (teksti vaihtelee), Inventory (itemit vaihtelee), Experience bar (exp vaihtelee), animoidut interfacet
+
+	- Mikäli kyseessä on staattinen interface, on tehtävämme helppo.
+		1. Luodaan kuvankäsittely ohjelmalla miellyttävän näköinen kuva
+		2. Ladataan tekstuuri seuraavasti: Texture.loadTexture("/res/icon.png").load()
+			Note:
+				Voit käyttää erilaisia filttereitä ladatessasi tekstuurin saadaksesi erinäköisiä lopputuloksia.
+				Vaihtoehtoina: clampEdges(), anisotropic(), normalMipMap() ja nearestFiltering().
+
+				Filttereitä käytetään kutsumalla filtteri metodi(t) ennen .load() käskyä seuraavasti:
+						Texture.loadTexture("/res/icon.png").nearestFiltering().load()
+
+		3. Luodaan interface käyttämällä lataamaamme tekstuuria: new Interface(tekstuuri, new Vector2f(0.5f, 0.5f), new Vector2f(0.2f, 0.2f)));
+			Ensimmäinen Vector2f parametri kuvaa interfacen KESKIPISTEEN sijaintia näytön koordinaatistossa, jonka origo (0, 0) sijaitsee keskellä näyttöä,
+			piste (-1, -1) kuvaa vasenta alareunaa, (1, 1) oikeaa yläreunaa jne.
+
+			Toinen Vector2f kuvaa interfacen kokoa suhteessa näytön kokoon. 1f, 1f vastaisi siis siis kooltaan koko näytön peittävää interfacea.
+
+		4. Lopuksi lisäämme luomamme Interfacen haluamaamme Viewiin.
+			View.addInterface(interface);
+
+	- Mikäli kyseessä taas on aktiivinen interface:
+		1. Tässä tapauksessa meidän on mahdollista luoda interfaceja BufferedImage -olioista. Tämä on hyvin lähellä Swingin graafisia ominaisuuksia.
+			- Luodaan BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB); //TYPE_INT_ARGB is a must!!
+			- Tämän jälkeen luomme BufferedImage oliollemme grafiikka objektin, jonka avulla voimme piirtää tälle objektille.
+				Graphics g = image.getGraphics();
+			- Nyt voimme käyttää erilaisia piirto-ominaisuuksia grafiikoiden piirtelyyn. Esimerkiksi g.drawImage(toinen_kuva, x, y, width, height, null);
+			- Tällä tavoin voisimme esimerkiksi ensin piirtää BufferedImagelle kuvan tyhjästä inventorysta, jonka jälkeen piirtäisimme kaikki pelaajan
+			  inventoryn esineet. Tai ensin piirtää tyhjän chatti ikkunan, jonka jälkeen piirtäisimme kaikki chatissa näkyvät viestit.
+			- Kun grafiikka on saatu piirrettyä, tulee kutsua g.dispose(); joka tallettaa graafiikan BufferedImagelle.
+
+		2. Kun grafiikka on piirretty ja disposettu BufferedImagelle, grafiikka ladataan samalla tapaa, kuin staattisen interfacen 2. vaiheessa.
+		   Tässä erona luomamme BufferedImage -olio tiedostosijainnin paikalla.
+						Texture.loadTexture(image).load()
+
+		3. ja 4. vaiheet samat kuin staattisella Interfacella.

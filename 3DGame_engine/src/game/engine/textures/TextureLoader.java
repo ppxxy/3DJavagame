@@ -1,10 +1,15 @@
 package game.engine.textures;
 
 import game.engine.textures.Texture.Loader;
+
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -46,7 +51,57 @@ public class TextureLoader {
 		}
 		return new TextureData(buffer, width, height);
 	}
-	
+
+	protected static Texture loadFromBufferedImage(BufferedImage image, Loader loader){
+		int[] array = new int[image.getWidth()*image.getHeight()];
+		image.getRGB(0, 0, image.getWidth(), image.getHeight(), array, 0, image.getWidth());
+		IntBuffer buffer = BufferUtils.createIntBuffer(array.length);
+		buffer.put(array);
+        buffer.flip();
+		GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, image.getWidth(), image.getHeight(), GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, buffer);
+		int id = saveToOpenGL(buffer, image.getWidth(), image.getHeight(), loader);
+		return new Texture(id, array.length);
+	}
+
+	/**
+	 * Makes improvements to texture data and loads it to OpenGL.
+	 * @param data Texture data to load on OpenGL.
+	 * @param loader Loader to perform chosen improvements.
+	 * @return Id of the given texture on the OpenGL.
+	 */
+	public static int saveToOpenGL(IntBuffer buffer, int width, int height, Loader loader) {
+		int id = GL11.glGenTextures();
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
+		GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE, buffer);
+		if (loader.isMipmap()) {
+			GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
+			if (loader.isAnisotropic() && GLContext.getCapabilities().GL_EXT_texture_filter_anisotropic) {
+				GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, 0);
+				GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT,
+						4.0f);
+			}
+		} else if (loader.isNearest()) {
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+		} else {
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+		}
+		if (loader.isClampEdges()) {
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+		} else {
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
+		}
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		return id;
+	}
+
 	/**
 	 * Makes improvements to texture data and loads it to OpenGL.
 	 * @param data Texture data to load on OpenGL.
@@ -85,12 +140,12 @@ public class TextureLoader {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		return id;
 	}
-	
+
 	protected static class TextureData{
-		
+
 		private int width, height;
 		private ByteBuffer buffer;
-		
+
 		/**
 		 * Object holding texture data.
 		 * @param buffer Buffer containing texture data.
@@ -102,15 +157,15 @@ public class TextureLoader {
 			this.width = width;
 			this.height = height;
 		}
-		
+
 		protected int getWidth(){
 			return this.width;
 		}
-		
+
 		protected int getHeight(){
 			return this.height;
 		}
-		
+
 		protected ByteBuffer getBuffer(){
 			return buffer;
 		}
