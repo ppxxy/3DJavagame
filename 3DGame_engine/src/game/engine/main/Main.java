@@ -36,12 +36,12 @@ public class Main {
 		Animation animation = ModelLoader.loadColladaAnimation(modelFile);
 		e.getModel().doAnimation(animation);
 		view.addEntity(e);
-		BufferedImage image = new BufferedImage(11, 11, BufferedImage.TYPE_INT_ARGB);
+		/*BufferedImage image = new BufferedImage(11, 11, BufferedImage.TYPE_INT_ARGB);
 		java.awt.Graphics g = image.getGraphics();
 		g.setColor(new Color(0, 255, 0, 255));
-		g.fillOval(0, 0, image.getWidth(), image.getHeight());
+		g.fillRect(0, 0, image.getWidth(), image.getHeight());
 		g.dispose();
-		view.addInterface(new Interface(Texture.loadTexture(image).nearestFiltering().load(), new Vector2f(0.5f, 0.5f), new Vector2f(0.2f, 0.2f)));
+		view.addInterface(new Interface(Texture.loadTexture(image).nearestFiltering().load(), new Vector2f(0.5f, 0.5f), new Vector2f(0.2f, 0.2f)));*/
 
 		while(!Display.isCloseRequested()){
 			camera.move();

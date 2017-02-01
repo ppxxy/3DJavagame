@@ -19,7 +19,9 @@ public class TerrainRenderer extends Renderer{
 	 * Terrain renderer is a renderer used for terrain rendering.
 	 */
 	public TerrainRenderer(){
+		System.out.println("Starting shader");
 		this.shader = new TerrainShader();
+		System.out.println("Shader started");
 	}
 
 	/**
@@ -29,9 +31,10 @@ public class TerrainRenderer extends Renderer{
 	 */
 	public void render(TerrainModel terrain, Camera camera) {
 		prepare(camera);
-		terrain.getModel().bind(0);
+		terrain.getTexture().bindToUnit(0);
+		terrain.getModel().bind(0, 1);
 		GL11.glDrawElements(GL11.GL_TRIANGLES, terrain.getModel().getIndexCount(), GL11.GL_UNSIGNED_INT, 0);
-		terrain.getModel().unbind(0);
+		terrain.getModel().unbind(0, 1);
 		finish();
 	}
 

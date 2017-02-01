@@ -15,6 +15,7 @@ public abstract class ShaderProgram {
 
 	public ShaderProgram(String vertexFile, String fragmentFile, String... inVariables){
 		int vertexShaderID = loadShader(vertexFile, GL20.GL_VERTEX_SHADER);
+		//Breaks on fragmentShader
 		int fragmentShaderID = loadShader(fragmentFile, GL20.GL_FRAGMENT_SHADER);
 		programID = GL20.glCreateProgram();
 		GL20.glAttachShader(programID, vertexShaderID);
