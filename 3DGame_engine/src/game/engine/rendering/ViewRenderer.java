@@ -1,10 +1,8 @@
 package game.engine.rendering;
 
+import game.engine.entities.AnimatedEntity;
 import game.engine.models.AnimatedModel;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
 public class ViewRenderer {
@@ -22,14 +20,29 @@ public class ViewRenderer {
 	public void renderView(View view){
 		prepare();
 		terrainRenderer.render(view.getTerrain(), view.getCamera());
-		for(AnimatedModel model : view.getAnimatedModels()){
-			animatedModelRenderer.render(model, view.getCamera(), view.getLightDirection());
+		for(AnimatedEntity e : view.getAnimatedEntities()){
+			animatedModelRenderer.render(e, view.getCamera(), view.getLightDirection());
 		}
 		interfaceRenderer.render(view.getInterfaces(), view.getCamera());
+		//After normal rendering, render depth buffer.
+		view.depthBuffer.bind(Display.getWidth(), Display.getHeight());
+		renderDepth(view);
+		view.depthBuffer.unbind();
+		view.useMousePicker();
+	}
+
+	public void renderDepth(View view){
+		prepare();
+		terrainRenderer.render(view.getTerrain(), view.getCamera());
+		/*for(AnimatedEntity e : view.getAnimatedEntities()){
+			animatedModelRenderer.render(e, view.getCamera(), view.getLightDirection());
+		}*/
 	}
 
 	public void cleanUp(){
 		animatedModelRenderer.cleanUp();
+		terrainRenderer.cleanUp();
+		interfaceRenderer.cleanUp();
 	}
 
 	private void prepare(){

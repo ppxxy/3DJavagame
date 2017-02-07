@@ -11,6 +11,8 @@ import game.engine.entities.AnimatedEntity;
 import game.engine.entities.Camera;
 import game.engine.interfaces.Interface;
 import game.engine.models.collada.ModelLoader;
+import game.engine.physics.MousePicker;
+import game.engine.physics.ViewDepthBuffer;
 import game.engine.rendering.DisplayManager;
 import game.engine.rendering.RenderEngine;
 import game.engine.rendering.View;
@@ -36,6 +38,7 @@ public class Main {
 		Animation animation = ModelLoader.loadColladaAnimation(modelFile);
 		e.getModel().doAnimation(animation);
 		view.addEntity(e);
+
 		/*BufferedImage image = new BufferedImage(11, 11, BufferedImage.TYPE_INT_ARGB);
 		java.awt.Graphics g = image.getGraphics();
 		g.setColor(new Color(0, 255, 0, 255));
@@ -45,11 +48,13 @@ public class Main {
 
 		while(!Display.isCloseRequested()){
 			camera.move();
+
 			view.updateEntities();
 			renderEngine.renderView(view);
 			DisplayManager.updateDisplay();
 		}
 
+		view.cleanUp();
 		renderEngine.cleanUp();
 		DisplayManager.closeDiplay();
 	}

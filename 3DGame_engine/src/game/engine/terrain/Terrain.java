@@ -1,12 +1,8 @@
 package game.engine.terrain;
 
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-
-import javax.imageio.ImageIO;
 
 import game.engine.models.VAO;
 import game.engine.textures.Texture;

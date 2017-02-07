@@ -1,10 +1,11 @@
 package game.engine.rendering;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
+import game.engine.entities.AnimatedEntity;
 import game.engine.entities.Camera;
-import game.engine.models.AnimatedModel;
 import game.engine.shader.ShaderProgram;
 import game.engine.shader.UniformMat4Array;
 import game.engine.shader.UniformMatrix;
@@ -18,13 +19,13 @@ public class AnimatedModelRenderer extends Renderer {
 		this.shader = new AnimatedModelShader();
 	}
 
-	public void render(AnimatedModel model, Camera camera, Vector3f lightDirection){
-		prepare(camera, lightDirection);
-		model.getTexture().bindToUnit(0);
-		model.getModel().bind(0, 1, 2, 3, 4);
-		((AnimatedModelShader)shader).jointTransforms.loadMatrixArray(model.getJointTransforms());
-		GL11.glDrawElements(GL11.GL_TRIANGLES, model.getModel().getIndexCount(), GL11.GL_UNSIGNED_INT, 0);
-		model.getModel().unbind(0, 1, 2, 3, 4);
+	public void render(AnimatedEntity e, Camera camera, Vector3f lightDirection){
+		prepare(e.getTransformationMatrix(), camera, lightDirection);
+		e.getModel().getTexture().bindToUnit(0);
+		e.getModel().getModel().bind(0, 1, 2, 3, 4);
+		((AnimatedModelShader)shader).jointTransforms.loadMatrixArray(e.getModel().getJointTransforms());
+		GL11.glDrawElements(GL11.GL_TRIANGLES, e.getModel().getModel().getIndexCount(), GL11.GL_UNSIGNED_INT, 0);
+		e.getModel().getModel().unbind(0, 1, 2, 3, 4);
 		finish();
 	}
 
@@ -32,10 +33,11 @@ public class AnimatedModelRenderer extends Renderer {
 		shader.cleanUp();
 	}
 
-	private void prepare(Camera camera, Vector3f lightDir){
+	private void prepare(Matrix4f transformation, Camera camera, Vector3f lightDir){
 		AnimatedModelShader shader = (AnimatedModelShader) this.shader;
 		shader.start();
 		shader.projectionViewMatrix.loadMatrix(camera.getProjectionViewMatrix());
+		shader.transformationMatrix.loadMatrix(transformation);
 		shader.lightDirection.loadVec3(lightDir);
 		OpenGlUtils.antialias(true);
 		OpenGlUtils.disableBlending();
@@ -51,13 +53,14 @@ public class AnimatedModelRenderer extends Renderer {
 		private static final String FRAGMENT_SHADER = "/game/engine/shader/animatedEntityFragment.glsl";
 
 		protected UniformMatrix projectionViewMatrix = new UniformMatrix("projectionViewMatrix");
+		protected UniformMatrix transformationMatrix = new UniformMatrix("transformationMatrix");
 		protected UniformVec3 lightDirection = new UniformVec3("lightDirection");
 		protected UniformMat4Array jointTransforms = new UniformMat4Array("jointTransforms", MAX_JOINTS);
 		private UniformSampler diffuseMap = new UniformSampler("diffuseMap");
 
 		public AnimatedModelShader(){
 			super(VERTEX_SHADER, FRAGMENT_SHADER, "in_position", "in_textureCoords", "in_normal", "in_jointIndices", "in_weights");
-			super.storeUniformLocations(projectionViewMatrix, lightDirection, jointTransforms, diffuseMap);
+			super.storeUniformLocations(projectionViewMatrix, transformationMatrix, lightDirection, jointTransforms, diffuseMap);
 			connectTextureUnits();
 		}
 

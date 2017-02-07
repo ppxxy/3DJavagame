@@ -14,21 +14,22 @@ out vec3 pass_normal;
 
 uniform mat4 jointTransforms[MAX_JOINTS];
 uniform mat4 projectionViewMatrix;
+uniform mat4 transformationMatrix;
 
 void main(void){
-	
+
 	vec4 totalLocalPos = vec4(0.0);
 	vec4 totalNormal = vec4(0.0);
-	
+
 	for(int i=0;i<MAX_WEIGHTS;i++){
 		vec4 localPosition = jointTransforms[in_jointIndices[i]] * vec4(in_position, 1.0);
 		totalLocalPos += localPosition * in_weights[i];
-		
+
 		vec4 worldNormal = jointTransforms[in_jointIndices[i]] * vec4(in_normal, 0.0);
 		totalNormal += worldNormal * in_weights[i];
 	}
-	
-	gl_Position = projectionViewMatrix * totalLocalPos;
+
+	gl_Position = projectionViewMatrix * transformationMatrix * totalLocalPos;
 	pass_normal = totalNormal.xyz;
 	pass_textureCoords = in_textureCoords;
 

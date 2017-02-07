@@ -12,8 +12,7 @@ public class Camera {
 	private float pitch, yaw, roll;
 
 	private static final float FOV = 70;
-	private static final float NEAR_PLANE = 0.2f;
-	private static final float FAR_PLANE = 400;
+	public static final float NEAR_PLANE = 0.5f, FAR_PLANE = 400.0f;
 	static final private float sensitivity = 0.05f;
 
 	private Matrix4f projectionMatrix;
@@ -110,6 +109,14 @@ public class Camera {
 
 	public float getRoll() {
 		return roll;
+	}
+
+	public Matrix4f getProjectionMatrix() {
+		return this.projectionMatrix;
+	}
+
+	public Matrix4f getViewMatrix(){
+		return this.viewMatrix;
 	}
 
 }

@@ -5,12 +5,15 @@ import game.engine.entities.Camera;
 import game.engine.entities.Entity;
 import game.engine.interfaces.Interface;
 import game.engine.models.AnimatedModel;
+import game.engine.physics.MousePicker;
+import game.engine.physics.ViewDepthBuffer;
 import game.engine.terrain.Terrain;
 import game.engine.terrain.TerrainModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
 
 public class View {
@@ -18,12 +21,17 @@ public class View {
 	private final List<Entity> entities = new ArrayList<Entity>();
 	private final List<Interface> interfaces = new ArrayList<Interface>();
 	private final Camera camera;
+	private final MousePicker mousePicker;
 	private TerrainModel terrain;
 	private Vector3f lightDirection = new Vector3f(0, -1, 0);
-	private final List<AnimatedModel> animatedModels = new ArrayList<AnimatedModel>();
+	private final List<AnimatedEntity> animatedEntities = new ArrayList<AnimatedEntity>();
+
+	ViewDepthBuffer depthBuffer;
 
 	public View(Camera camera){
+		this.depthBuffer = new ViewDepthBuffer();
 		this.camera = camera;
+		this.mousePicker = new MousePicker(camera);
 		Terrain terrain = new Terrain(0, 0);
 		terrain.loadChunks();
 		this.terrain = terrain.loadModel();
@@ -32,7 +40,7 @@ public class View {
 	public void addEntity(Entity entity){
 		entities.add(entity);
 		if(entity instanceof AnimatedEntity){
-			animatedModels.add(((AnimatedEntity) entity).getModel());
+			animatedEntities.add((AnimatedEntity) entity);
 		}
 	}
 
@@ -68,8 +76,8 @@ public class View {
 	 * Get list of AnimatedModels on this view.
 	 * @return List of AnimatedModels on this view.
 	 */
-	public List<AnimatedModel> getAnimatedModels(){
-		return animatedModels;
+	public List<AnimatedEntity> getAnimatedEntities(){
+		return animatedEntities;
 	}
 
 	/**
@@ -96,7 +104,19 @@ public class View {
 		return this.terrain;
 	}
 
+	private float distanceAt(int x, int y){
+		return depthBuffer.getDepth(x, y);
+	}
+
 	public List<Interface> getInterfaces() {
 		return this.interfaces;
+	}
+
+	public void useMousePicker() {
+		entities.get(0).setPosition(mousePicker.update(distanceAt(Mouse.getX(), Mouse.getY())));
+	}
+
+	public void cleanUp() {
+		this.depthBuffer.cleanUp();
 	}
 }
