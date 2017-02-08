@@ -72,9 +72,9 @@ public class Terrain{
 		for(int i = 0; i < vertices.length/3; i++){
 			int x = i%w;
 			int z = i/w;
-			vertices[i*3] = x; //x
+			vertices[i*3] = x-w/2; //x
 			vertices[i*3+1] = chunks[x/ChunkData.WIDTH][z/ChunkData.HEIGHT].getHeight(x%ChunkData.WIDTH, z%ChunkData.HEIGHT); //y
-			vertices[i*3+2] = z; //z
+			vertices[i*3+2] = z-h/2; //z
 			textureCoords[i*2] = (float)x/(float)w;
 			textureCoords[i*2+1] = (float)z/(float)h;
 		}

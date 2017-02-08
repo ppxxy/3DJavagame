@@ -29,12 +29,12 @@ public class View {
 
 	ViewDepthBuffer depthBuffer;
 
-	public View(Camera camera){
+	public View(){
 		this.depthBuffer = new ViewDepthBuffer();
-		this.camera = camera;
-		this.mousePicker = new MousePicker(camera);
 		Terrain terrain = new Terrain(0, 0);
 		terrain.loadChunks();
+		this.camera = new Camera(new Vector3f(0, 0, 0));
+		this.mousePicker = new MousePicker(camera);
 		this.terrain = terrain.loadModel();
 	}
 
@@ -94,6 +94,7 @@ public class View {
 	}
 
 	public void updateEntities() {
+		camera.move();
 		for(Entity e : entities){
 			if(e instanceof AnimatedEntity){
 				((AnimatedEntity) e).update();

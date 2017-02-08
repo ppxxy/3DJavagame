@@ -8,7 +8,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 public class Camera {
 
-	private Vector3f position = new Vector3f(0, 5, 5);
+	private Vector3f position;
 	private float pitch, yaw=90f, roll;
 
 	private static final float FOV = 70;
@@ -18,7 +18,8 @@ public class Camera {
 	private Matrix4f projectionMatrix;
 	private Matrix4f viewMatrix = new Matrix4f();
 
-	public Camera(){
+	public Camera(Vector3f position){
+		this.position = position;
 		this.projectionMatrix = createProjectionMatrix();
 	}
 

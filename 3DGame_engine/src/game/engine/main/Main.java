@@ -32,8 +32,7 @@ public class Main {
 
 		RenderEngine renderEngine = RenderEngine.init();
 
-		Camera camera = new Camera();
-		View view = new View(camera);
+		View view = new View();
 		activeView = view;
 		String modelFile = "/res/model.dae";
 		String textureFile = "/res/diffuse.png";
@@ -50,8 +49,6 @@ public class Main {
 		view.addInterface(new Interface(Texture.loadTexture(image).nearestFiltering().load(), new Vector2f(0.5f, 0.5f), new Vector2f(0.2f, 0.2f)));*/
 
 		while(!Display.isCloseRequested()){
-			camera.move();
-
 			view.updateEntities();
 			renderEngine.renderView(view);
 			DisplayManager.updateDisplay();
