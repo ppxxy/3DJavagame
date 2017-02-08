@@ -27,7 +27,7 @@ public class MousePicker {
 	}
 
 	public Vector3f update(float distance){
-		System.out.println(distance);
+		//System.out.println(distance);
 		this.projectionMatrix = camera.getProjectionMatrix();
 		this.viewMatrix = camera.getViewMatrix();
 		currentRay = calculateMouseRay();

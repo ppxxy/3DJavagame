@@ -1,10 +1,11 @@
 package game.engine.rendering;
 
+import game.connection.objects.MovementDestination;
 import game.engine.entities.AnimatedEntity;
 import game.engine.entities.Camera;
 import game.engine.entities.Entity;
 import game.engine.interfaces.Interface;
-import game.engine.models.AnimatedModel;
+import game.engine.main.Main;
 import game.engine.physics.MousePicker;
 import game.engine.physics.ViewDepthBuffer;
 import game.engine.terrain.Terrain;
@@ -95,7 +96,7 @@ public class View {
 	public void updateEntities() {
 		for(Entity e : entities){
 			if(e instanceof AnimatedEntity){
-				((AnimatedEntity) e).getModel().update();
+				((AnimatedEntity) e).update();
 			}
 		}
 	}
@@ -113,7 +114,13 @@ public class View {
 	}
 
 	public void useMousePicker() {
-		entities.get(0).setPosition(mousePicker.update(distanceAt(Mouse.getX(), Mouse.getY())));
+		if(Mouse.next() && Mouse.getEventButton() == 0 && Mouse.getEventButtonState()){
+			float distance = distanceAt(Mouse.getX(), Mouse.getY());
+			if(distance < Camera.FAR_PLANE){
+				Vector3f location = mousePicker.update(distance);
+				Main.connection.send(new MovementDestination.MovementTo(location));
+			}
+		}
 	}
 
 	public void cleanUp() {

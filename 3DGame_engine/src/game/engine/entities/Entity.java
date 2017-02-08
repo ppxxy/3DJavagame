@@ -7,9 +7,9 @@ import game.engine.models.TexturedModel;
 
 public abstract class Entity {
 
-	private Vector3f position;
-	private float rotX, rotY, rotZ;
-	private float scale;
+	protected Vector3f position;
+	protected float rotX, rotY, rotZ;
+	protected float scale;
 
 	public Entity(Vector3f position, float rotX,
 			float rotY, float rotZ, float scale) {

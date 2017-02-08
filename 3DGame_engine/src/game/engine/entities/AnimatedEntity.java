@@ -16,7 +16,7 @@ import org.lwjgl.util.vector.Vector3f;
 public class AnimatedEntity extends Entity{
 
 	private AnimatedModel animatedModel;
-	
+
 	public AnimatedEntity(Vector3f position, float rotX, float rotY, float rotZ, float scale, AnimatedModel animatedModel) {
 		super(position, rotX, rotY, rotZ, scale);
 		this.animatedModel = animatedModel;
@@ -32,24 +32,24 @@ public class AnimatedEntity extends Entity{
 		return new AnimatedEntity(new Vector3f(1, 1, 1), 0, 0, 0, 1, model);
 	}
 
-	private static Texture loadTexture(String path){
+	protected static Texture loadTexture(String path){
 		Texture diffuseTexture = Texture.loadTexture(path).anisotropic().load();
 		return diffuseTexture;
 	}
-	
-	private static Joint createJoints(JointData data){
+
+	protected static Joint createJoints(JointData data){
 		Joint joint = new Joint(data.index, data.name, data.bindLocalTransform);
 		for(JointData child : data.children){
 			joint.addChild(createJoints(child));
 		}
 		return joint;
 	}
-	
+
 	public AnimatedModel getModel() {
 		return this.animatedModel;
 	}
-	
-	private static VAO createVao(Mesh data){
+
+	protected static VAO createVao(Mesh data){
 		VAO vao = VAO.create();
 		vao.bind();
 		vao.createIndexBuffer(data.getIndices());
@@ -61,5 +61,9 @@ public class AnimatedEntity extends Entity{
 		vao.unbind();
 		return vao;
 	}
-	
+
+	public void update() {
+		this.animatedModel.update();
+	}
+
 }

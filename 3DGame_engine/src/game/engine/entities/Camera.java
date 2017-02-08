@@ -9,7 +9,7 @@ import org.lwjgl.util.vector.Vector3f;
 public class Camera {
 
 	private Vector3f position = new Vector3f(0, 5, 5);
-	private float pitch, yaw, roll;
+	private float pitch, yaw=90f, roll;
 
 	private static final float FOV = 70;
 	public static final float NEAR_PLANE = 0.5f, FAR_PLANE = 400.0f;

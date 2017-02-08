@@ -25,8 +25,8 @@ public class Terrain{
 
 	/**
 	 * Creates terrain object with CenterChunk(x, z)
-	 * @param x X coordinate of the center chunk.
-	 * @param z Z coordinate of the center chunk.
+	 * @param x Coordinate of the center chunk.
+	 * @param z Coordinate of the center chunk.
 	 */
 	public Terrain(int x, int z){
 		this.chunks = new ChunkData[CHUNKS_WIDTH][CHUNKS_HEIGHT];
