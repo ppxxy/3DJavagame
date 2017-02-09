@@ -6,5 +6,7 @@
 	<classpathentry kind="lib" path="src/lib/jars/lwjgl.jar"/>
 	<classpathentry kind="lib" path="src/lib/jars/PNGDecoder.jar"/>
 	<classpathentry kind="lib" path="src/lib/jars/slick-util.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Läbäri/Desktop/javax.mail.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Läbäri/Desktop/mysql-connector-java-5.1.40/mysql-connector-java-5.1.40-bin.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
