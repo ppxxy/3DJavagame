@@ -65,5 +65,4 @@ public class AnimatedEntity extends Entity{
 	public void update() {
 		this.animatedModel.update();
 	}
-
 }

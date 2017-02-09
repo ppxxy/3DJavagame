@@ -1,6 +1,10 @@
 package game.engine.entities;
 
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
+
+import game.engine.main.Main;
+import game.engine.tools.Maths;
 
 public class Movement {
 
@@ -45,9 +49,22 @@ public class Movement {
 			pos_index++;
 		}
 		previousFrame = currentTime;
-		source.translate(dir_vector.x*distance, dir_vector.y*distance, dir_vector.z*distance);
+		source.translate(dir_vector.x*distance, 0, dir_vector.z*distance);
+		source.setY(getHeight(source.x, source.z));
 		return true;
 	}
 
-
+	private float getHeight(float x, float z){
+		float[][] heightmap = Main.activeView.getTerrain().getHeightMap();
+		Vector3f a, b, c;
+		if(x%1 <= 1-z%1){
+			a = new Vector3f((int) 0, heightmap[(int) x][(int) z], (int) 0);
+		}
+		else{
+			a = new Vector3f((int) 1, heightmap[(int) x+1][(int) z+1], (int) 1);
+		}
+		b = new Vector3f((int) 0, heightmap[(int) x][(int) z+1], (int) 1);
+		c = new Vector3f((int) 1, heightmap[(int) x+1][(int) z], (int) 0);
+		return Maths.barryCentric(a, b, c, new Vector2f(x%1, z%1));
+	}
 }

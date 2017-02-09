@@ -66,15 +66,18 @@ public class Terrain{
 	public TerrainModel loadModel(){
 		int w = (CHUNKS_WIDTH*ChunkData.WIDTH-CHUNKS_WIDTH+1), h = (CHUNKS_HEIGHT*ChunkData.HEIGHT-CHUNKS_HEIGHT+1);
 		float[] vertices = new float[3*w*h];
+		float[][] heightMap = new float[w][h];
 		float[] textureCoords = new float[2*w*h];
 		int[] indices = new int[CHUNKS_WIDTH*CHUNKS_HEIGHT*(ChunkData.WIDTH-1)*(ChunkData.HEIGHT-1)*6];
 		//System.out.println(vertices.length +", " +indices.length);
 		for(int i = 0; i < vertices.length/3; i++){
 			int x = i%w;
 			int z = i/w;
-			vertices[i*3] = x-w/2; //x
-			vertices[i*3+1] = chunks[x/ChunkData.WIDTH][z/ChunkData.HEIGHT].getHeight(x%ChunkData.WIDTH, z%ChunkData.HEIGHT); //y
-			vertices[i*3+2] = z-h/2; //z
+			float y = chunks[x/ChunkData.WIDTH][z/ChunkData.HEIGHT].getHeight(x%ChunkData.WIDTH, z%ChunkData.HEIGHT);
+			vertices[i*3] = x; //x
+			vertices[i*3+1] = y; //y
+			vertices[i*3+2] = z; //z
+			heightMap[x][z] = y;
 			textureCoords[i*2] = (float)x/(float)w;
 			textureCoords[i*2+1] = (float)z/(float)h;
 		}
@@ -88,7 +91,7 @@ public class Terrain{
 			indices[i*6+4] = a+1;
 			indices[i*6+5] = b+1;
 		}
-		return new TerrainModel(createVao(vertices, textureCoords, indices), texture);
+		return new TerrainModel(createVao(vertices, textureCoords, indices), heightMap, texture);
 	}
 
 	/**

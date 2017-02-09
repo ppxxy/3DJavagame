@@ -3,9 +3,18 @@ package game.engine.tools;
 import game.engine.entities.Camera;
 
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 public class Maths {
+
+	public static float barryCentric(Vector3f v1, Vector3f v2, Vector3f v3, Vector2f pos){
+		float det = (v2.z - v3.z) * (v1.x - v3.x) + (v3.x - v2.x) * (v1.z - v3.z);
+		float l1 = ((v2.z - v3.z) * (pos.x - v3.x) + (v3.x - v2.x) * (pos.y - v3.z)) / det;
+		float l2 = ((v3.z - v1.z) * (pos.x - v3.x) + (v1.x - v3.x) * (pos.y - v3.z)) / det;
+		float l3 = 1.0f - l1 - l2;
+		return l1 * v1.y + l2 * v2.y + l3 * v3.y;
+	}
 
 	public static Matrix4f createTransformationMatrix(Vector3f translation,
 			float rx, float ry, float rz, float scale){
@@ -18,7 +27,7 @@ public class Maths {
 		Matrix4f.scale(new Vector3f(scale, scale, scale), matrix, matrix);
 		return matrix;
 	}
-	
+
 	public static Matrix4f createViewMatrix(Camera camera) {
         Matrix4f viewMatrix = new Matrix4f();
         viewMatrix.setIdentity();
@@ -30,5 +39,5 @@ public class Maths {
         Matrix4f.translate(negativeCameraPos, viewMatrix, viewMatrix);
         return viewMatrix;
     }
-	
+
 }
