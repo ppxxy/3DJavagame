@@ -2,7 +2,7 @@ package login;
 import javax.persistence.*;
 
 @Entity
-@Table(name="3Dpeli")
+@Table(name="Account")
 public class Userdata {
         
         @Id
@@ -32,6 +32,9 @@ public class Userdata {
                 this.hash = hash;
                 this.salt = salt;
 	}
+        
+        public Userdata(){
+        }
 
 	public String getUsername() {
 		return username;

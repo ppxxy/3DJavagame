@@ -306,9 +306,11 @@ public class Window extends JPanel implements ActionListener{
                 //tarkista onko kyseista pelaajaa olemassa ja onko salasana oikein
             		connect = new Connect();
             		username = usernameField.getText();
-                    String databaseSalt = connect.getDatabaseSalt("SELECT PasswordSalt FROM Account WHERE Nimi='"+username+"';");
+                    //String databaseSalt = connect.getDatabaseSalt("SELECT PasswordSalt FROM Account WHERE Nimi='"+username+"';");
+                    String databaseSalt = connect.getDatabaseSalt(username);
                     System.out.println("Salt on:"+databaseSalt);
-                    String databaseHash = connect.getDatabaseHash("SELECT PasswordHash FROM Account WHERE Nimi='"+username+"';");
+                    //String databaseHash = connect.getDatabaseHash("SELECT PasswordHash FROM Account WHERE Nimi='"+username+"';");
+                    String databaseHash = connect.getDatabaseHash(username);
                     System.out.println("Hash on:"+databaseHash);
                     String typedPassword = (new String (passwordField.getPassword()));
                     String hashThis = databaseSalt+typedPassword;

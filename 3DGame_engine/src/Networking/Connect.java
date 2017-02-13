@@ -42,7 +42,7 @@ public class Connect {
 		}
         }
 
-	public void executeUpdate(String query){
+	/*public void executeUpdate(String query){
 		try {
 			myStmt = myConn.createStatement();
 			myStmt.executeUpdate(query);
@@ -58,11 +58,26 @@ public class Connect {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 
 	public String getDatabaseSalt(String query){
+            
+            Session istunto = istuntotehdas.openSession();
 
-		String salt = "";
+		try{
+			istunto.beginTransaction();
+			Userdata user = new Userdata();
+			istunto.load(user, query);
+			istunto.getTransaction().commit();
+			istunto.close();
+			return user.getSalt();
+
+		}
+		catch(Exception e){
+			throw e;
+		}
+
+		/*String salt = "";
 
 		try{
 			myStmt = myConn.createStatement();
@@ -73,12 +88,27 @@ public class Connect {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		return salt;
+		return salt;*/
 	}
 
 	public String getDatabaseHash(String query){
+            
+            Session istunto = istuntotehdas.openSession();
+            
+                try{
+			istunto.beginTransaction();
+			Userdata user = new Userdata();
+			istunto.load(user, query);
+			istunto.getTransaction().commit();
+			istunto.close();
+			return user.getHash();
 
-		String hash = "";
+		}
+		catch(Exception e){
+			throw e;
+		}
+
+		/*String hash = "";
 
 		try{
 			myStmt = myConn.createStatement();
@@ -89,7 +119,7 @@ public class Connect {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		return hash;
+		return hash;*/
 	}
 
 
