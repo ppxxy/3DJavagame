@@ -1,6 +1,6 @@
 package login;
 
-import Networking.Connect;
+import game.engine.database.Connect;
 
 public class Main {
 
