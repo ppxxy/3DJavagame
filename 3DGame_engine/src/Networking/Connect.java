@@ -19,9 +19,9 @@ public class Connect {
 
 	Window window;
 
-	ResultSet myRs;
+	/*ResultSet myRs;
 	Statement myStmt;
-	PreparedStatement myStmt2;
+	PreparedStatement myStmt2;*/
 
 	private static Connection myConn;
 	public static String errorMessage;
