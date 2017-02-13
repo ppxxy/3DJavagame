@@ -6,30 +6,43 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import login.Userdata;
 import login.Window;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 public class Connect {
 
 	Window window;
 
-	ResultSet myRs;
+	/*ResultSet myRs;
 	Statement myStmt;
-	PreparedStatement myStmt2;
+	PreparedStatement myStmt2;*/
 
-	public static Connection myConn;
+	private static Connection myConn;
 	public static String errorMessage;
 
+	SessionFactory istuntotehdas= null;
 
-	public void connectDb(){
+	public Connect() {
+
+		final StandardServiceRegistry registry = new StandardServiceRegistryBuilder().configure().build();
+
 		try{
-			myConn = DriverManager.getConnection("jdbc:mysql://mysql-raivoairlines.crenqljciaae.eu-central-1.rds.amazonaws.com:3306/3Dpeli","ohjelmauser","Salasana159");
-			System.out.println("Created connection to the database.");
-		}catch(Exception e){
+			istuntotehdas = new MetadataSources(registry).buildMetadata().buildSessionFactory();
+		}
+		catch(Exception e){
+			System.out.println("Oh no");
+			StandardServiceRegistryBuilder.destroy( registry );
 			e.printStackTrace();
 		}
-	}
+        }
 
-	public void executeUpdate(String query){
+	/*public void executeUpdate(String query){
 		try {
 			myStmt = myConn.createStatement();
 			myStmt.executeUpdate(query);
@@ -45,11 +58,26 @@ public class Connect {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 
 	public String getDatabaseSalt(String query){
+            
+            Session istunto = istuntotehdas.openSession();
 
-		String salt = "";
+		try{
+			istunto.beginTransaction();
+			Userdata user = new Userdata();
+			istunto.load(user, query);
+			istunto.getTransaction().commit();
+			istunto.close();
+			return user.getSalt();
+
+		}
+		catch(Exception e){
+			throw e;
+		}
+
+		/*String salt = "";
 
 		try{
 			myStmt = myConn.createStatement();
@@ -60,12 +88,27 @@ public class Connect {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		return salt;
+		return salt;*/
 	}
 
 	public String getDatabaseHash(String query){
+            
+            Session istunto = istuntotehdas.openSession();
+            
+                try{
+			istunto.beginTransaction();
+			Userdata user = new Userdata();
+			istunto.load(user, query);
+			istunto.getTransaction().commit();
+			istunto.close();
+			return user.getHash();
 
-		String hash = "";
+		}
+		catch(Exception e){
+			throw e;
+		}
+
+		/*String hash = "";
 
 		try{
 			myStmt = myConn.createStatement();
@@ -76,13 +119,29 @@ public class Connect {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		return hash;
+		return hash;*/
 	}
 
 
 	public void addUser(String username, String hash, String salt, String email, String recq, String reca){
+                Userdata user = new Userdata(username, hash, salt, email, recq, reca);
+                
+                Session istunto = istuntotehdas.openSession();
+		Transaction transaktio = null;
 
-		String sql = "INSERT INTO Account "
+		try{
+			transaktio = istunto.beginTransaction();
+			istunto.saveOrUpdate(user);
+			transaktio.commit();
+		}
+		catch(Exception e){
+			if (transaktio!=null) transaktio.rollback();
+			throw e;
+		}
+		finally{
+			istunto.close();
+		}
+		/*String sql = "INSERT INTO Account "
 				+ " (Nimi, PasswordHash, PasswordSalt, Email, SecurityQ, SecurityA)"
 				+ " VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -102,7 +161,7 @@ public class Connect {
             }else if(e.toString().contains("Nimi_UNIQUE")){
             	errorMessage="Account with this name already exists.";
             }
-            }
+            }*/
 		}
 	}
 
