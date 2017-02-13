@@ -2,10 +2,10 @@ package login;
 
 
 import Networking.Clientside;
+import Networking.Connect;
 
 //javax.mail saatavissa osoitteesta https://java.net/projects/javamail/pages/Home#Download_JavaMail_Release
 
-import game.engine.database.Connect;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
