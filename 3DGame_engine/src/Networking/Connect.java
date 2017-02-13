@@ -6,9 +6,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import login.Userdata;
 import login.Window;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -92,8 +94,24 @@ public class Connect {
 
 
 	public void addUser(String username, String hash, String salt, String email, String recq, String reca){
+                Userdata user = new Userdata(username, hash, salt, email, recq, reca);
+                
+                Session istunto = istuntotehdas.openSession();
+		Transaction transaktio = null;
 
-		String sql = "INSERT INTO Account "
+		try{
+			transaktio = istunto.beginTransaction();
+			istunto.saveOrUpdate(user);
+			transaktio.commit();
+		}
+		catch(Exception e){
+			if (transaktio!=null) transaktio.rollback();
+			throw e;
+		}
+		finally{
+			istunto.close();
+		}
+		/*String sql = "INSERT INTO Account "
 				+ " (Nimi, PasswordHash, PasswordSalt, Email, SecurityQ, SecurityA)"
 				+ " VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -113,7 +131,7 @@ public class Connect {
             }else if(e.toString().contains("Nimi_UNIQUE")){
             	errorMessage="Account with this name already exists.";
             }
-            }
+            }*/
 		}
 	}
 

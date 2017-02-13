@@ -22,7 +22,7 @@
    </property>
    <property name="hbm2ddl.auto">validate</property>
    <property name="show_sql">true</property>
-   <mapping class="hibernate.Valuutta"/>
+   <mapping class="hibernate.Userdata"/>
 
 </session-factory>
 </hibernate-configuration>
