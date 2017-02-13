@@ -11,7 +11,7 @@ import game.engine.physics.MousePicker;
 public class Camera {
 
 	private Vector3f position;
-	private float pitch = 90f, yaw, roll;
+	private float pitch = 45f, yaw=270f, roll;
 
 	public static final float FOV = 70;
 	public static final float NEAR_PLANE = 0.5f, FAR_PLANE = 400.0f;

@@ -36,8 +36,10 @@ public class MousePicker {
 		Vector2f normalizedCoords = getNomalizedDeviceCoordinates(mouseX, mouseY);
 		currentRay = calculateMouseRay(normalizedCoords);
 		if(further){
-			float angle = (float) Math.toRadians(camera.getPitch());
-			distance /= -currentRay.y;
+			float pitch = (float) Math.toRadians(camera.getPitch());
+			float yaw = (float) Math.toRadians(camera.getYaw());
+			System.out.println(currentRay.z);
+			distance /= (Math.sin(pitch)*(currentRay.y)+Math.cos(pitch)*(Math.cos(yaw)*currentRay.z-Math.sin(yaw)*currentRay.x));
 		}
 		return getIntersectionPoint(distance);
 	}
