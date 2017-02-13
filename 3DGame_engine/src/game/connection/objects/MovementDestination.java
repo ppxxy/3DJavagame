@@ -29,7 +29,7 @@ public class MovementDestination implements Serializable, ReceiveAction{
 	@Override
 	public void unpack() {
 		game.engine.characters.Character entity = (game.engine.characters.Character) Main.activeView.getAnimatedEntities().get(0);
-		entity.setMovement(new Movement(entity, 6f, this.getDestination()));
+		entity.setMovement(new Movement(entity, 60f, this.getDestination()));
 	}
 
 	public static class MovementTo implements Serializable{

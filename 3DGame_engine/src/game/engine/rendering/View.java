@@ -33,7 +33,7 @@ public class View {
 		this.depthBuffer = new ViewDepthBuffer();
 		Terrain terrain = new Terrain(0, 0);
 		terrain.loadChunks();
-		this.camera = new Camera(new Vector3f(0, 0, 0));
+		this.camera = new Camera(new Vector3f(320, 200, 320));
 		this.mousePicker = new MousePicker(camera);
 		this.terrain = terrain.loadModel();
 	}

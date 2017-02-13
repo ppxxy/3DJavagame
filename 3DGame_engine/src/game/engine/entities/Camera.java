@@ -6,12 +6,14 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
+import game.engine.physics.MousePicker;
+
 public class Camera {
 
 	private Vector3f position;
-	private float pitch, yaw=90f, roll;
+	private float pitch = 90f, yaw, roll;
 
-	private static final float FOV = 70;
+	public static final float FOV = 70;
 	public static final float NEAR_PLANE = 0.5f, FAR_PLANE = 400.0f;
 	static final private float sensitivity = 0.05f;
 
@@ -93,6 +95,17 @@ public class Camera {
 			position.y+= (pitch < 90 ? (pitch/90) : (pitch < 270 ? (-1*(pitch/90) +2) : (pitch/90)-4))*0.2f;
 			//System.out.println(position.x +", " +position.y +", " +position.z);
 		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_E)){
+			position.y+= 0.2f;
+			//System.out.println(position.x +", " +position.y +", " +position.z);
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_Q)){
+			position.y-= 0.2f;
+			//System.out.println(position.x +", " +position.y +", " +position.z);
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_X)){
+			MousePicker.further = MousePicker.further ? false : true;
+		}
 		updateViewMatrix();
 	}
 
@@ -118,6 +131,10 @@ public class Camera {
 
 	public Matrix4f getViewMatrix(){
 		return this.viewMatrix;
+	}
+
+	public float getFOV() {
+		return (float) Math.toRadians(FOV/2);
 	}
 
 }

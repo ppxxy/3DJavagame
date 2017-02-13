@@ -12,6 +12,7 @@ import game.engine.entities.Camera;
 public class MousePicker {
 
 	private Vector3f currentRay;
+	public static boolean further = true;
 
 	private Matrix4f projectionMatrix, viewMatrix;
 	private Camera camera;
@@ -30,23 +31,31 @@ public class MousePicker {
 		//System.out.println(distance);
 		this.projectionMatrix = camera.getProjectionMatrix();
 		this.viewMatrix = camera.getViewMatrix();
-		currentRay = calculateMouseRay();
+		float mouseX = Mouse.getX();
+		float mouseY = Mouse.getY();
+		Vector2f normalizedCoords = getNomalizedDeviceCoordinates(mouseX, mouseY);
+		currentRay = calculateMouseRay(normalizedCoords);
+		if(further){
+			float angle = (float) Math.toRadians(camera.getPitch());
+			distance /= -currentRay.y;
+		}
 		return getIntersectionPoint(distance);
 	}
 
 	private Vector3f getIntersectionPoint(float distance) {
 		Vector3f camPos = camera.getPosition();
-		return new Vector3f(camPos.x+currentRay.x*distance, camPos.y+currentRay.y*distance, camPos.z+currentRay.z*distance);
+		return new Vector3f(camPos.x+currentRay.x*Math.abs(distance), camPos.y-currentRay.y*distance, camPos.z+currentRay.z*Math.abs(distance));
 	}
 
-	private Vector3f calculateMouseRay() {
-		float mouseX = Mouse.getX();
-		float mouseY = Mouse.getY();
-		Vector2f normalizedCoords = getNomalizedDeviceCoordinates(mouseX, mouseY);
+	private Vector3f calculateMouseRay(Vector2f normalizedCoords) {
 		Vector4f clipCoords = new Vector4f(normalizedCoords.x, normalizedCoords.y, -1f, 1f);
 		Vector4f eyeCoords = toEyeCoords(clipCoords);
 		Vector3f worldCoords = toWorldCoords(eyeCoords);
 		return worldCoords;
+	}
+
+	private static float getPow(float f){
+		return f*f;
 	}
 
 	private Vector3f toWorldCoords(Vector4f eyeCoords){
