@@ -6,22 +6,22 @@ import javax.persistence.*;
 public class Userdata {
         
         @Id
-        @Column(name ="user")
+        @Column(name ="Nimi")
 	private String username;
         
-        @Column(name ="email")
+        @Column(name ="Email")
 	private String email;
         
-        @Column(name ="recq")
+        @Column(name ="SecurityQ")
 	private String recoveryQuestion1;
         
-        @Column(name ="reca")
+        @Column(name ="SecurityA")
 	private String recoveryAnswer1;
         
-        @Column(name ="hashedpass")
+        @Column(name ="PasswordHash")
         private String hash;
         
-        @Column(name ="salt")
+        @Column(name ="PasswordSalt")
         private String salt;
 
 	public Userdata(String username, String hash, String salt, String email, String recoveryQuestion1, String recoveryAnswer1){
