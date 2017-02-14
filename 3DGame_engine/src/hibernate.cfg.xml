@@ -15,14 +15,14 @@
       jdbc:mysql://mysql-raivoairlines.crenqljciaae.eu-central-1.rds.amazonaws.com:3306/3Dpeli
    </property>
    <property name="hibernate.connection.username">
-      ohjelmauser
+      ohjelmauser2
    </property>
    <property name="hibernate.connection.password">
       Salasana159
    </property>
    <property name="hbm2ddl.auto">validate</property>
    <property name="show_sql">true</property>
-   <mapping class="hibernate.Userdata"/>
+   <mapping class="login.Userdata"/>
 
 </session-factory>
 </hibernate-configuration>
