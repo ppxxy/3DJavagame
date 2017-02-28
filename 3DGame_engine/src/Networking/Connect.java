@@ -61,7 +61,7 @@ public class Connect {
 	}*/
 
 	public String getDatabaseSalt(String query){
-            
+
             Session istunto = istuntotehdas.openSession();
 
 		try{
@@ -74,7 +74,9 @@ public class Connect {
 
 		}
 		catch(Exception e){
-			throw e;
+
+			e.printStackTrace();
+			return null;
 		}
 
 		/*String salt = "";
@@ -92,9 +94,9 @@ public class Connect {
 	}
 
 	public String getDatabaseHash(String query){
-            
+
             Session istunto = istuntotehdas.openSession();
-            
+
                 try{
 			istunto.beginTransaction();
 			Userdata user = new Userdata();
@@ -105,7 +107,8 @@ public class Connect {
 
 		}
 		catch(Exception e){
-			throw e;
+			e.printStackTrace();
+			return null;
 		}
 
 		/*String hash = "";
@@ -125,7 +128,7 @@ public class Connect {
 
 	public void addUser(String username, String hash, String salt, String email, String recq, String reca){
                 Userdata user = new Userdata(username, hash, salt, email, recq, reca);
-                
+
                 Session istunto = istuntotehdas.openSession();
 		Transaction transaktio = null;
 
@@ -136,7 +139,7 @@ public class Connect {
 		}
 		catch(Exception e){
 			if (transaktio!=null) transaktio.rollback();
-			throw e;
+			e.printStackTrace();
 		}
 		finally{
 			istunto.close();

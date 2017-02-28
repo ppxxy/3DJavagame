@@ -5,13 +5,13 @@
  */
 package game.engine.interfaces;
 
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+
 /**
  *
  * @author Tomi
  */
 public class InventoryInterface {
-    
-    public InventoryInterface(){
-        
-    }
+
 }
