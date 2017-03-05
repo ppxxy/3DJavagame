@@ -13,13 +13,17 @@ import java.util.ArrayList;
  * @author Tomi
  */
 public class CharacterData implements Serializable {
+	private String name;
     private ArrayList<Item> inventory;
     private int bagsize;
-    
-    public CharacterData(){
+    private int level = 0;
+    private int exp = 0;
+
+    public CharacterData(String nimi){
         this.inventory = new ArrayList<Item>();
+        this.name = nimi;
     }
-    
+
     //Lisää uusi Item listalle, jos inventory ei ole täynnä, eikä siellä ole jo vastaavaa itemiä.
     //Jos Item on jo listalla niin nostetaan määrää Item-luokassa.
     public boolean lootItem(Item tavara){
@@ -33,8 +37,8 @@ public class CharacterData implements Serializable {
             return true;
         }
     }
-    
-    //palauttaa listalta löytyvän item olion, jos parametrina annetun itemin nimi vastaa sitä 
+
+    //palauttaa listalta löytyvän item olion, jos parametrina annetun itemin nimi vastaa sitä
     //tai null jos itemiä ei löydy listalta
     public Item containsItem(Item tavara){
         for (Item item : inventory) {
@@ -42,15 +46,28 @@ public class CharacterData implements Serializable {
                 return item;
             }
         }
-        
+
         return null;
     }
-    
+
     public void removeItem(Item tavara){
         inventory.remove(tavara);
     }
-    
-    private void setBagsize(int i){
+
+    public void setBagsize(int i){
         this.bagsize = i;
     }
+
+	public String getName() {
+		return name;
+	}
+
+	public int getLevel() {
+		return level;
+	}
+
+	public int getExp() {
+		return exp;
+	}
+
 }

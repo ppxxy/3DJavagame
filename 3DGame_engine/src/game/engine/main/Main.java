@@ -51,8 +51,11 @@ public class Main {
 		player.getModel().doAnimation(animation);
 		view.addEntity(player);
 
+		Interface testi = new Interface(Texture.loadTexture("/res/bag.png").load(), new Vector2f(-0.70f, 0.5f), new Vector2f(0.05f, 0.1f));
+		view.addInterface(testi);
+
 		//inventory interface
-		/*BufferedImage img = null;
+		BufferedImage img = null;
 		try {
 			img = ImageIO.read(new File("C:/Users/Tomi/git/3DJavaGame/3DGame_engine/src/res/inventory.jpg"));
 		} catch (IOException e) {
@@ -79,7 +82,7 @@ public class Main {
 		g.dispose();
 		Interface laukku = new Interface(Texture.loadTexture(bagButton).load(), new Vector2f(0.0f, -0.3f), new Vector2f(0.05f, 0.1f));
 		view.addInterface(laukku);
-        */
+
 
 
 		/*BufferedImage image = new BufferedImage(11, 11, BufferedImage.TYPE_INT_ARGB);
