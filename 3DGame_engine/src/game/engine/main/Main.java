@@ -1,26 +1,13 @@
 package game.engine.main;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
-
 import game.engine.animation.Animation;
 import game.engine.characters.Character;
-import game.engine.characters.InventoryInterface;
 import game.engine.connection.Connection;
-import game.engine.entities.AnimatedEntity;
-import game.engine.entities.Camera;
-import game.engine.entities.Movement;
 import game.engine.interfaces.Interface;
+import game.engine.interfaces.InventoryInterface;
 import game.engine.models.collada.ModelLoader;
 import game.engine.rendering.DisplayManager;
 import game.engine.rendering.RenderEngine;
@@ -52,12 +39,12 @@ public class Main {
 		player.getModel().doAnimation(animation);
 		view.addEntity(player);
 
-		Interface testi = new Interface(Texture.loadTexture("/res/bag.png").load(), new Vector2f(-0.70f, 0.5f), new Vector2f(0.05f, 0.1f));
+		InventoryInterface testi = new InventoryInterface(Texture.loadTexture("/res/bag.png").load(), new Vector2f(-0.70f, 0.5f), new Vector2f(0.05f, 0.1f));
 		view.addInterface(testi);
 
 		//inventory interface
-		InventoryInterface invint = new InventoryInterface("C:/Users/Tomi/git/3DJavaGame/3DGame_engine/src/res/inventory.jpg", 0.70f, 0.0f, 0.25f, 0.35f);
-        view.addInterface(invint.getInterface());
+		/*InventoryInterface invint = new InventoryInterface("/res/inventory.jpg", 0.70f, 0.0f, 0.25f, 0.35f);
+        view.addInterface(invint.getInterface());*/
 
 
         /*BufferedImage bagButton = null;

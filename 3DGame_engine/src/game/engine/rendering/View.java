@@ -4,6 +4,7 @@ import game.connection.objects.MovementDestination;
 import game.engine.entities.AnimatedEntity;
 import game.engine.entities.Camera;
 import game.engine.entities.Entity;
+import game.engine.interfaces.ActiveInterface;
 import game.engine.interfaces.Interface;
 import game.engine.main.Main;
 import game.engine.physics.MousePicker;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 
 public class View {
@@ -102,6 +104,17 @@ public class View {
 		}
 	}
 
+	private boolean checkInterfacePress(float x, float y){
+		for(Interface inter : interfaces){
+			if(inter instanceof ActiveInterface){
+				if(((ActiveInterface)inter).MouseAction(x, y)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	public TerrainModel getTerrain() {
 		return this.terrain;
 	}
@@ -116,6 +129,11 @@ public class View {
 
 	public void useMousePicker() {
 		if(Mouse.next() && Mouse.getEventButton() == 0 && Mouse.getEventButtonState()){
+			float mouseRelativeX = 2f*Mouse.getX()/Display.getWidth()-1f;
+			float mouseRelativeY = 2f*Mouse.getY()/Display.getHeight()-1f;
+			if(checkInterfacePress(mouseRelativeX, mouseRelativeY)){
+				return;
+			}
 			float distance = distanceAt(Mouse.getX(), Mouse.getY());
 			if(distance < Camera.FAR_PLANE){
 				Vector3f location = mousePicker.update(distance);
