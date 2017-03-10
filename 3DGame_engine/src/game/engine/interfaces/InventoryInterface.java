@@ -23,8 +23,12 @@ public class InventoryInterface extends Interface implements ActiveInterface{
 	@Override
 	public boolean MouseAction(float x, float y) {
 		Matrix4f matrix = this.getMatrix();
-		System.out.println("X: " +matrix.m30 +" < " +x + " < " +(matrix.m30 + matrix.m00) +", Y:" +matrix.m31 + " < " +y + " < " +(matrix.m31 + matrix.m11));
-		if(x > matrix.m30 && x < 2*matrix.m30 + matrix.m00 && y > matrix.m31 && y < matrix.m31 + 2*matrix.m11){
+		float left = matrix.m30 - matrix.m00;
+		float right = matrix.m30 + matrix.m00;
+		float top = matrix.m31 - matrix.m11;
+		float bottom = matrix.m31 + matrix.m11;
+		System.out.println("X: " +left +" < " +x + " < " +right +", Y:" +top + " < " +y + " < " +bottom);
+		if(x > left && x < right && y > top && y < bottom){
 			System.out.println("Pressed on interface.");
 			return true;
 		}
