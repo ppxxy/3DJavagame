@@ -13,10 +13,6 @@ public class Borders {
 
 	public void addButtonBorders(ArrayList<JButton> buttons){
 
-		for(int i = 0; i<buttons.size(); i++){
-			buttons.get(i).setBorder(new LineBorder(Color.black));
-		}
-
     }
 
 	public void addTextFieldBorders(ArrayList<JTextField> textFields){

@@ -22,5 +22,6 @@
 	<classpathentry kind="lib" path="src/lib/jars/jboss-logging-3.3.0.Final.jar"/>
 	<classpathentry kind="lib" path="src/lib/jars/jsr250-api-1.0.jar"/>
 	<classpathentry kind="lib" path="src/lib/jars/mysql-connector-java.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sami/Desktop/javax.mail.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

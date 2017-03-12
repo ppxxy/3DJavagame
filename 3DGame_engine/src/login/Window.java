@@ -8,12 +8,18 @@ import Networking.Connect;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -51,13 +57,13 @@ public class Window extends JPanel implements ActionListener{
     JPanel panel = this;
 
     //Luodaan buttonit
-    JButton newUserButton = new JButton("New User");
-    JButton exUserButton = new JButton("Existing User");
+    JButton newUserButton = new JButton();
+    JButton exUserButton = new JButton();
     JButton createUser = new JButton("Create User");
-    JButton login = new JButton("Log in");
-    JButton backButton = new JButton("Back");
-    JButton securityButton = new JButton("Security Settings");
-    JButton resetPasswordButton = new JButton("Reset Password");
+    JButton login = new JButton();
+    JButton backButton = new JButton();
+    JButton securityButton = new JButton();
+    JButton resetPasswordButton = new JButton();
     JButton emailVerificationButton = new JButton("Send security code to your email.");
     JButton changePasswordButton = new JButton("Change password");
 
@@ -94,7 +100,7 @@ public class Window extends JPanel implements ActionListener{
     ArrayList<JPasswordField> passFields = new ArrayList<JPasswordField>();
     ArrayList<JTextArea> textAreas = new ArrayList<JTextArea>();
 
-    //Tyhj� kontruktor
+    //Tyhja kontruktori
     public Window(){}
 
     //konstruktori jossa asetetaan ikkunan asetukset
@@ -107,9 +113,9 @@ public class Window extends JPanel implements ActionListener{
 
         frame.setTitle(title);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setResizable(true);
+        frame.setResizable(false);
         frame.setMaximumSize(new Dimension(1280,720));
-        frame.setMinimumSize(new Dimension(400,600));
+        frame.setMinimumSize(new Dimension(1280,720));
         frame.setSize(new Dimension(1280,720));
         frame.setLocationRelativeTo(null);
         frame.add(panel);
@@ -117,24 +123,37 @@ public class Window extends JPanel implements ActionListener{
         panel.setLayout(null);
 
         panel.add(newUserButton);
-        newUserButton.setBounds(panel.getWidth()/2-210, panel.getHeight()/2-25, 200, 50);
+        newUserButton.setBounds(panel.getWidth()/2-280, panel.getHeight()/2-40, 300, 80);
         newUserButton.addActionListener(this);
+        newUserButton.setBorder(BorderFactory.createEmptyBorder());
+        newUserButton.setContentAreaFilled(false);
         panel.add(exUserButton);
-        exUserButton.setBounds(panel.getWidth()/2+10, panel.getHeight()/2-25, 200, 50);
+        exUserButton.setBounds(panel.getWidth()/2+30, panel.getHeight()/2-40, 300, 80);
         exUserButton.addActionListener(this);
+        exUserButton.setContentAreaFilled(false);
+        exUserButton.setBorder(BorderFactory.createEmptyBorder());
         panel.add(securityButton);
-        securityButton.setBounds(panel.getWidth()-160, panel.getHeight()-60, 150, 50);
+        securityButton.setBounds(panel.getWidth()-315, panel.getHeight()-95, 300, 80);
+        securityButton.setContentAreaFilled(false);
+        securityButton.setBorder(BorderFactory.createEmptyBorder());
 
         securityButton.addActionListener(this);
         backButton.addActionListener(this);
+        backButton.setContentAreaFilled(false);
+        backButton.setBorder(BorderFactory.createEmptyBorder());
         resetPasswordButton.addActionListener(this);
+        login.setContentAreaFilled(false);
+        login.setBorder(BorderFactory.createEmptyBorder());
         emailVerificationButton.addActionListener(this);
         changePasswordButton.addActionListener(this);
+        resetPasswordButton.setContentAreaFilled(false);
+        resetPasswordButton.setBorder(BorderFactory.createEmptyBorder());
 
         borders.addButtonBorders(buttons);
         borders.addTextFieldBorders(textFields);
         borders.addPassFieldBorders(passFields);
         borders.addTextAreaBorders(textAreas);
+       
 
         addForbidden();
         limitChars();
@@ -147,6 +166,38 @@ public class Window extends JPanel implements ActionListener{
     public void repaint(){
         resize();
         super.repaint();
+    }
+    
+    @Override
+    protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
+
+		BufferedImage image;
+
+		if(ikkuna == 0){
+			try {
+				image = ImageIO.read(getClass().getResource("/res/loginscreenphoto.png"));
+				g.drawImage(image, 0, 0, this);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		if(ikkuna == 2){
+			try {
+				image = ImageIO.read(getClass().getResource("/res/loginscreen2photo.png"));
+				g.drawImage(image, 0, 0, this);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		if(ikkuna == 4){
+			try {
+				image = ImageIO.read(getClass().getResource("/res/settingsphoto.png"));
+				g.drawImage(image, 0, 0, this);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
     }
 
     //buttoneiden actionlistenerit. Maariteaan mita tapahtuu kun nappia painetaan.
@@ -202,24 +253,24 @@ public class Window extends JPanel implements ActionListener{
             panel.add(passwordField);
             passwordField.setBounds(password.getX()+password.getWidth()+10, password.getY()-5, 200, 40);
             panel.add(login);
-            login.setBounds(passwordField.getX(), passwordField.getY()+passwordField.getHeight()+10, 100, 40);
+            login.setBounds(passwordField.getX(), passwordField.getY()+passwordField.getHeight()+52, 180, 50);
             login.addActionListener(this);
             panel.add(backButton);
             backButton.addActionListener(this);
-            backButton.setBounds(panel.getWidth()/60, panel.getHeight()-60, 100, 40);
+            backButton.setBounds(panel.getWidth()-1265, panel.getHeight()-70, 200, 55);
         }
 
         else if(e.getSource() == backButton){
-            ikkuna = 3;
+            ikkuna = 0;
             panel.removeAll();
             panel.repaint();
             panel.add(newUserButton);
-            newUserButton.setBounds(430, 330, 200, 50);
+            newUserButton.setBounds(panel.getWidth()/2-280, panel.getHeight()/2-40, 300, 80);
             newUserButton.addActionListener(this);
             panel.add(exUserButton);
-            exUserButton.setBounds(640, 330, 200, 50);
+            exUserButton.setBounds(panel.getWidth()/2+30, panel.getHeight()/2-40, 300, 80);
             panel.add(securityButton);
-            securityButton.setBounds(panel.getWidth()-160, panel.getHeight()-60, 150, 50);
+            securityButton.setBounds(panel.getWidth()-315, panel.getHeight()-95, 300, 80);
         }
 
         else if(e.getSource() == createUser){
@@ -337,9 +388,9 @@ public class Window extends JPanel implements ActionListener{
         	panel.removeAll();
             panel.repaint();
             panel.add(backButton);
-            backButton.setBounds(panel.getWidth()/60, panel.getHeight()-60, 100, 40);
+            backButton.setBounds(panel.getWidth()-1265, panel.getHeight()-70, 200, 55);
             panel.add(resetPasswordButton);
-            resetPasswordButton.setBounds(panel.getWidth()/20, panel.getHeight()/13, 200, 50);
+            resetPasswordButton.setBounds(panel.getWidth()-1245, panel.getHeight()-665, 250, 70);
         }
 
         else if(e.getSource() == resetPasswordButton){
@@ -347,7 +398,7 @@ public class Window extends JPanel implements ActionListener{
         	panel.removeAll();
         	panel.repaint();
         	panel.add(backButton);
-        	backButton.setBounds(panel.getWidth()/60, panel.getHeight()-60, 100, 40);
+        	 backButton.setBounds(panel.getWidth()-1265, panel.getHeight()-70, 200, 55);
         	panel.add(emailVerificationButton);
         	emailVerificationButton.setBounds(panel.getWidth()/2-125, panel.getHeight()/2-25, 250, 50);
         	panel.add(email);
