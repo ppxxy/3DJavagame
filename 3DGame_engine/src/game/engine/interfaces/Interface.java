@@ -17,12 +17,15 @@ public class Interface {
 		matrix.setIdentity();
 		Matrix4f.translate(position, matrix, matrix);
 		Matrix4f.scale(new Vector3f(size.x, size.y, 1f), matrix, matrix);
+
 	}
 
 	public Texture getTexture() {
 		return texture;
 	}
-
+	public void setTexture(Texture texture){
+		this.texture=texture;
+	}
 	public Matrix4f getMatrix(){
 		return this.matrix;
 	}

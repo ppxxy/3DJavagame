@@ -7,13 +7,15 @@ import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import Networking.Chat;
+import Networking.ChatMessage;
 import game.connection.objects.MovementDestination;
 import game.connection.objects.ReceiveAction;
 
 public class Connection implements Runnable{
 
 	private Socket socket;
-
+	private Chat chat;
 	private ObjectInputStream input;
 	private ObjectOutputStream output;
 
@@ -51,6 +53,8 @@ public class Connection implements Runnable{
 	private void handleObject(Object o){
 		if(o instanceof ReceiveAction){
 			((ReceiveAction) o).unpack();
+		}else if(o instanceof ChatMessage){
+			chat.recieveMessage((ChatMessage) o);
 		}
 	}
 
@@ -61,6 +65,9 @@ public class Connection implements Runnable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	public void setChat(Chat chat){
+		this.chat=chat;
 	}
 
 }

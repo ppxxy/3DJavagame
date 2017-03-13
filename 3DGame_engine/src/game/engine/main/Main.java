@@ -3,9 +3,12 @@ package game.engine.main;
 import java.io.File;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
+
+import Networking.Chat;
 import game.engine.animation.Animation;
 import game.engine.characters.Character;
 import game.engine.connection.Connection;
+import game.engine.interfaces.ChatControls;
 import game.engine.interfaces.Interface;
 import game.engine.interfaces.InventoryInterface;
 import game.engine.models.collada.ModelLoader;
@@ -69,11 +72,19 @@ public class Main {
 		g.fillRect(0, 0, image.getWidth(), image.getHeight());
 		g.dispose();
 		view.addInterface(new Interface(Texture.loadTexture(image).nearestFiltering().load(), new Vector2f(0.5f, 0.5f), new Vector2f(0.2f, 0.2f)));*/
+		Chat chat=new Chat();
+		connection.setChat(chat);
+		view.addInterface(chat.getChatbox().getInterface());
+		view.addInterface(chat.getMessageBox().getInterface());
+		ChatControls chatcontrols= new ChatControls(chat.getMessageBox(),chat.getChatbox());
 
 		while(!Display.isCloseRequested()){
 			view.updateEntities();
 			renderEngine.renderView(view);
 			DisplayManager.updateDisplay();
+			chat.getChatbox().update();
+			chat.getMessageBox().update();
+			chatcontrols.poll();
 		}
 
 		view.cleanUp();
