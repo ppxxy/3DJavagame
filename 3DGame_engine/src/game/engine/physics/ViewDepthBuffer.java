@@ -9,7 +9,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
 
-import game.engine.entities.Camera;
+import game.engine.camera.Camera;
 
 public class ViewDepthBuffer {
 

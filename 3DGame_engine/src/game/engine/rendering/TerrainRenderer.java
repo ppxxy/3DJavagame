@@ -2,7 +2,7 @@ package game.engine.rendering;
 
 import org.lwjgl.opengl.GL11;
 
-import game.engine.entities.Camera;
+import game.engine.camera.Camera;
 import game.engine.shader.ShaderProgram;
 import game.engine.shader.UniformMatrix;
 import game.engine.terrain.TerrainModel;

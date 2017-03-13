@@ -1,8 +1,9 @@
 package game.engine.rendering;
 
 import game.connection.objects.MovementDestination;
+import game.engine.camera.ActiveCamera;
+import game.engine.camera.Camera;
 import game.engine.entities.AnimatedEntity;
-import game.engine.entities.Camera;
 import game.engine.entities.Entity;
 import game.engine.interfaces.ActiveInterface;
 import game.engine.interfaces.Interface;
@@ -36,6 +37,15 @@ public class View {
 		Terrain terrain = new Terrain(0, 0);
 		terrain.loadChunks();
 		this.camera = new Camera(new Vector3f(320, 200, 320));
+		this.mousePicker = new MousePicker(camera);
+		this.terrain = terrain.loadModel();
+	}
+
+	public View(Camera camera) {
+		this.depthBuffer = new ViewDepthBuffer();
+		Terrain terrain = new Terrain(0, 0);
+		terrain.loadChunks();
+		this.camera = camera;
 		this.mousePicker = new MousePicker(camera);
 		this.terrain = terrain.loadModel();
 	}
@@ -96,7 +106,9 @@ public class View {
 	}
 
 	public void updateEntities() {
-		camera.move();
+		if(camera instanceof ActiveCamera){
+			((ActiveCamera) camera).update();
+		}
 		for(Entity e : entities){
 			if(e instanceof AnimatedEntity){
 				((AnimatedEntity) e).update();

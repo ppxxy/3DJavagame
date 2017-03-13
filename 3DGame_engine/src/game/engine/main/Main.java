@@ -8,10 +8,11 @@ import org.lwjgl.util.vector.Vector2f;
 
 import Networking.Chat;
 import game.engine.animation.Animation;
+import game.engine.camera.Camera;
+import game.engine.camera.TargetCamera;
 import game.engine.characters.Character;
 import game.engine.connection.Connection;
 import game.engine.interfaces.ChatControls;
-import game.engine.interfaces.Interface;
 import game.engine.interfaces.Inventory;
 import game.engine.interfaces.InventoryInterface;
 import game.engine.models.collada.ModelLoader;
@@ -28,24 +29,24 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		System.out.println("Aa");
-		
 		System.setProperty("org.lwjgl.librarypath", new File("src/lib/jars/natives-win").getAbsolutePath());
 
 		/*
 		 * Login screen here!!
 		 */
-		
+
 		RenderEngine renderEngine = RenderEngine.init();
 
-		View view = new View();
-		activeView = view;
 		String modelFile = "/res/model.dae";
 		String textureFile = "/res/diffuse.png";
 		game.engine.characters.Character player = Character.loadCharacter(modelFile, textureFile);
 		Animation animation = ModelLoader.loadColladaAnimation(modelFile);
 		player.getModel().doAnimation(animation);
+		Camera camera = new TargetCamera(player);
+
+		View view = new View(camera);
 		view.addEntity(player);
+		activeView = view;
 
 		InventoryInterface testi = new InventoryInterface(Texture.loadTexture("/res/bag.png").load(), new Vector2f(-0.70f, 0.5f), new Vector2f(0.05f, 0.1f));
 		view.addInterface(testi);

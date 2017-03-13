@@ -4,8 +4,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
+import game.engine.camera.Camera;
 import game.engine.entities.AnimatedEntity;
-import game.engine.entities.Camera;
 import game.engine.shader.ShaderProgram;
 import game.engine.shader.UniformMat4Array;
 import game.engine.shader.UniformMatrix;

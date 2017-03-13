@@ -1,6 +1,6 @@
 package game.engine.shader;
 
-import game.engine.entities.Camera;
+import game.engine.camera.Camera;
 import game.engine.tools.Maths;
 
 import org.lwjgl.util.vector.Matrix4f;

@@ -1,10 +1,10 @@
 package game.engine.tools;
 
-import game.engine.entities.Camera;
-
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
+
+import game.engine.camera.Camera;
 
 public class Maths {
 
