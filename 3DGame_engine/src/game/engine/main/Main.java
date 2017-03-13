@@ -1,6 +1,8 @@
 package game.engine.main;
 
 import java.io.File;
+import java.io.IOException;
+
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -26,12 +28,14 @@ public class Main {
 
 	public static void main(String[] args) {
 
+		System.out.println("Aa");
+		
 		System.setProperty("org.lwjgl.librarypath", new File("src/lib/jars/natives-win").getAbsolutePath());
 
 		/*
 		 * Login screen here!!
 		 */
-
+		
 		RenderEngine renderEngine = RenderEngine.init();
 
 		View view = new View();
@@ -47,8 +51,13 @@ public class Main {
 		view.addInterface(testi);
 
 		//inventory interface
-		Inventory inventory = new Inventory("/res/inventory.jpg", 0.70f, 0.0f, 0.25f, 0.35f);
-        view.addInterface(inventory.getInterface());
+		try {
+			Inventory inventory = new Inventory("/res/inventory.jpg", 0.70f, 0.0f, 0.25f, 0.35f);
+			view.addInterface(inventory);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 
         /*BufferedImage bagButton = null;
