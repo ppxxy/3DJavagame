@@ -42,7 +42,7 @@ public class Main {
 		game.engine.characters.Character player = Character.loadCharacter(modelFile, textureFile);
 		Animation animation = ModelLoader.loadColladaAnimation(modelFile);
 		player.getModel().doAnimation(animation);
-		Camera camera = new TargetCamera(player);
+		Camera camera = new TargetCamera(player, 100f);
 
 		View view = new View(camera);
 		view.addEntity(player);

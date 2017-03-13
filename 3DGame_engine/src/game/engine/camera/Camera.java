@@ -16,6 +16,7 @@ public class Camera {
 	private Matrix4f viewMatrix = new Matrix4f();
 
 	public Camera(){
+		this.position = new Vector3f(0, 0, 0);
 		this.projectionMatrix = createProjectionMatrix();
 		updateViewMatrix();
 	}
