@@ -10,6 +10,7 @@ import game.engine.characters.Character;
 import game.engine.connection.Connection;
 import game.engine.interfaces.ChatControls;
 import game.engine.interfaces.Interface;
+import game.engine.interfaces.Inventory;
 import game.engine.interfaces.InventoryInterface;
 import game.engine.models.collada.ModelLoader;
 import game.engine.rendering.DisplayManager;
@@ -46,8 +47,8 @@ public class Main {
 		view.addInterface(testi);
 
 		//inventory interface
-		/*InventoryInterface invint = new InventoryInterface("/res/inventory.jpg", 0.70f, 0.0f, 0.25f, 0.35f);
-        view.addInterface(invint.getInterface());*/
+		Inventory inventory = new Inventory("/res/inventory.jpg", 0.70f, 0.0f, 0.25f, 0.35f);
+        view.addInterface(inventory.getInterface());
 
 
         /*BufferedImage bagButton = null;
