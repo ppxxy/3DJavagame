@@ -1,10 +1,7 @@
 package game.engine.camera;
 
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-
 import game.engine.entities.Entity;
-import game.engine.physics.MousePicker;
 
 public class TargetCamera extends Camera implements ActiveCamera{
 
@@ -24,11 +21,11 @@ public class TargetCamera extends Camera implements ActiveCamera{
 		boolean rotated = false;
 		if(Keyboard.isKeyDown(Keyboard.KEY_LEFT)){
 			yaw += yawSens;
-			onRotate();
+			//onRotate();
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT)){
 			yaw -= yawSens;
-			onRotate();
+			//onRotate();
 		}
 		if(pitch < 90 && Keyboard.isKeyDown(Keyboard.KEY_UP)){
 			pitch += pitchSens;

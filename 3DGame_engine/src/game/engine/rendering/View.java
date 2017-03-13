@@ -141,8 +141,8 @@ public class View {
 
 	public void useMousePicker() {
 		if(Mouse.next() && Mouse.getEventButton() == 0 && Mouse.getEventButtonState()){
-			float mouseRelativeX = 2f*Mouse.getX()/Display.getWidth()-1f;
-			float mouseRelativeY = 2f*Mouse.getY()/Display.getHeight()-1f;
+			float mouseRelativeX = Mouse.getX()/Display.getWidth();
+			float mouseRelativeY = Mouse.getY()/Display.getHeight();
 			if(checkInterfacePress(mouseRelativeX, mouseRelativeY)){
 				return;
 			}
