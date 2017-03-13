@@ -21,11 +21,14 @@ public class TargetCamera extends Camera implements ActiveCamera{
 	}
 
 	public void update(){
+		boolean rotated = false;
 		if(Keyboard.isKeyDown(Keyboard.KEY_LEFT)){
 			yaw += yawSens;
+			onRotate();
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT)){
 			yaw -= yawSens;
+			onRotate();
 		}
 		if(pitch < 90 && Keyboard.isKeyDown(Keyboard.KEY_UP)){
 			pitch += pitchSens;
@@ -35,15 +38,14 @@ public class TargetCamera extends Camera implements ActiveCamera{
 		}
 		float pitch = (float) Math.toRadians(this.pitch);
 		float yaw = (float) Math.toRadians(this.yaw);
-		System.out.println(this.yaw);
-		this.position.y = (float) (Math.sin(pitch)*distance);
-		this.position.x = (float) (Math.cos(pitch)*(Math.sin(yaw+Math.PI))*distance);
-		this.position.z = (float) (Math.cos(pitch)*(Math.cos(yaw))*distance);
+		this.position.y = (float) (Math.sin(pitch)*distance+target.getPosition().y);
+		this.position.x = (float) (Math.cos(pitch)*(Math.sin(yaw+Math.PI))*distance+target.getPosition().x);
+		this.position.z = (float) (Math.cos(pitch)*(Math.cos(yaw))*distance+target.getPosition().z);
 		updateViewMatrix();
 	}
 
 	public void onRotate(){
-
+		target.setRotY(180-yaw);
 	}
 
 }
