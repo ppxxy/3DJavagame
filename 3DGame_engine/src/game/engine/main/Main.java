@@ -1,7 +1,10 @@
 package game.engine.main;
 
+import java.awt.Canvas;
 import java.io.File;
 import java.io.IOException;
+
+import javax.swing.JFrame;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
@@ -20,6 +23,7 @@ import game.engine.rendering.DisplayManager;
 import game.engine.rendering.RenderEngine;
 import game.engine.rendering.View;
 import game.engine.textures.Texture;
+import login.Window;
 
 public class Main {
 
@@ -31,11 +35,21 @@ public class Main {
 
 		System.setProperty("org.lwjgl.librarypath", new File("src/lib/jars/natives-win").getAbsolutePath());
 
-		/*
-		 * Login screen here!!
-		 */
+		final JFrame frame = new JFrame();
 
-		RenderEngine renderEngine = RenderEngine.init();
+		Window login = new Window(frame, "Log In"){
+			public void onLogin(){
+				startLWJGL(frame);
+			}
+		};
+	}
+
+	private static void startLWJGL(JFrame frame){
+
+		Canvas canvas = new Canvas();
+		frame.add(canvas);
+
+		RenderEngine renderEngine = RenderEngine.init(canvas);
 
 		String modelFile = "/res/model.dae";
 		String textureFile = "/res/diffuse.png";
@@ -102,6 +116,5 @@ public class Main {
 		renderEngine.cleanUp();
 		DisplayManager.closeDiplay();
 	}
-
 
 }

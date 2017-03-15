@@ -1,7 +1,6 @@
 package login;
 
 
-import Networking.Clientside;
 import Networking.Connect;
 
 //javax.mail saatavissa osoitteesta https://java.net/projects/javamail/pages/Home#Download_JavaMail_Release
@@ -32,7 +31,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
 
-public class Window extends JPanel implements ActionListener{
+public abstract class Window extends JPanel implements ActionListener{
 
     private static final long serialVersionUID = 7116463709442422088L;
 
@@ -53,7 +52,7 @@ public class Window extends JPanel implements ActionListener{
     Borders borders = new Borders();
 
     //luodaan frame ja panel
-    JFrame frame = new JFrame();
+    JFrame frame;
     JPanel panel = this;
 
     //Luodaan buttonit
@@ -104,7 +103,9 @@ public class Window extends JPanel implements ActionListener{
     public Window(){}
 
     //konstruktori jossa asetetaan ikkunan asetukset
-    public Window(String title){
+    public Window(JFrame frame, String title){
+
+    	this.frame = frame;
 
     	buttons.addAll(Arrays.asList(backButton, newUserButton, exUserButton, createUser, login, securityButton, resetPasswordButton, emailVerificationButton, changePasswordButton));
     	textFields.addAll(Arrays.asList(usernameField, emailField, securityCodeField));
@@ -153,7 +154,7 @@ public class Window extends JPanel implements ActionListener{
         borders.addTextFieldBorders(textFields);
         borders.addPassFieldBorders(passFields);
         borders.addTextAreaBorders(textAreas);
-       
+
 
         addForbidden();
         limitChars();
@@ -161,13 +162,15 @@ public class Window extends JPanel implements ActionListener{
 
     }
 
+    public abstract void onLogin();
+
     //repaint metodi joka on overridattu ja johon lisatty resize metodi
     @Override
     public void repaint(){
         resize();
         super.repaint();
     }
-    
+
     @Override
     protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -372,7 +375,7 @@ public class Window extends JPanel implements ActionListener{
 						if(hashed.equals(databaseHash)){
 	                    	//salasana oikein --> käynnistä client
 							System.out.println("Salasana oikein");
-	                    	Clientside client = new Clientside(usernameField.getText());
+	                    	onLogin();
 	                    }else{
 	                    	System.out.println("Wrong username or password.");
 	                    }
