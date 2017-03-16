@@ -13,6 +13,7 @@ Valmiit toiminnallisuudet:
 -Login ja uusien k‰ytt‰jien luonti/tallennus tietokantaan toimii hibernaten kautta, mutta sit‰ ei ole viel‰ yhdistetty pelin k‰ynnistykseen.
 -Animaatiot toimivat ja uusien animaatioiden lis‰‰minen on helppoa.
 -Chatti toimii kuten pit‰‰kin.
+-Pelaajan hahmot tallennetaan tiedostoon.
 
 Arkkitehtuuri:
 -Chatti on toteutettu MVC-mallia noudattaen.
