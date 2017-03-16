@@ -1,0 +1,19 @@
+Projektin suunnitelma:
+-Toteuttaa 3-ulotteinen online pelimaailma Javalla.
+-Pelaajat voivat viesti‰ ja toimia kesken‰‰n.
+-Pelaajilla on omat hahmot, joita voi kustomoida.
+-Peliss‰ on myˆs useita tietokoneen ohjaamia hahmoja.
+-Peliss‰ on ker‰tt‰vi‰ tavaroita.
+
+Valmiit toiminnallisuudet:
+-Pelimaailman renderointi, varjot ja skybox puuttuvat viel‰.
+-Hahmoa pystyy liikuttamaan pelimaailmassa hiiren klikkausten avulla ja kameraa pystyy k‰‰nt‰m‰‰n nuolin‰pp‰imill‰.
+-Interfacet ovat olemassa mutta niiden toiminnallisuudessa on viel‰ hieman puutteita.
+-Server-client connection toimii hyvin, monen pelaajan samanaikainen yhteys serverille puuttuu mutta on helposti lis‰tt‰viss‰.
+-Login ja uusien k‰ytt‰jien luonti/tallennus tietokantaan toimii hibernaten kautta, mutta sit‰ ei ole viel‰ yhdistetty pelin k‰ynnistykseen.
+-Animaatiot toimivat ja uusien animaatioiden lis‰‰minen on helppoa.
+-Chatti toimii kuten pit‰‰kin.
+
+Arkkitehtuuri:
+-Chatti on toteutettu MVC-mallia noudattaen.
+-Client-server yhteydess‰ sovelluslogiikka on jaettu asiakkaiden ja palvelimen kesken (2-tiered architecture).
