@@ -19,4 +19,16 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>src/game/engine/interfaces/eraser.png</name>
+			<type>1</type>
+			<location>C:/Users/Tomi/git/3DJavaGame/3DGame_engine/src/res/eraser.png</location>
+		</link>
+		<link>
+			<name>src/game/engine/interfaces/paintbrush.png</name>
+			<type>1</type>
+			<location>C:/Users/Tomi/git/3DJavaGame/3DGame_engine/src/res/paintbrush.png</location>
+		</link>
+	</linkedResources>
 </projectDescription>
