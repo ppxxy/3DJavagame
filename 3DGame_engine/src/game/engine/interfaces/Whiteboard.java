@@ -38,7 +38,7 @@ public class Whiteboard extends Application{
 	ToggleGroup tGroup = new ToggleGroup();
 	ToggleButton penButton = new ToggleButton();
 	ToggleButton eraserButton = new ToggleButton();
-	Boolean erase = false;
+	Boolean erase = false; //tells if eraser is selected
 
 
 	StackPane pane = new StackPane();
