@@ -14,6 +14,7 @@ public class ChatMessage implements Serializable{
 
 	public ChatMessage(String name,String message){
 		this.name=name;
+		//this.message=message;
 		if(message.length()>30){
 			this.rows=2;
 			this.message=message.substring(0, 30);
