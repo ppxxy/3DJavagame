@@ -12,6 +12,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
@@ -33,12 +34,13 @@ public class Whiteboard extends Application{
 	GraphicsContext gc;
 	ColorPicker cPicker = new ColorPicker();
 	ChoiceBox<Integer> cb = new ChoiceBox<Integer>();
-	Image penImage = new Image(getClass().getResourceAsStream("paintbrush.png"));
-	Image eraserImage = new Image(getClass().getResourceAsStream("eraser.png"));
+	Image penImage = new Image(getClass().getResourceAsStream("/res/paintbrush.png"));
+	Image eraserImage = new Image(getClass().getResourceAsStream("/res/eraser.png"));
 	ToggleGroup tGroup = new ToggleGroup();
 	ToggleButton penButton = new ToggleButton();
 	ToggleButton eraserButton = new ToggleButton();
 	Boolean erase = false; //tells if eraser is selected
+	Button clearButton = new Button("Clear Canvas");
 
 
 	StackPane pane = new StackPane();
@@ -115,7 +117,13 @@ public class Whiteboard extends Application{
 			         }
 			});
 
-			//gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight()); TYHJENTÄÄ KOKO KANKAAN.
+			clearButton.setOnAction(new EventHandler<ActionEvent>() {
+			    @Override public void handle(ActionEvent e) {
+			    	if(WBConfirmationBox.Display("Confirm", "Do you want to clear the canvas?")){
+			    		gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight()); //Clears the whole canvas
+			    	}
+			    }
+			});
 
 			//add image to the toggleButtons.
 			ImageView penIV = new ImageView(penImage);
@@ -137,10 +145,11 @@ public class Whiteboard extends Application{
 			grid2.setAlignment(Pos.TOP_LEFT);
 			grid2.setPadding(new Insets(20,0,0,20));
 
-			grid3.addRow(0, penButton, eraserButton);
+			grid3.addRow(0, penButton, eraserButton, clearButton);
 			grid3.setHgap(5);
 			grid3.setAlignment(Pos.TOP_LEFT);
 			grid3.setPadding(new Insets(20,0,0,20));
+
 
 
 
@@ -159,6 +168,7 @@ public class Whiteboard extends Application{
 		}
 
 	}
+
 
 	public static void main(String[] args) {
 		launch(args);
