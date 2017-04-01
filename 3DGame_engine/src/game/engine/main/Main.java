@@ -7,15 +7,13 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 
 import Networking.Chat;
-import game.engine.animation.Animation;
 import game.engine.camera.Camera;
 import game.engine.camera.TargetCamera;
-import game.engine.characters.Character;
+import game.engine.characters.PlayerFactory;
 import game.engine.connection.Connection;
 import game.engine.interfaces.ChatControls;
 import game.engine.interfaces.Inventory;
 import game.engine.interfaces.InventoryInterface;
-import game.engine.models.collada.ModelLoader;
 import game.engine.rendering.DisplayManager;
 import game.engine.rendering.RenderEngine;
 import game.engine.rendering.View;
@@ -23,7 +21,7 @@ import game.engine.textures.Texture;
 
 public class Main {
 
-	public static final Connection connection = new Connection("127.0.0.1", 16304);
+	public static Connection connection;
 
 	public static View activeView;
 
@@ -37,16 +35,14 @@ public class Main {
 
 		RenderEngine renderEngine = RenderEngine.init();
 
-		String modelFile = "/res/model.dae";
-		String textureFile = "/res/diffuse.png";
-		game.engine.characters.Character player = Character.loadCharacter(modelFile, textureFile);
-		Animation animation = ModelLoader.loadColladaAnimation(modelFile);
-		player.getModel().doAnimation(animation);
+		game.engine.characters.Character player = PlayerFactory.createPlayer(0);
 		Camera camera = new TargetCamera(player, 100f);
 
 		View view = new View(camera);
 		view.addEntity(player);
 		activeView = view;
+
+		connection = new Connection("127.0.0.1", 16304);
 
 		InventoryInterface testi = new InventoryInterface(Texture.loadTexture("/res/bag.png").load(), new Vector2f(-0.70f, 0.5f), new Vector2f(0.05f, 0.1f));
 		view.addInterface(testi);

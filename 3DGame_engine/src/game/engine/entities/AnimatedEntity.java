@@ -16,20 +16,22 @@ import org.lwjgl.util.vector.Vector3f;
 public class AnimatedEntity extends Entity{
 
 	private AnimatedModel animatedModel;
+	private int id;
 
-	public AnimatedEntity(Vector3f position, float rotX, float rotY, float rotZ, float scale, AnimatedModel animatedModel) {
+	public AnimatedEntity(int id, Vector3f position, float rotX, float rotY, float rotZ, float scale, AnimatedModel animatedModel) {
 		super(position, rotX, rotY, rotZ, scale);
+		this.id = id;
 		this.animatedModel = animatedModel;
 	}
 
-	public static AnimatedEntity loadEntity(String modelFile, String textureFile){
+	public static AnimatedEntity loadEntity(int id, String modelFile, String textureFile){
 		AnimatedModelData entityData = ModelLoader.loadColladaModel(modelFile, GeneralSettings.MAX_WEIGHTS);
 		VAO vao = createVao(entityData.getMesh());
 		Texture texture = loadTexture(textureFile);
 		JointsData skeletonData = entityData.getJointsData();
 		Joint rootJoint = createJoints(skeletonData.rootJoint);
 		AnimatedModel model = new AnimatedModel(vao, texture, rootJoint, skeletonData.jointCount);
-		return new AnimatedEntity(new Vector3f(1, 1, 1), 0, 0, 0, 1, model);
+		return new AnimatedEntity(id, new Vector3f(1, 1, 1), 0, 0, 0, 1, model);
 	}
 
 	protected static Texture loadTexture(String path){
@@ -64,5 +66,9 @@ public class AnimatedEntity extends Entity{
 
 	public void update() {
 		this.animatedModel.update();
+	}
+
+	public int getId() {
+		return id;
 	}
 }
