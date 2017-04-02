@@ -22,7 +22,7 @@ public class MessageBox {
     private Font font;
     private Color backgroundcolor;
     private Color bordercolor;
-    private final int maxsize=90;
+    private final int maxsize=50000000;
 
 
 
@@ -63,18 +63,21 @@ public class MessageBox {
     	message="";
     	clearInput();
     }
-
+    //testausta varten
+    public void setMessage(String msg){
+    	this.message=msg;
+    }
     public void backspace(){
     	if(message.length()>1){
     		message=message.substring(0, message.length()-1);
     		clearInput();
-    		System.out.println(message.length());
+    		//System.out.println(message.length());
     		drawString(message+"*",5,70);
     	}
     }
     public void send(){
     	if(message.length()>1){
-    		System.out.println(message.length());
+    		//System.out.println(message.length());
     		chat.sendMessage(message.substring(1,message.length()));
     		message="";
     		clearInput();

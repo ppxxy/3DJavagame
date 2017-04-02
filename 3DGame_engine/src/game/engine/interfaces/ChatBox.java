@@ -84,12 +84,7 @@ public class ChatBox {
     	clearchat();
     	cursorpos=1;
     	for(ChatMessage msg:messages){
-    		if(msg.getRows()>1){
-    			drawString(msg.getSecondline());
-    			drawString(msg.toString());
-    		}else{
-    			drawString(msg.toString());
-    		}
+    		drawString(msg.toString());
     	}
     }
 
@@ -98,12 +93,37 @@ public class ChatBox {
     	g.setColor(fontcolor);
     	g.setFont(font);
     	FontMetrics metrics = g.getFontMetrics();
+    	if(metrics.stringWidth(string)>chatbox.getWidth()-40){
+    		ArrayList<String> strings=cutString(string,metrics);
+    		for(int i=strings.size()-1;i>-1;i--){
+    	    	g.drawString(strings.get(i) ,0 ,chatbox.getHeight()-metrics.getHeight()*cursorpos+scrollpos*metrics.getHeight());
+    	    	cursorpos++;
+    		}
+    	}else{
     	if(cursorpos==1){
-    		System.out.println(metrics.stringWidth(string));
+    		//System.out.println(metrics.stringWidth(string));
     	}
-    	g.drawString(string ,5 ,chatbox.getHeight()-metrics.getHeight()*cursorpos+scrollpos*metrics.getHeight());
+    	g.drawString(string ,0 ,chatbox.getHeight()-metrics.getHeight()*cursorpos+scrollpos*metrics.getHeight());
     	cursorpos++;
     	g.dispose();
+    	}
+    }
+    public ArrayList<String> cutString(String str, FontMetrics fm){
+    	ArrayList<String> strlist= new ArrayList();
+    	String strcopy=str;
+    	int counter=1;
+    	while(fm.stringWidth(str)>chatbox.getWidth()-40){
+    		str=str.substring(0,str.length()-1);
+    		counter++;
+    	}
+    	strcopy=strcopy.substring(strcopy.length()-counter+1,strcopy.length()-1);
+    	strlist.add(str);
+    	if(fm.stringWidth(strcopy)>chatbox.getWidth()-40){
+    		strlist.addAll(cutString(strcopy,fm));
+    	}else{
+    		strlist.add(strcopy);
+    	}
+    	return strlist;
     }
     public Interface getInterface(){
     	return this.ifce;
