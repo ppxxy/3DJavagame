@@ -1,15 +1,23 @@
 package game.engine.interfaces;
 
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
 import javafx.application.Application;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -21,6 +29,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -49,7 +58,9 @@ public class Whiteboard extends Application{
 	GridPane grid = new GridPane();
 	GridPane grid2 = new GridPane();
 	GridPane grid3 = new GridPane();
+	GridPane grid4 = new GridPane();
 	Label label = new Label("Brush/Eraser Width: ");
+
 
 	@Override
 	public void start(Stage stage){
@@ -145,15 +156,19 @@ public class Whiteboard extends Application{
 			grid2.setAlignment(Pos.TOP_LEFT);
 			grid2.setPadding(new Insets(20,0,0,20));
 
-			grid3.addRow(0, penButton, eraserButton, clearButton);
+			grid3.addRow(0, penButton, eraserButton);
 			grid3.setHgap(5);
 			grid3.setAlignment(Pos.TOP_LEFT);
 			grid3.setPadding(new Insets(20,0,0,20));
 
+			grid4.addRow(0, clearButton);
+			grid4.setAlignment(Pos.TOP_RIGHT);
+			grid4.setPadding(new Insets(20,0,0,40));
 
 
 
-			hbox.getChildren().addAll(grid, grid2, grid3);
+
+			hbox.getChildren().addAll(grid, grid2, grid3, grid4);
 
 
 			pane.getChildren().addAll(canvas, hbox);
@@ -167,6 +182,19 @@ public class Whiteboard extends Application{
 			e.printStackTrace();
 		}
 
+	}
+
+	public void saveAsPng() {
+	    WritableImage image = canvas.snapshot(new SnapshotParameters(), null);
+
+	    // TODO: probably use a file chooser here
+	    File file = new File("whiteboardImg.png");
+
+	    try {
+	        ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+	    } catch (IOException e) {
+	        // TODO: handle exception here
+	    }
 	}
 
 
