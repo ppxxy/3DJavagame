@@ -19,4 +19,11 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>src/game/engine/interfaces/whiteboardImg.png</name>
+			<type>1</type>
+			<location>C:/Users/Tomi/git/3DJavaGame/3DGame_engine/src/res/whiteboardImg.png</location>
+		</link>
+	</linkedResources>
 </projectDescription>

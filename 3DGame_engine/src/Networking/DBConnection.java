@@ -5,6 +5,8 @@
  */
 package Networking;
 
+import java.io.File;
+import java.io.FileInputStream;
 /**
  *
  * @author Tomi
@@ -53,6 +55,61 @@ public class DBConnection {
 			}
 		}
 		return false;
+	}
+
+	public void updateWhiteboard(){
+		FileInputStream fis = null;
+	    PreparedStatement stmt = null;
+	    try {
+	      conn.setAutoCommit(false);
+	      File file = new File("/res/whiteboardImg.png");
+	      fis = new FileInputStream(file);
+	      stmt = conn.prepareStatement("UPDATE 3Dpeli.Whiteboard SET PICTURE = ?"+ "WHERE NAME = ?");
+	      stmt.setBinaryStream(1, fis, (int) file.length());
+	      stmt.setString(2, "Whiteboard");
+	      stmt.executeUpdate();
+	      conn.commit();
+	    } catch(Exception e) {
+	    	e.printStackTrace();
+	    } finally {
+	    	try {
+				if (stmt != null)
+					stmt.close();
+				if(fis != null){
+					fis.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+	    }
+	}
+
+	public void insertWhiteboard(){
+
+	    FileInputStream fis = null;
+	    PreparedStatement stmt = null;
+	    try {
+	      conn.setAutoCommit(false);
+	      File file = new File("/res/whiteboardImg.png");
+	      fis = new FileInputStream(file);
+	      stmt = conn.prepareStatement("INSERT INTO 3Dpeli.Whiteboard VALUES(?,?)");
+	      stmt.setString(1, "Whiteboard");
+	      stmt.setBinaryStream(2, fis, (int) file.length());
+	      stmt.executeUpdate();
+	      conn.commit();
+	    } catch(Exception e) {
+	    	e.printStackTrace();
+	    } finally {
+	    	try {
+				if (stmt != null)
+					stmt.close();
+				if(fis != null){
+					fis.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+	    }
 	}
 
 /*	public Valuutta readValuutta(String tunnus) {

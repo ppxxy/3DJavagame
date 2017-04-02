@@ -42,6 +42,7 @@ import javafx.stage.WindowEvent;
 
 public class Whiteboard extends Application{
 
+	Image img;
 	Canvas canvas = new Canvas(800, 500);
 	GraphicsContext gc;
 	ColorPicker cPicker = new ColorPicker();
@@ -68,10 +69,12 @@ public class Whiteboard extends Application{
 	@Override
 	public void start(final Stage stage){
 		try {
-			pane.setStyle("-fx-background-color: #f2f2f2"); //set background and eraser the same colour.
+			pane.setStyle("-fx-background-color: white"); //set background and eraser the same colour.
 			gc = canvas.getGraphicsContext2D();
 			gc.setStroke(Color.BLACK);
 			gc.setLineWidth(1);
+			img = new Image(getClass().getResourceAsStream("whiteboardImg.png"));
+			gc.drawImage(img, 0, 0);
 
 			cPicker.setValue(Color.BLACK); //default value for the ColorPicker.
 			cPicker.setOnAction(new EventHandler<ActionEvent>() {
@@ -114,7 +117,7 @@ public class Whiteboard extends Application{
 				}
 			});
 
-			eraserButton.setUserData(Color.rgb(242, 242, 242)); //set background and eraser the same colour.
+			eraserButton.setUserData(Color.WHITE); //set background and eraser the same colour.
 
 			//checks when and which togglebutton is pressed and executes the lines if there are changes.
 			tGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>(){
@@ -195,27 +198,28 @@ public class Whiteboard extends Application{
 	}
 
 
-public void captureAndSaveDisplay(){
-    FileChooser fileChooser = new FileChooser();
+	public void captureAndSaveDisplay(){
+		FileChooser fileChooser = new FileChooser();
 
-    //Set extension filter
-    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("png files (*.png)", "*.png"));
+		//Set extension filter
+		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("png files (*.png)", "*.png"));
 
-    //Prompt user to select a file
-    File file = fileChooser.showSaveDialog(null);
+		//Prompt user to select a file
+		File file = fileChooser.showSaveDialog(null);
 
-    if(file != null){
-        try {
-            //Pad the capture area
-            WritableImage writableImage = new WritableImage((int)canvas.getWidth(),
-                    (int)canvas.getHeight());
-            writableImage = canvas.snapshot(null, writableImage);
-            RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
-            //Write the snapshot to the chosen file
-            ImageIO.write(renderedImage, "png", file);
-        } catch (IOException ex) { ex.printStackTrace(); }
-    }
-}
+		if(file != null){
+			try {
+				//Pad the capture area
+				WritableImage writableImage = new WritableImage((int)canvas.getWidth(),
+						(int)canvas.getHeight());
+				writableImage = canvas.snapshot(null, writableImage);
+				RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+				//Write the snapshot to the chosen file
+				ImageIO.write(renderedImage, "png", file);
+			} catch (IOException ex) {
+				ex.printStackTrace(); }
+		}
+	}
 
 
 	public static void main(String[] args) {
