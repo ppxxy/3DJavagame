@@ -1,5 +1,6 @@
 package game.engine.interfaces;
 
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -35,7 +36,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class Whiteboard extends Application{
 
@@ -63,7 +66,7 @@ public class Whiteboard extends Application{
 
 
 	@Override
-	public void start(Stage stage){
+	public void start(final Stage stage){
 		try {
 			pane.setStyle("-fx-background-color: #f2f2f2"); //set background and eraser the same colour.
 			gc = canvas.getGraphicsContext2D();
@@ -178,24 +181,41 @@ public class Whiteboard extends Application{
 			stage.setScene(scene);
 			stage.show();
 
+			stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+		          public void handle(WindowEvent we) {
+		        	  captureAndSaveDisplay();
+		              stage.close();
+		          }
+		      });
+
 		} catch(Exception e){
 			e.printStackTrace();
 		}
 
 	}
 
-	public void saveAsPng() {
-	    WritableImage image = canvas.snapshot(new SnapshotParameters(), null);
 
-	    // TODO: probably use a file chooser here
-	    File file = new File("whiteboardImg.png");
+public void captureAndSaveDisplay(){
+    FileChooser fileChooser = new FileChooser();
 
-	    try {
-	        ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
-	    } catch (IOException e) {
-	        // TODO: handle exception here
-	    }
-	}
+    //Set extension filter
+    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("png files (*.png)", "*.png"));
+
+    //Prompt user to select a file
+    File file = fileChooser.showSaveDialog(null);
+
+    if(file != null){
+        try {
+            //Pad the capture area
+            WritableImage writableImage = new WritableImage((int)canvas.getWidth(),
+                    (int)canvas.getHeight());
+            writableImage = canvas.snapshot(null, writableImage);
+            RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+            //Write the snapshot to the chosen file
+            ImageIO.write(renderedImage, "png", file);
+        } catch (IOException ex) { ex.printStackTrace(); }
+    }
+}
 
 
 	public static void main(String[] args) {
