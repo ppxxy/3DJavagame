@@ -3,6 +3,7 @@ package game.engine.rendering;
 import game.connection.objects.MovementDestination;
 import game.engine.camera.ActiveCamera;
 import game.engine.camera.Camera;
+import game.engine.characters.Update;
 import game.engine.entities.AnimatedEntity;
 import game.engine.entities.Entity;
 import game.engine.interfaces.ActiveInterface;
@@ -22,9 +23,11 @@ import org.lwjgl.util.vector.Vector3f;
 
 public class View {
 
+	private List<Update> updates = new ArrayList<Update>();
+
 	private final List<Entity> entities = new ArrayList<Entity>();
 	private final List<Interface> interfaces = new ArrayList<Interface>();
-	private final Camera camera;
+	private Camera camera;
 	private final MousePicker mousePicker;
 	private TerrainModel terrain;
 	private Vector3f lightDirection = new Vector3f(0, -1, 0);
@@ -106,6 +109,10 @@ public class View {
 	}
 
 	public void updateEntities() {
+		for(Update u : updates){
+			u.update();
+		}
+		updates.clear();
 		if(camera instanceof ActiveCamera){
 			((ActiveCamera) camera).update();
 		}
@@ -156,5 +163,22 @@ public class View {
 
 	public void cleanUp() {
 		this.depthBuffer.cleanUp();
+	}
+
+	public AnimatedEntity getEntityById(int id) {
+		for(AnimatedEntity e : animatedEntities){
+			if(e.getId() == id){
+				return e;
+			}
+		}
+		return null;
+	}
+
+	public void addUpdate(Update update){
+		updates.add(update);
+	}
+
+	public void setCamera(Camera camera) {
+		this.camera = camera;
 	}
 }

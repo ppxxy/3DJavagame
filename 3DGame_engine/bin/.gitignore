@@ -1,6 +1,5 @@
-/game/
-<<<<<<< HEAD
 /res/
-=======
 /Networking/
->>>>>>> branch 'develop' of https://gitlab.com/ppxxy/3DJavaGame.git
+/game/
+/login/
+/temp_chunk_data/
