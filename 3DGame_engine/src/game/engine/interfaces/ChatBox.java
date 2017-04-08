@@ -32,7 +32,7 @@ public class ChatBox {
     	this.chat=chat;
     	this.message="";
     	this.position=new Vector2f(0.0f,-0.65f);
-    	this.size=new Vector2f(0.5f,0.25f);
+    	this.size=new Vector2f(0.4f,0.25f);
     	this.chatbox=new BufferedImage(1000,300,BufferedImage.TYPE_INT_ARGB);
     	initialize();
     	ifce=new Interface(Texture.loadTexture(chatbox).nearestFiltering().load(),position,size);
@@ -116,7 +116,7 @@ public class ChatBox {
     		str=str.substring(0,str.length()-1);
     		counter++;
     	}
-    	strcopy=strcopy.substring(strcopy.length()-counter+1,strcopy.length()-1);
+    	strcopy=strcopy.substring(strcopy.length()-counter+1,strcopy.length());
     	strlist.add(str);
     	if(fm.stringWidth(strcopy)>chatbox.getWidth()-40){
     		strlist.addAll(cutString(strcopy,fm));
