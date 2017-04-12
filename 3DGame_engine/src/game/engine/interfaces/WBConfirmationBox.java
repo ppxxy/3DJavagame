@@ -1,5 +1,6 @@
 package game.engine.interfaces;
 
+import Localization.Localization;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -16,18 +17,18 @@ public class WBConfirmationBox {
 	private static Stage window;
 	private static boolean clear = false;
 
-	public static boolean Display(String title, String message){
+	public static boolean Display(){
 		window = new Stage();
 
 		window.initModality(Modality.APPLICATION_MODAL); //block events to other windows
-		window.setTitle(title);
+		window.setTitle(Localization.getBundle().getString("confirm"));
 		window.setMinWidth(250);
 		window.setMinHeight(150);
 
 		Label label = new Label();
-		label.setText(message);
-		Button okButton = new Button("Yes");
-		Button cancelButton = new Button("Cancel");
+		label.setText(Localization.getBundle().getString("clear_canvas_confirmation_message"));
+		Button okButton = new Button(Localization.getBundle().getString("yes"));
+		Button cancelButton = new Button(Localization.getBundle().getString("cancel"));
 
 
 		cancelButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -48,7 +49,7 @@ public class WBConfirmationBox {
 		HBox hbox = new HBox(10);
 		hbox.setAlignment(Pos.CENTER);
 		hbox.setPadding(new Insets(10,0,10,0));
-		hbox.getChildren().addAll(cancelButton, okButton);
+		hbox.getChildren().addAll(okButton, cancelButton);
 		vbox.getChildren().addAll(label, hbox);
 		vbox.setAlignment(Pos.CENTER);
 

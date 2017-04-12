@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import Localization.Localization;
 import javafx.application.Application;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -16,7 +17,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
@@ -53,7 +53,8 @@ public class Whiteboard extends Application{
 	ToggleButton penButton = new ToggleButton();
 	ToggleButton eraserButton = new ToggleButton();
 	Boolean erase = false; //tells if eraser is selected
-	Button clearButton = new Button("Clear Canvas");
+	Button clearButton = new Button(Localization.getBundle().getString("clear_canvas"));
+
 
 
 	StackPane pane = new StackPane();
@@ -63,7 +64,7 @@ public class Whiteboard extends Application{
 	GridPane grid2 = new GridPane();
 	GridPane grid3 = new GridPane();
 	GridPane grid4 = new GridPane();
-	Label label = new Label("Brush/Eraser Width: ");
+	Label label = new Label(Localization.getBundle().getString("brush_eraser"));
 
 
 	@Override
@@ -136,7 +137,7 @@ public class Whiteboard extends Application{
 
 			clearButton.setOnAction(new EventHandler<ActionEvent>() {
 			    @Override public void handle(ActionEvent e) {
-			    	if(WBConfirmationBox.Display("Confirm", "Do you want to clear the canvas?")){
+			    	if(WBConfirmationBox.Display()){
 			    		gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight()); //Clears the whole canvas
 			    	}
 			    }
@@ -184,6 +185,7 @@ public class Whiteboard extends Application{
 			stage.setScene(scene);
 			stage.show();
 
+			//canvas is saved as a picture when the window is closed.
 			stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 		          public void handle(WindowEvent we) {
 		        	  captureAndSaveDisplay();
@@ -199,13 +201,14 @@ public class Whiteboard extends Application{
 
 
 	public void captureAndSaveDisplay(){
-		FileChooser fileChooser = new FileChooser();
+		/*FileChooser fileChooser = new FileChooser();
 
 		//Set extension filter
 		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("png files (*.png)", "*.png"));
 
 		//Prompt user to select a file
-		File file = fileChooser.showSaveDialog(null);
+		File file = fileChooser.showSaveDialog(null);*/
+		File file = new File("C:/Users/Tomi/git/3DJavaGame/3DGame_engine/src/game/engine/interfaces/whiteboardImg.png");
 
 		if(file != null){
 			try {
@@ -223,6 +226,7 @@ public class Whiteboard extends Application{
 
 
 	public static void main(String[] args) {
+		Localization.setNewLocale("ru", "RU");
 		launch(args);
 	}
 

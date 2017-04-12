@@ -56,7 +56,8 @@ public class DBConnection {
 		}
 		return false;
 	}
-
+	
+	//updates the picture in database with the latest version every time user closes the whiteboard.
 	public void updateWhiteboard(){
 		FileInputStream fis = null;
 	    PreparedStatement stmt = null;
@@ -84,13 +85,14 @@ public class DBConnection {
 	    }
 	}
 
+	
 	public void insertWhiteboard(){
 
 	    FileInputStream fis = null;
 	    PreparedStatement stmt = null;
 	    try {
 	      conn.setAutoCommit(false);
-	      File file = new File("/res/whiteboardImg.png");
+	      File file = new File("whiteboardImg.png");
 	      fis = new FileInputStream(file);
 	      stmt = conn.prepareStatement("INSERT INTO 3Dpeli.Whiteboard VALUES(?,?)");
 	      stmt.setString(1, "Whiteboard");
@@ -112,94 +114,6 @@ public class DBConnection {
 	    }
 	}
 
-/*	public Valuutta readValuutta(String tunnus) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Valuutta[] readValuutat() {
-		ArrayList<Valuutta> valuutat = new ArrayList<Valuutta>();
-		PreparedStatement myStatement = null;
-		ResultSet myRs = null;
-		try {
-			String sqlSelect = "SELECT * FROM tomiple.Valuutat ";
-			myStatement = conn.prepareStatement(sqlSelect);
-			myRs = myStatement.executeQuery();
-			while (myRs.next()) {
-				String tunnus = myRs.getString("tunnus");
-				float vaihtokurssi = myRs.getFloat("vaihtokurssi");
-				String nimi = myRs.getString("nimi");
-				Valuutta valuutta = new Valuutta();
-				valuutta.setTunnus(tunnus);
-				valuutta.setVaihtokurssi(vaihtokurssi);
-				valuutta.setNimi(nimi);
-				valuutat.add(valuutta);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}finally {
-			try {
-				if (myRs != null)
-					myRs.close();
-				if (myStatement != null)
-					myStatement.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-		Valuutta[] returnArray = new Valuutta[valuutat.size()];
-		return (Valuutta[])valuutat.toArray(returnArray);
-	}
-
-	public boolean updateValuutta(Valuutta valuutta) {
-		PreparedStatement stmt = null;
-		try {
-			stmt = conn.prepareStatement("UPDATE "+taulukko+" SET VAIHTOKURSSI = ?"+ "WHERE TUNNUS = ?");
-			stmt.setDouble(1, valuutta.getVaihtokurssi());
-			stmt.setString(2, valuutta.getTunnus());
-			int count = stmt.executeUpdate();
-			if(count > 0){
-				return true;
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			try {
-				if (stmt != null)
-					stmt.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return false;
-	}
-
-	public boolean deleteValuutta(String tunnus) {
-		PreparedStatement stmt = null;
-		try {
-			stmt = conn.prepareStatement("DELETE FROM "+taulukko+" WHERE TUNNUS = ?");
-			stmt.setString(1, tunnus);
-			int count = stmt.executeUpdate();
-			if(count > 0){
-				return true;
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			try {
-				if (stmt != null)
-					stmt.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return false;
-	}
-
-	*/
 	protected void finalize() {
 		try {
 			if (conn != null)

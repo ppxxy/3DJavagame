@@ -12,7 +12,7 @@
    </property>
 
    <property name="hibernate.connection.url">
-      jdbc:mysql://mysql-raivoairlines.crenqljciaae.eu-central-1.rds.amazonaws.com:3306/3Dpeli
+      jdbc:mysql://rg.crenqljciaae.eu-central-1.rds.amazonaws.com:3306/3Dpeli
    </property>
    <property name="hibernate.connection.username">
       ohjelmauser2
