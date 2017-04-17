@@ -1,23 +1,19 @@
-package Networking;
+package Dummies;
 
 import java.util.ArrayList;
-
-import org.lwjgl.LWJGLException;
-
-import game.engine.interfaces.ChatBox;
+import Networking.ChatMessage;
 import game.engine.interfaces.ChatControls;
-import game.engine.interfaces.MessageBox;
 
-public class Chat {
+public class ChatDummy {
 	private ArrayList<ChatMessage> messages=new ArrayList<ChatMessage>();
-	private final int maxmessages=99;
-	private ChatBox ifce;
-	private MessageBox msgbox;
+	public static final int maxmessages=99;
+	private ChatBoxDummy ifce;
+	private MessageBoxDummy msgbox;
 	private ChatControls kb;
 
-	public Chat(){
-		ifce=new ChatBox(this);
-		msgbox=new MessageBox(this);
+	public ChatDummy(){
+		ifce=new ChatBoxDummy(this);
+		msgbox=new MessageBoxDummy(this);
 	}
 
 	public void recieveMessage(ChatMessage message){
@@ -40,12 +36,6 @@ public class Chat {
 	public void drawMessages(){
 		ifce.drawMessages(messages);
 	}
-	public ChatBox getChatbox(){
-		return ifce;
-	}
-	public MessageBox getMessageBox(){
-		return this.msgbox;
-	}
 	public void mute(String player){
 		for(int i=0;i<messages.size();i++){
 			if(messages.get(i).getName().equals(player)){
@@ -54,4 +44,10 @@ public class Chat {
 			}
 		}
 	}
+	/*public ChatBox getChatbox(){
+		return ifce;
+	}
+	public MessageBox getMessageBox(){
+		return this.msgbox;
+	}*/
 }

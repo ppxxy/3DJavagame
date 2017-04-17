@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="lib" path="src/lib/jars/lwjgl_util.jar"/>
 	<classpathentry kind="lib" path="src/lib/jars/lwjgl.jar"/>
@@ -22,5 +23,6 @@
 	<classpathentry kind="lib" path="src/lib/jars/jboss-logging-3.3.0.Final.jar"/>
 	<classpathentry kind="lib" path="src/lib/jars/jsr250-api-1.0.jar"/>
 	<classpathentry kind="lib" path="src/lib/jars/mysql-connector-java.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
