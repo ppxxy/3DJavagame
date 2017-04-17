@@ -9,25 +9,25 @@ import game.engine.entities.Entity;
 import game.engine.interfaces.ActiveInterface;
 import game.engine.interfaces.Interface;
 import game.engine.main.Main;
+import game.engine.main.View;
 import game.engine.physics.MousePicker;
 import game.engine.physics.ViewDepthBuffer;
 import game.engine.terrain.Terrain;
 import game.engine.terrain.TerrainModel;
+import game.engine.tools.Maths;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
-public class View {
-
-	private List<Update> updates = new ArrayList<Update>();
+public class GameView extends View{
 
 	private final List<Entity> entities = new ArrayList<Entity>();
 	private final List<Interface> interfaces = new ArrayList<Interface>();
-	private Camera camera;
 	private final MousePicker mousePicker;
 	private TerrainModel terrain;
 	private Vector3f lightDirection = new Vector3f(0, -1, 0);
@@ -35,7 +35,7 @@ public class View {
 
 	ViewDepthBuffer depthBuffer;
 
-	public View(){
+	public GameView(){
 		this.depthBuffer = new ViewDepthBuffer();
 		Terrain terrain = new Terrain(0, 0);
 		terrain.loadChunks();
@@ -44,7 +44,7 @@ public class View {
 		this.terrain = terrain.loadModel();
 	}
 
-	public View(Camera camera) {
+	public GameView(Camera camera) {
 		this.depthBuffer = new ViewDepthBuffer();
 		Terrain terrain = new Terrain(0, 0);
 		terrain.loadChunks();
@@ -104,23 +104,22 @@ public class View {
 		return lightDirection;
 	}
 
-	public void setLightDirection(Vector3f lightDir) {
-		this.lightDirection.set(lightDir);
+	public float getHeightAt(float x, float z){
+		float[][] heightmap = terrain.getHeightMap();
+		Vector3f a, b, c;
+		if(x%1 <= 1-z%1){
+			a = new Vector3f((int) 0, heightmap[(int) x][(int) z], (int) 0);
+		}
+		else{
+			a = new Vector3f((int) 1, heightmap[(int) x+1][(int) z+1], (int) 1);
+		}
+		b = new Vector3f((int) 0, heightmap[(int) x][(int) z+1], (int) 1);
+		c = new Vector3f((int) 1, heightmap[(int) x+1][(int) z], (int) 0);
+		return Maths.barryCentric(a, b, c, new Vector2f(x%1, z%1));
 	}
 
-	public void updateEntities() {
-		for(Update u : updates){
-			u.update();
-		}
-		updates.clear();
-		if(camera instanceof ActiveCamera){
-			((ActiveCamera) camera).update();
-		}
-		for(Entity e : entities){
-			if(e instanceof AnimatedEntity){
-				((AnimatedEntity) e).update();
-			}
-		}
+	public void setLightDirection(Vector3f lightDir) {
+		this.lightDirection.set(lightDir);
 	}
 
 	private boolean checkInterfacePress(float x, float y){
@@ -155,12 +154,13 @@ public class View {
 			}
 			float distance = distanceAt(Mouse.getX(), Mouse.getY());
 			if(distance < Camera.FAR_PLANE){
-				Vector3f location = mousePicker.update(distance);
+				Vector2f location = mousePicker.update(distance);
 				Main.connection.send(new MovementDestination.MovementTo(location));
 			}
 		}
 	}
 
+	@Override
 	public void cleanUp() {
 		this.depthBuffer.cleanUp();
 	}
@@ -174,11 +174,20 @@ public class View {
 		return null;
 	}
 
-	public void addUpdate(Update update){
-		updates.add(update);
-	}
-
 	public void setCamera(Camera camera) {
 		this.camera = camera;
+	}
+
+	@Override
+	public void update() {
+		super.update();
+		if(camera instanceof ActiveCamera){
+			((ActiveCamera) camera).update();
+		}
+		for(Entity e : entities){
+			if(e instanceof AnimatedEntity){
+				((AnimatedEntity) e).update();
+			}
+		}
 	}
 }

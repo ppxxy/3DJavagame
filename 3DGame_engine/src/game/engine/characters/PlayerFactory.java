@@ -1,9 +1,11 @@
 package game.engine.characters;
 
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import game.engine.animation.Animation;
 import game.engine.entities.Entity;
+import game.engine.main.Main;
 import game.engine.models.collada.ModelLoader;
 
 public class PlayerFactory {
@@ -18,9 +20,9 @@ public class PlayerFactory {
 		return player;
 	}
 
-	public static Entity createPlayer(int id, Vector3f location) {
+	public static Entity createPlayer(int id, Vector2f location) {
 		game.engine.characters.Character player = createPlayer(id);
-		player.setPosition(location);
+		player.setPosition(new Vector3f(location.x, Main.getGameView().getHeightAt(location.x, location.y), location.y));
 		return player;
 	}
 

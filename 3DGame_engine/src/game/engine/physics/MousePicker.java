@@ -27,7 +27,7 @@ public class MousePicker {
 		return currentRay;
 	}
 
-	public Vector3f update(float distance){
+	public Vector2f update(float distance){
 		//System.out.println(distance);
 		this.projectionMatrix = camera.getProjectionMatrix();
 		this.viewMatrix = camera.getViewMatrix();
@@ -44,9 +44,9 @@ public class MousePicker {
 		return getIntersectionPoint(distance);
 	}
 
-	private Vector3f getIntersectionPoint(float distance) {
+	private Vector2f getIntersectionPoint(float distance) {
 		Vector3f camPos = camera.getPosition();
-		return new Vector3f(camPos.x+currentRay.x*Math.abs(distance), camPos.y-currentRay.y*distance, camPos.z+currentRay.z*Math.abs(distance));
+		return new Vector2f(camPos.x+currentRay.x*Math.abs(distance), camPos.z+currentRay.z*Math.abs(distance));
 	}
 
 	private Vector3f calculateMouseRay(Vector2f normalizedCoords) {

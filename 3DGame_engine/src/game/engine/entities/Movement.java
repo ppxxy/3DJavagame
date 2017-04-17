@@ -1,70 +1,59 @@
 package game.engine.entities;
 
 import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
-
-import game.engine.main.Main;
-import game.engine.tools.Maths;
 
 public class Movement {
 
-	private Vector3f[] path;
-	private Entity entity;
-	private int pos_index;
+	private int pos_index = 0;
+
+	private Vector2f current;
+	private Vector2f[] path;
 	private float speed;
+
+	private float rotation;
+
 	private long previousFrame;
 
-	public Movement(Entity entity, float speed, Vector3f destination){
-		this.entity = entity;
-		path = calcPath(destination);
+	public Movement(long time, Vector2f source, Vector2f target, float speed){
+		this.previousFrame = time;
+		this.current = source;
+		this.path = new Vector2f[]{target};
 		this.speed = speed;
-		this.previousFrame = System.currentTimeMillis();
 	}
 
-	public Movement(Entity entity, float speed, Vector3f... path){
-		this.entity = entity;
-		this.speed = speed;
+	public Movement(long time, Vector2f source, Vector2f[] path, float speed){
+		this.previousFrame = time;
+		this.current = source;
 		this.path = path;
-		this.previousFrame = System.currentTimeMillis();
+		this.speed = speed;
 	}
 
-	public Vector3f[] calcPath(Vector3f destination){
-		return path = new Vector3f[]{destination};
-	}
-
-	public boolean update(){
-		Vector3f source = entity.getPosition();
+	public Vector2f update(){
 		if(pos_index >= path.length){
-			return false;
+			return null;
 		}
-		Vector3f destination = path[pos_index];
-		Vector3f dir_vector = new Vector3f(destination.x-source.x, 0, destination.z-source.z);
+		Vector2f destination = path[pos_index];
+		Vector2f dir_vector = new Vector2f(destination.x-current.x, destination.y-current.y);
 		float dist = dir_vector.length();
 		dir_vector.normalise();
-		entity.setRotY((float) (Math.toDegrees((dir_vector.z < 0 ? -135 : 0)+Math.atan(dir_vector.x/dir_vector.z))));
+		rotation = (float) (Math.toDegrees((dir_vector.y < 0 ? -135 : 0)+Math.atan(dir_vector.x/dir_vector.y)));
+		//entity.setRotY((float) (Math.toDegrees((dir_vector.z < 0 ? -135 : 0)+Math.atan(dir_vector.x/dir_vector.z))));
 		long currentTime = System.currentTimeMillis();
-		float distance = speed*(currentTime-previousFrame)/700f;
+		float distance = speed*(currentTime-previousFrame)/100f;
 		if(dist < distance){
-			source = destination;
+			current = destination;
 			pos_index++;
 		}
+		else{
+			current.translate(dir_vector.x*distance, dir_vector.y*distance);
+		}
 		previousFrame = currentTime;
-		source.translate(dir_vector.x*distance, 0, dir_vector.z*distance);
-		source.setY(getHeight(source.x, source.z));
-		return true;
+		//source.setY(getHeight(source.x, source.z));
+		return current;
 	}
 
-	private float getHeight(float x, float z){
-		float[][] heightmap = Main.activeView.getTerrain().getHeightMap();
-		Vector3f a, b, c;
-		if(x%1 <= 1-z%1){
-			a = new Vector3f((int) 0, heightmap[(int) x][(int) z], (int) 0);
-		}
-		else{
-			a = new Vector3f((int) 1, heightmap[(int) x+1][(int) z+1], (int) 1);
-		}
-		b = new Vector3f((int) 0, heightmap[(int) x][(int) z+1], (int) 1);
-		c = new Vector3f((int) 1, heightmap[(int) x+1][(int) z], (int) 0);
-		return Maths.barryCentric(a, b, c, new Vector2f(x%1, z%1));
+	public float getRotation(){
+		return this.rotation;
 	}
+
 }

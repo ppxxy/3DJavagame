@@ -1,9 +1,11 @@
 package game.engine.characters;
 
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import game.engine.entities.AnimatedEntity;
 import game.engine.entities.Movement;
+import game.engine.main.Main;
 import game.engine.models.AnimatedModel;
 import game.engine.models.Joint;
 import game.engine.models.VAO;
@@ -25,9 +27,13 @@ public class Character extends AnimatedEntity{
     public void update(){
         super.update();
         if(this.movement != null){
-        	if(!this.movement.update()){
+        	Vector2f move = this.movement.update();
+        	if(move == null){
         		this.movement = null;
+        		return;
         	}
+        	this.position.set(move.x, Main.getGameView().getHeightAt(move.x, move.y), move.y);
+        	this.setRotY(movement.getRotation());
         }
     }
 
@@ -43,6 +49,14 @@ public class Character extends AnimatedEntity{
 
 	public void setMovement(Movement movement) {
 		this.movement = movement;
+	}
+
+	public Vector2f getLocation(){
+		return new Vector2f(this.position.x, this.position.z);
+	}
+
+	public void setMoveTo(long startTime, Vector2f destination, float speed) {
+		this.movement = new Movement(startTime, getLocation(), destination, speed);
 	}
 
 }

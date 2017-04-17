@@ -7,17 +7,20 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 
 import Networking.Chat;
+import game.connection.objects.RequestData;
 import game.engine.camera.Camera;
 import game.engine.camera.TargetCamera;
 import game.engine.characters.PlayerFactory;
 import game.engine.connection.Connection;
 import game.engine.interfaces.ChatControls;
+import game.engine.interfaces.Interface;
 import game.engine.interfaces.Inventory;
 import game.engine.interfaces.InventoryInterface;
 import game.engine.rendering.DisplayManager;
+import game.engine.rendering.GameView;
 import game.engine.rendering.RenderEngine;
-import game.engine.rendering.View;
 import game.engine.textures.Texture;
+import game.engine.view.InterfaceView;
 
 public class Main {
 
@@ -29,20 +32,38 @@ public class Main {
 
 		System.setProperty("org.lwjgl.librarypath", new File("src/lib/jars/natives-win").getAbsolutePath());
 
+		RenderEngine renderEngine = RenderEngine.init();
+
+		Interface logging = new Interface(Texture.loadTexture("/res/logging.png").load(), new Vector2f(0f, 0f), new Vector2f(1f, 1f));
+		activeView = new InterfaceView(logging);
+
+		connection = new Connection("127.0.0.1", 16304);
+
 		/*
 		 * Login screen here!!
 		 */
 
-		RenderEngine renderEngine = RenderEngine.init();
+		while(!Display.isCloseRequested()){
+			activeView.update();
+			renderEngine.renderView(activeView);
+			DisplayManager.updateDisplay();
+		}
 
-		game.engine.characters.Character player = PlayerFactory.createPlayer(0);
+		activeView.cleanUp();
+		renderEngine.cleanUp();
+		DisplayManager.closeDiplay();
+	}
+
+	public static void setPlayer(int id){
+		System.out.println("Setting player.");
+		game.engine.characters.Character player = PlayerFactory.createPlayer(id);
 		Camera camera = new TargetCamera(player, 100f);
 
-		View view = new View(camera);
+		GameView view = new GameView(camera);
 		view.addEntity(player);
 		activeView = view;
 
-		connection = new Connection("127.0.0.1", 16304);
+		connection.send(RequestData.REQUEST_PLAYERS);
 
 		InventoryInterface testi = new InventoryInterface(Texture.loadTexture("/res/bag.png").load(), new Vector2f(-0.70f, 0.5f), new Vector2f(0.05f, 0.1f));
 		view.addInterface(testi);
@@ -84,20 +105,10 @@ public class Main {
 		view.addInterface(chat.getChatbox().getInterface());
 		view.addInterface(chat.getMessageBox().getInterface());
 		ChatControls chatcontrols= new ChatControls(chat.getMessageBox(),chat.getChatbox());
-
-		while(!Display.isCloseRequested()){
-			view.updateEntities();
-			renderEngine.renderView(view);
-			DisplayManager.updateDisplay();
-			chat.getChatbox().update();
-			chat.getMessageBox().update();
-			chatcontrols.poll();
-		}
-
-		view.cleanUp();
-		renderEngine.cleanUp();
-		DisplayManager.closeDiplay();
 	}
 
+	public static GameView getGameView() {
+		return (GameView) activeView;
+	}
 
 }
