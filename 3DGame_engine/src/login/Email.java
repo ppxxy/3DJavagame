@@ -10,6 +10,8 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.*;
 
+import Localization.Localization;
+
 public class Email {
 
 	Window window;
@@ -29,7 +31,7 @@ public class Email {
  	      emailOk = false;
  	      window.panel.add(window.warning);
            window.warning.setForeground(Color.RED);
-           window.warning.setText("Invalid Email-address");
+           window.warning.setText(Localization.getBundle().getString("invalid_email"));
            window.warning.setBounds(window.createUser.getX()-20, window.createUser.getY()+window.createUser.getHeight()+10, 400, 30);
  	   }
  	}
@@ -58,12 +60,12 @@ public class Email {
             message.setFrom(new InternetAddress("raivogaming@gmail.com"));
             message.setRecipients(Message.RecipientType.TO,
                 InternetAddress.parse(emailaddr));
-            message.setSubject("Java 3D Account");
+            message.setSubject(Localization.getBundle().getString("email_Java3DAccount"));
             message.setText(mes);
 
             Transport.send(message);
 
-            System.out.println("Done");
+            System.out.println(Localization.getBundle().getString("done"));
 
         } catch (MessagingException e) {
             throw new RuntimeException(e);

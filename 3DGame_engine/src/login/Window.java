@@ -31,6 +31,8 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
+import Localization.Localization;
+
 
 public class Window extends JPanel implements ActionListener{
 
@@ -59,26 +61,26 @@ public class Window extends JPanel implements ActionListener{
     //Luodaan buttonit
     JButton newUserButton = new JButton();
     JButton exUserButton = new JButton();
-    JButton createUser = new JButton("Create User");
+    JButton createUser = new JButton(Localization.getBundle().getString("login_window_create_user"));
     JButton login = new JButton();
     JButton backButton = new JButton();
     JButton securityButton = new JButton();
     JButton resetPasswordButton = new JButton();
-    JButton emailVerificationButton = new JButton("Send security code to your email.");
-    JButton changePasswordButton = new JButton("Change password");
+    JButton emailVerificationButton = new JButton(Localization.getBundle().getString("login_window_security_code"));
+    JButton changePasswordButton = new JButton(Localization.getBundle().getString("login_window_change_password"));
 
     //luodaaan tekstit
-    JLabel username = new JLabel("Username:");
-    JLabel password = new JLabel("Password:");
-    JLabel retypepass = new JLabel("Retype password:");
-    JLabel email = new JLabel("Email address:");
-    JLabel warning = new JLabel("Warning:");
-    JLabel recoveryQuestion1 = new JLabel("Recovery Question 1:");
-    JLabel recoveryQuestionAns = new JLabel("Question 1 answer:");
-    JLabel securityCodeText = new JLabel("Security Code");
-    JLabel securityPassInfo = new JLabel("Please check your email for security code. If you didn't get the code remember to check your trashbin or try again.");
-    JLabel passwordSuccessText = new JLabel("Password changed succesfully!");
-    JLabel passwordFailureText = new JLabel("Password change failed.");
+    JLabel username = new JLabel(Localization.getBundle().getString("login_window_username")+":");
+    JLabel password = new JLabel(Localization.getBundle().getString("login_window_password")+":");
+    JLabel retypepass = new JLabel(Localization.getBundle().getString("login_window_password_retype")+":");
+    JLabel email = new JLabel(Localization.getBundle().getString("login_window_email")+":");
+    JLabel warning = new JLabel(Localization.getBundle().getString("login_window_warning")+":");
+    JLabel recoveryQuestion1 = new JLabel(Localization.getBundle().getString("login_window_recovery_question_1")+":");
+    JLabel recoveryQuestionAns = new JLabel(Localization.getBundle().getString("login_window_question_1_answer")+":");
+    JLabel securityCodeText = new JLabel(Localization.getBundle().getString("login_window_security_code")+":");
+    JLabel securityPassInfo = new JLabel(Localization.getBundle().getString("login_window_email_reminder")+".");
+    JLabel passwordSuccessText = new JLabel(Localization.getBundle().getString("login_window_password_change_success")+"!");
+    JLabel passwordFailureText = new JLabel(Localization.getBundle().getString("login_window_password_change_failure")+".");
 
     //luodaan tekstikentat
     JTextField usernameField = new JTextField();
@@ -153,7 +155,7 @@ public class Window extends JPanel implements ActionListener{
         borders.addTextFieldBorders(textFields);
         borders.addPassFieldBorders(passFields);
         borders.addTextAreaBorders(textAreas);
-       
+
 
         addForbidden();
         limitChars();
@@ -167,7 +169,7 @@ public class Window extends JPanel implements ActionListener{
         resize();
         super.repaint();
     }
-    
+
     @Override
     protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -302,11 +304,11 @@ public class Window extends JPanel implements ActionListener{
                 warning.setBounds(400, 300, 400, 50);
                 warning.setText(Connect.errorMessage);
                 //kaynnista peli-->
-                emailClass.sendEmail("Hi! You just created an account to Java 3D Game. Your username is: "+usernameField.getText()+" and your password is: "+new String(passwordField.getPassword()), emailField.getText());
+                emailClass.sendEmail(Localization.getBundle().getString("login_window_welcome_email_1")+": "+usernameField.getText()+" "+Localization.getBundle().getString("login_window_welcome_email_2")+": "+new String(passwordField.getPassword()), emailField.getText());
             }else if(!Arrays.equals(passwordField.getPassword(), retypepassField.getPassword())){
                 panel.add(warning);
                 warning.setForeground(Color.RED);
-                warning.setText("Passwords do not match!");
+                warning.setText(Localization.getBundle().getString("login_window_password_no_match")+"!");
                 warning.setBounds(createUser.getX()-20, createUser.getY()+createUser.getHeight()+10, 400, 30);
                 passwordField.setText("");
                 retypepassField.setText("");
@@ -314,7 +316,7 @@ public class Window extends JPanel implements ActionListener{
             }else if(usernameField.getText().length() <= 3){
                 panel.add(warning);
                 warning.setForeground(Color.RED);
-                warning.setText("Username too short!");
+                warning.setText(Localization.getBundle().getString("login_window_short_username")+"!");
                 warning.setBounds(createUser.getX()-20, createUser.getY()+createUser.getHeight()+10, 400, 30);
             }else if(!emailField.getText().contains("@") || !emailField.getText().contains(".")){
                 panel.add(warning);
