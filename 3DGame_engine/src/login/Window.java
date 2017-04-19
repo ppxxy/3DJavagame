@@ -321,12 +321,12 @@ public class Window extends JPanel implements ActionListener{
             }else if(!emailField.getText().contains("@") || !emailField.getText().contains(".")){
                 panel.add(warning);
                 warning.setForeground(Color.RED);
-                warning.setText("Please enter valid email address");
+                warning.setText(Localization.getBundle().getString("login_window_valid_email")+".");
                 warning.setBounds(createUser.getX()-20, createUser.getY()+createUser.getHeight()+10, 400, 30);
             }else if(Array.getLength(passwordField.getPassword()) < 6){
                 panel.add(warning);
                 warning.setForeground(Color.RED);
-                warning.setText("Password too short!");
+                warning.setText(Localization.getBundle().getString("login_window_short_password")+".");
                 warning.setBounds(createUser.getX()-20, createUser.getY()+createUser.getHeight()+10, 400, 30);
                 passwordField.setText("");
                 retypepassField.setText("");
@@ -334,7 +334,7 @@ public class Window extends JPanel implements ActionListener{
             }else if(Array.getLength(passwordField.getPassword()) >= 25){
                 panel.add(warning);
                 warning.setForeground(Color.RED);
-                warning.setText("Password too long!");
+                warning.setText(Localization.getBundle().getString("login_window_short_password")+".");
                 warning.setBounds(createUser.getX()-20, createUser.getY()+createUser.getHeight()+10, 400, 30);
                 passwordField.setText("");
                 retypepassField.setText("");
@@ -348,12 +348,12 @@ public class Window extends JPanel implements ActionListener{
             if(usernameField.getText().length() == 0){
                 panel.add(warning);
                 warning.setForeground(Color.RED);
-                warning.setText("Please enter username.");
+                warning.setText(Localization.getBundle().getString("login_window_enter_username")+".");
                 warning.setBounds(login.getX()-20, login.getY()+login.getHeight()+10, 400, 30);
             }else if(Array.getLength(passwordField.getPassword()) == 0){
                 panel.add(warning);
                 warning.setForeground(Color.RED);
-                warning.setText("Please enter password.");
+                warning.setText(Localization.getBundle().getString("login_window_enter_password")+".");
                 warning.setBounds(login.getX()-20, login.getY()+login.getHeight()+10, 400, 30);
             }else{
                 //tarkista onko kyseista pelaajaa olemassa ja onko salasana oikein
@@ -373,10 +373,10 @@ public class Window extends JPanel implements ActionListener{
 						hashed = password.hashPassword(hashThis);
 						if(hashed.equals(databaseHash)){
 	                    	//salasana oikein --> käynnistä client
-							System.out.println("Salasana oikein");
+							System.out.println(Localization.getBundle().getString("login_window_right_password")+".");
 	                    	Clientside client = new Clientside(usernameField.getText());
 	                    }else{
-	                    	System.out.println("Wrong username or password.");
+	                    	System.out.println(Localization.getBundle().getString("login_window_wrong")+".");
 	                    }
 					} catch (NoSuchAlgorithmException e1) {
 						e1.printStackTrace();
@@ -414,7 +414,7 @@ public class Window extends JPanel implements ActionListener{
         	int x = 999999;
         	int y = 100001;
         	securityCode = (int)(Math.random()*x)+y;
-        	emailClass.sendEmail("Here is your security code: "+securityCode+" Put this number to the \"Security Code\" box and give your new password.", emailField.getText());
+        	emailClass.sendEmail(Localization.getBundle().getString("login_window_email_security_code1")+": "+securityCode+" "+Localization.getBundle().getString("login_window_email_security_code2")+".", emailField.getText());
         	ikkuna = 5;
         	panel.removeAll();
         	panel.repaint();
@@ -559,10 +559,10 @@ public class Window extends JPanel implements ActionListener{
     public void checkUsername(){
     	for(int i = 0; i < forbidden.size(); i++){
     		if(usernameField.getText().toLowerCase().contains(forbidden.get(i)) || text.toLowerCase().contains(forbidden.get(i))){
-    			System.out.println("L�ytyi:"+forbidden.get(i));
+    			System.out.println(Localization.getBundle().getString("login_window_found_user")+":"+forbidden.get(i));
     			panel.add(warning);
                 warning.setForeground(Color.RED);
-                warning.setText("Unacceptable username.");
+                warning.setText(Localization.getBundle().getString("login_window_unacceptable_username")+".");
                 warning.setBounds(createUser.getX()-20, createUser.getY()+createUser.getHeight()+10, 400, 30);
                 usernameDoesntContainForbiddenWords = false;
                 break;
@@ -580,7 +580,7 @@ public class Window extends JPanel implements ActionListener{
     		usernameDoesntContainSpecialChars = false;
     		panel.add(warning);
             warning.setForeground(Color.RED);
-            warning.setText("You can only use: [A-z], [0-9]");
+            warning.setText(Localization.getBundle().getString("login_window_usable_chars"));
             warning.setBounds(createUser.getX()-20, createUser.getY()+createUser.getHeight()+10, 400, 30);
     	}else{
     		usernameDoesntContainSpecialChars = true;

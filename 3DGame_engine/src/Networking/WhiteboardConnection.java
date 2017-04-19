@@ -9,8 +9,8 @@ import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
 
 public class WhiteboardConnection {
-	
-	public static String imageToDataUrl(RenderedImage img) { 
+
+	public static String imageToDataUrl(RenderedImage img) {
 	    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
 	    try {
@@ -25,9 +25,9 @@ public class WhiteboardConnection {
 
 	    return dataUrl;
 	}
-	
+
 	public static RenderedImage dataUrlToImage(String dataUrl) {
-	    String data = dataUrl.substring(dataUrl.indexOf(',')+1);        
+	    String data = dataUrl.substring(dataUrl.indexOf(',')+1);
 	    byte[] bytes = DatatypeConverter.parseBase64Binary(data);
 
 	    try (ByteArrayInputStream in = new ByteArrayInputStream(bytes)) {
