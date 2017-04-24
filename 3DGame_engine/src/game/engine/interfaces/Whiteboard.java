@@ -7,6 +7,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import Localization.Localization;
+import Networking.WhiteboardConnection;
 import javafx.application.Application;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -217,8 +218,12 @@ public class Whiteboard extends Application{
 						(int)canvas.getHeight());
 				writableImage = canvas.snapshot(null, writableImage);
 				RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+
+				String dataurl = WhiteboardConnection.imageToDataUrl(renderedImage);
+				RenderedImage REimage = WhiteboardConnection.dataUrlToImage(dataurl);
+
 				//Write the snapshot to the chosen file
-				ImageIO.write(renderedImage, "png", file);
+				ImageIO.write(REimage, "png", file);
 			} catch (IOException ex) {
 				ex.printStackTrace(); }
 		}
