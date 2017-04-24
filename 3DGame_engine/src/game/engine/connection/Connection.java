@@ -3,14 +3,15 @@ package game.engine.connection;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 import Networking.Chat;
 import Networking.ChatMessage;
-import game.connection.objects.MovementDestination;
 import game.connection.objects.ReceiveAction;
+import game.connection.objects.WaiterObject;
 
 public class Connection implements Runnable{
 
@@ -18,6 +19,8 @@ public class Connection implements Runnable{
 	private Chat chat;
 	private ObjectInputStream input;
 	private ObjectOutputStream output;
+	
+	private List<WaiterObject> waiters = new ArrayList<WaiterObject>();
 
 	public Connection(String ip, int port){
 		try {
@@ -55,6 +58,10 @@ public class Connection implements Runnable{
 			((ReceiveAction) o).unpack();
 		}else if(o instanceof ChatMessage){
 			chat.recieveMessage((ChatMessage) o);
+		}else if(waiters.size() > 0){
+			for(WaiterObject<?> waiter : waiters){
+				waiter.checkType(o);
+			}
 		}
 	}
 
@@ -66,8 +73,13 @@ public class Connection implements Runnable{
 			e.printStackTrace();
 		}
 	}
+	
 	public void setChat(Chat chat){
 		this.chat=chat;
 	}
 
+	public void addWaiter(WaiterObject<?> waitForImage) {
+		waiters.add(waitForImage);
+	}
+	
 }

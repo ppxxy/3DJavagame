@@ -2,12 +2,17 @@ package game.engine.interfaces;
 
 import java.awt.image.RenderedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
 import Localization.Localization;
 import Networking.WhiteboardConnection;
+import game.connection.objects.ImageData;
+import game.connection.objects.RequestData;
+import game.connection.objects.WaiterObject;
+import game.engine.main.Main;
 import javafx.application.Application;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -66,7 +71,15 @@ public class Whiteboard extends Application{
 	GridPane grid3 = new GridPane();
 	GridPane grid4 = new GridPane();
 	Label label = new Label(Localization.getBundle().getString("brush_eraser"));
+	
+	private final WaiterObject<ImageData> waitForImage = new WaiterObject<ImageData>(ImageData.class){
 
+		@Override
+		public void onReceive(ImageData data) {
+			img = (Image) data.toRenderedImage();
+		}
+		
+	};
 
 	@Override
 	public void start(final Stage stage){
@@ -75,7 +88,9 @@ public class Whiteboard extends Application{
 			gc = canvas.getGraphicsContext2D();
 			gc.setStroke(Color.BLACK);
 			gc.setLineWidth(1);
-			img = new Image(getClass().getResourceAsStream("whiteboardImg.png"));
+			Main.connection.send(RequestData.REQUEST_IMAGE);
+			Main.connection.addWaiter(waitForImage);
+			while(img == null);
 			gc.drawImage(img, 0, 0);
 
 			cPicker.setValue(Color.BLACK); //default value for the ColorPicker.
@@ -209,10 +224,10 @@ public class Whiteboard extends Application{
 
 		//Prompt user to select a file
 		File file = fileChooser.showSaveDialog(null);*/
-		File file = new File("C:/Users/Tomi/git/3DJavaGame/3DGame_engine/src/game/engine/interfaces/whiteboardImg.png");
+		//File file = new File("/src/game/engine/interfaces/whiteboardImg.png");
 
-		if(file != null){
-			try {
+		//if(file != null){
+			//try {
 				//Pad the capture area
 				WritableImage writableImage = new WritableImage((int)canvas.getWidth(),
 						(int)canvas.getHeight());
@@ -220,19 +235,20 @@ public class Whiteboard extends Application{
 				RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
 
 				String dataurl = WhiteboardConnection.imageToDataUrl(renderedImage);
-				RenderedImage REimage = WhiteboardConnection.dataUrlToImage(dataurl);
+				Main.connection.send(new ImageData(dataurl));
+				//RenderedImage REimage = WhiteboardConnection.dataUrlToImage(dataurl);
 
 				//Write the snapshot to the chosen file
-				ImageIO.write(REimage, "png", file);
-			} catch (IOException ex) {
-				ex.printStackTrace(); }
-		}
+				//ImageIO.write(REimage, "png", new FileOutputStream("/src/game/engine/interfaces/whiteboardImg.png"));
+			//} catch (IOException ex) {
+				//ex.printStackTrace(); }
+		//}
 	}
 
 
-	public static void main(String[] args) {
+	public static void startWhiteboard() {
 		Localization.setNewLocale("ru", "RU");
-		launch(args);
+		launch();
 	}
 
 

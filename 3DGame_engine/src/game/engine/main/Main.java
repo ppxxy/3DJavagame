@@ -16,6 +16,7 @@ import game.engine.interfaces.ChatControls;
 import game.engine.interfaces.Interface;
 import game.engine.interfaces.Inventory;
 import game.engine.interfaces.InventoryInterface;
+import game.engine.interfaces.Whiteboard;
 import game.engine.rendering.DisplayManager;
 import game.engine.rendering.GameView;
 import game.engine.rendering.RenderEngine;
@@ -105,6 +106,8 @@ public class Main {
 		view.addInterface(chat.getChatbox().getInterface());
 		view.addInterface(chat.getMessageBox().getInterface());
 		ChatControls chatcontrols= new ChatControls(chat.getMessageBox(),chat.getChatbox());
+		
+		//Whiteboard.startWhiteboard();
 	}
 
 	public static GameView getGameView() {
