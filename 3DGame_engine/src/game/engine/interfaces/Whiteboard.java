@@ -72,6 +72,10 @@ public class Whiteboard extends Application{
 	GridPane grid4 = new GridPane();
 	Label label = new Label(Localization.getBundle().getString("brush_eraser"));
 	
+	public Whiteboard(){
+		
+	}
+	
 	private final WaiterObject<ImageData> waitForImage = new WaiterObject<ImageData>(ImageData.class){
 
 		@Override
@@ -246,9 +250,9 @@ public class Whiteboard extends Application{
 	}
 
 
-	public static void startWhiteboard() {
+	public static void main(String[] args) {
 		Localization.setNewLocale("ru", "RU");
-		launch();
+        launch();
 	}
 
 

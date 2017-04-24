@@ -22,6 +22,7 @@ import game.engine.rendering.GameView;
 import game.engine.rendering.RenderEngine;
 import game.engine.textures.Texture;
 import game.engine.view.InterfaceView;
+import javafx.stage.Stage;
 
 public class Main {
 
@@ -29,6 +30,10 @@ public class Main {
 
 	public static View activeView;
 
+	public Main(){
+		
+	}
+	
 	public static void main(String[] args) {
 
 		System.setProperty("org.lwjgl.librarypath", new File("src/lib/jars/natives-win").getAbsolutePath());
@@ -105,9 +110,9 @@ public class Main {
 		connection.setChat(chat);
 		view.addInterface(chat.getChatbox().getInterface());
 		view.addInterface(chat.getMessageBox().getInterface());
-		ChatControls chatcontrols= new ChatControls(chat.getMessageBox(),chat.getChatbox());
+		ChatControls chatcontrols = new ChatControls(chat.getMessageBox(),chat.getChatbox());
 		
-		//Whiteboard.startWhiteboard();
+		Whiteboard.launch(Whiteboard.class);
 	}
 
 	public static GameView getGameView() {
