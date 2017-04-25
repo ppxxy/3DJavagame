@@ -2,17 +2,12 @@ package game.engine.interfaces;
 
 import java.awt.image.RenderedImage;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
 import Localization.Localization;
 import Networking.WhiteboardConnection;
-import game.connection.objects.ImageData;
-import game.connection.objects.RequestData;
-import game.connection.objects.WaiterObject;
-import game.engine.main.Main;
 import javafx.application.Application;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -24,7 +19,6 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -38,10 +32,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -63,7 +58,7 @@ public class Whiteboard extends Application{
 
 
 
-	StackPane pane = new StackPane();
+	BorderPane pane = new BorderPane();
 	Scene scene = new Scene(pane, 800, 500);
 	HBox hbox = new HBox();
 	GridPane grid = new GridPane();
@@ -71,31 +66,20 @@ public class Whiteboard extends Application{
 	GridPane grid3 = new GridPane();
 	GridPane grid4 = new GridPane();
 	Label label = new Label(Localization.getBundle().getString("brush_eraser"));
-	
-	public Whiteboard(){
-		
-	}
-	
-	private final WaiterObject<ImageData> waitForImage = new WaiterObject<ImageData>(ImageData.class){
 
-		@Override
-		public void onReceive(ImageData data) {
-			img = (Image) data.toRenderedImage();
-		}
-		
-	};
 
 	@Override
 	public void start(final Stage stage){
 		try {
+			stage.setResizable(false);
 			pane.setStyle("-fx-background-color: white"); //set background and eraser the same colour.
 			gc = canvas.getGraphicsContext2D();
 			gc.setStroke(Color.BLACK);
 			gc.setLineWidth(1);
-			Main.connection.send(RequestData.REQUEST_IMAGE);
-			Main.connection.addWaiter(waitForImage);
-			while(img == null);
+			img = new Image(getClass().getResourceAsStream("whiteboardImg.png"));
 			gc.drawImage(img, 0, 0);
+			canvas.widthProperty().bind(pane.widthProperty());
+
 
 			cPicker.setValue(Color.BLACK); //default value for the ColorPicker.
 			cPicker.setOnAction(new EventHandler<ActionEvent>() {
@@ -120,20 +104,20 @@ public class Whiteboard extends Application{
 			});
 
 			//handles what to do when mouse is pressed (starting to draw)
-			scene.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+			canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
 				@Override
 				public void handle(MouseEvent e) {
 					gc.beginPath(); //start a new line when mouse is pressed again, without the old line would always be connected to the new mouseclick location automatically.
-					gc.lineTo(e.getSceneX(), e.getSceneY());
+					gc.lineTo(e.getX(), e.getY());
 					gc.stroke();
 				}
 			});
 
 			//handles what to do when mouse is dragged on the screen
-			scene.addEventHandler(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
+			canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
 				@Override
 				public void handle(MouseEvent e) {
-					gc.lineTo(e.getSceneX(), e.getSceneY());
+					gc.lineTo(e.getX(), e.getY());
 					gc.stroke();
 				}
 			});
@@ -196,12 +180,13 @@ public class Whiteboard extends Application{
 
 
 			hbox.getChildren().addAll(grid, grid2, grid3, grid4);
+			hbox.setPadding(new Insets(0,0,10,0));
 
+			Line line = new Line(0,0,800,0);
+			pane.setTop(hbox);
+			pane.setCenter(line);
+			pane.setBottom(canvas);
 
-			pane.getChildren().addAll(canvas, hbox);
-
-			stage.setMinHeight(500);
-			stage.setMinWidth(500);
 			stage.setScene(scene);
 			stage.show();
 
@@ -228,10 +213,10 @@ public class Whiteboard extends Application{
 
 		//Prompt user to select a file
 		File file = fileChooser.showSaveDialog(null);*/
-		//File file = new File("/src/game/engine/interfaces/whiteboardImg.png");
+		File file = new File("C:/Users/Tomi/git/3DJavaGame/3DGame_engine/src/game/engine/interfaces/whiteboardImg.png");
 
-		//if(file != null){
-			//try {
+		if(file != null){
+			try {
 				//Pad the capture area
 				WritableImage writableImage = new WritableImage((int)canvas.getWidth(),
 						(int)canvas.getHeight());
@@ -239,20 +224,19 @@ public class Whiteboard extends Application{
 				RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
 
 				String dataurl = WhiteboardConnection.imageToDataUrl(renderedImage);
-				Main.connection.send(new ImageData(dataurl));
-				//RenderedImage REimage = WhiteboardConnection.dataUrlToImage(dataurl);
+				RenderedImage REimage = WhiteboardConnection.dataUrlToImage(dataurl);
 
 				//Write the snapshot to the chosen file
-				//ImageIO.write(REimage, "png", new FileOutputStream("/src/game/engine/interfaces/whiteboardImg.png"));
-			//} catch (IOException ex) {
-				//ex.printStackTrace(); }
-		//}
+				ImageIO.write(REimage, "png", file);
+			} catch (IOException ex) {
+				ex.printStackTrace(); }
+		}
 	}
 
 
 	public static void main(String[] args) {
 		Localization.setNewLocale("ru", "RU");
-        launch();
+		launch(args);
 	}
 
 
