@@ -65,14 +65,16 @@ public class Whiteboard extends Application{
     GridPane grid3 = new GridPane();
     GridPane grid4 = new GridPane();
     Label label = new Label(Localization.getBundle().getString("brush_eraser"));
-    
+
     private final WaiterObject<ImageData> waitForImage = new WaiterObject<ImageData>(ImageData.class){
 
 		@Override
 		public void onReceive(ImageData data) {
+			System.out.println("ennen");
 			img = (Image) data.toRenderedImage();
+			System.out.println("jälkeen");
 		}
-		
+
 	};
 
     public Whiteboard(){
@@ -91,7 +93,9 @@ public class Whiteboard extends Application{
             Main.connection.send(RequestData.REQUEST_IMAGE);
 			Main.connection.addWaiter(waitForImage);
 			System.out.println("Waiting for image.");
-			while(img == null);
+			Thread.sleep(2000);
+			//while(img == null);
+			System.out.println("image received");
             gc.drawImage(img, 0, 0);
             canvas.widthProperty().bind(pane.widthProperty());
 
