@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 
+import Localization.Localization;
 import Networking.Chat;
 import game.connection.objects.RequestData;
 import game.engine.camera.Camera;
@@ -31,9 +32,9 @@ public class Main {
 	public static View activeView;
 
 	public Main(){
-		
+
 	}
-	
+
 	public static void main(String[] args) {
 
 		System.setProperty("org.lwjgl.librarypath", new File("src/lib/jars/natives-win").getAbsolutePath());
@@ -71,7 +72,7 @@ public class Main {
 
 		connection.send(RequestData.REQUEST_PLAYERS);
 
-		InventoryInterface testi = new InventoryInterface(Texture.loadTexture("/res/bag.png").load(), new Vector2f(-0.70f, 0.5f), new Vector2f(0.05f, 0.1f));
+		/*InventoryInterface testi = new InventoryInterface(Texture.loadTexture("/res/bag.png").load(), new Vector2f(-0.70f, 0.5f), new Vector2f(0.05f, 0.1f));
 		view.addInterface(testi);
 
 		//inventory interface
@@ -81,7 +82,7 @@ public class Main {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 
 
         /*BufferedImage bagButton = null;
@@ -111,8 +112,16 @@ public class Main {
 		view.addInterface(chat.getChatbox().getInterface());
 		view.addInterface(chat.getMessageBox().getInterface());
 		ChatControls chatcontrols = new ChatControls(chat.getMessageBox(),chat.getChatbox());
-		
-		Whiteboard.launch(Whiteboard.class);
+
+		Localization.setNewLocale("fi", "FI");
+
+		Thread t = new Thread(){
+			@Override
+			public void run(){
+				Whiteboard.launch(Whiteboard.class);
+			}
+		};
+		t.start();
 	}
 
 	public static GameView getGameView() {
