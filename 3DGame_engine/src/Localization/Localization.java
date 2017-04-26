@@ -1,12 +1,11 @@
 package Localization;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class Localization {
 
-	private static Locale currentLocale;
+	private static Locale currentLocale = new Locale.Builder().setLanguage("en").setRegion("EN").build();
 	private static ResourceBundle messages;
 
 	private Localization(){

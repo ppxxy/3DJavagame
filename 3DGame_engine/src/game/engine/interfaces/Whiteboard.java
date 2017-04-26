@@ -55,7 +55,7 @@ public class Whiteboard extends Application{
 
     Button clearButton = new Button(Localization.getBundle().getString("clear_canvas"));
 
-
+    Thread thread;
 
     BorderPane pane = new BorderPane();
     Scene scene = new Scene(pane, 800, 500);
@@ -73,6 +73,10 @@ public class Whiteboard extends Application{
 			System.out.println("ennen");
 			img = (Image) data.toRenderedImage();
 			System.out.println("jälkeen");
+			synchronized(thread){
+				System.out.println("b");
+				thread.notify();
+			}
 		}
 
 	};
@@ -84,6 +88,7 @@ public class Whiteboard extends Application{
 
     @Override
     public void start(final Stage stage){
+    	thread = Thread.currentThread();
         try {
             stage.setResizable(false);
             pane.setStyle("-fx-background-color: white"); //set background and eraser the same colour.
@@ -93,7 +98,13 @@ public class Whiteboard extends Application{
             Main.connection.send(RequestData.REQUEST_IMAGE);
 			Main.connection.addWaiter(waitForImage);
 			System.out.println("Waiting for image.");
-			Thread.sleep(2000);
+			synchronized(thread){
+				try{
+					thread.wait();
+				} catch(InterruptedException e){
+					e.printStackTrace();
+				}
+			}
 			//while(img == null);
 			System.out.println("image received");
             gc.drawImage(img, 0, 0);
