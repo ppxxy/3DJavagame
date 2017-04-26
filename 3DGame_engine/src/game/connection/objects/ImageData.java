@@ -1,9 +1,9 @@
 package game.connection.objects;
 
-import java.awt.image.RenderedImage;
 import java.io.Serializable;
 
 import Networking.WhiteboardConnection;
+import javafx.scene.image.Image;
 
 public class ImageData implements Serializable{
 	private static final long serialVersionUID = 4923167136299302702L;
@@ -18,7 +18,7 @@ public class ImageData implements Serializable{
 		return this.data;
 	}
 	
-	public RenderedImage toRenderedImage(){
+	public Image toRenderedImage(){
 		return WhiteboardConnection.dataUrlToImage(data);
 	}
 }

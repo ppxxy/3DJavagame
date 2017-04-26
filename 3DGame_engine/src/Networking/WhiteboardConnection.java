@@ -8,6 +8,8 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
 
+import javafx.scene.image.Image;
+
 public class WhiteboardConnection {
 
 	public static String imageToDataUrl(RenderedImage img) {
@@ -26,12 +28,12 @@ public class WhiteboardConnection {
 	    return dataUrl;
 	}
 
-	public static RenderedImage dataUrlToImage(String dataUrl) {
+	public static Image dataUrlToImage(String dataUrl) {
 	    String data = dataUrl.substring(dataUrl.indexOf(',')+1);
 	    byte[] bytes = DatatypeConverter.parseBase64Binary(data);
 
 	    try (ByteArrayInputStream in = new ByteArrayInputStream(bytes)) {
-	        return ImageIO.read(in);
+	        return new Image(in);
 	    } catch (IOException e) {
 	        throw new RuntimeException(e);
 	    }
