@@ -51,7 +51,7 @@ public class Window extends JPanel implements ActionListener{
     private String text;
 
     //esitell��n luokat
-    Email emailClass = new Email();
+    //Email emailClass = new Email();
     Borders borders = new Borders();
 
     //luodaan frame ja panel
@@ -278,9 +278,9 @@ public class Window extends JPanel implements ActionListener{
         else if(e.getSource() == createUser){
         	changeChars();
         	checkUsername();
-        	emailClass.isValidEmailAddress(emailField.getText());
+        	//emailClass.isValidEmailAddress(emailField.getText());
             if(Arrays.equals(passwordField.getPassword(), retypepassField.getPassword()) && Array.getLength(passwordField.getPassword()) >= 6 && Array.getLength(passwordField.getPassword()) < 25
-                    && usernameField.getText().length() > 3 && emailField.getText().contains("@") && emailField.getText().contains(".") && usernameDoesntContainSpecialChars && emailClass.emailOk
+                    && usernameField.getText().length() > 3 && emailField.getText().contains("@") && emailField.getText().contains(".") && usernameDoesntContainSpecialChars /*&& emailClass.emailOk*/
                     && usernameDoesntContainForbiddenWords){
                 warning.setText("");
                 System.out.println(usernameDoesntContainForbiddenWords+"-"+usernameDoesntContainSpecialChars);
@@ -304,7 +304,7 @@ public class Window extends JPanel implements ActionListener{
                 warning.setBounds(400, 300, 400, 50);
                 warning.setText(Connect.errorMessage);
                 //kaynnista peli-->
-                emailClass.sendEmail(Localization.getBundle().getString("login_window_welcome_email_1")+": "+usernameField.getText()+" "+Localization.getBundle().getString("login_window_welcome_email_2")+": "+new String(passwordField.getPassword()), emailField.getText());
+                //emailClass.sendEmail(Localization.getBundle().getString("login_window_welcome_email_1")+": "+usernameField.getText()+" "+Localization.getBundle().getString("login_window_welcome_email_2")+": "+new String(passwordField.getPassword()), emailField.getText());
             }else if(!Arrays.equals(passwordField.getPassword(), retypepassField.getPassword())){
                 panel.add(warning);
                 warning.setForeground(Color.RED);
@@ -410,11 +410,11 @@ public class Window extends JPanel implements ActionListener{
         }
 
         else if(e.getSource() == emailVerificationButton){
-        	emailClass.emailaddr = emailField.getText();
+        	//emailClass.emailaddr = emailField.getText();
         	int x = 999999;
         	int y = 100001;
         	securityCode = (int)(Math.random()*x)+y;
-        	emailClass.sendEmail(Localization.getBundle().getString("login_window_email_security_code1")+": "+securityCode+" "+Localization.getBundle().getString("login_window_email_security_code2")+".", emailField.getText());
+        	//emailClass.sendEmail(Localization.getBundle().getString("login_window_email_security_code1")+": "+securityCode+" "+Localization.getBundle().getString("login_window_email_security_code2")+".", emailField.getText());
         	ikkuna = 5;
         	panel.removeAll();
         	panel.repaint();

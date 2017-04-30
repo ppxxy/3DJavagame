@@ -1,4 +1,4 @@
-package login;
+/*package login;
 
 import java.awt.Color;
 import java.util.Properties;
@@ -73,3 +73,4 @@ public class Email {
 }
 
 }
+*/

@@ -64,7 +64,7 @@ public class Whiteboard extends Application{
     GridPane grid2 = new GridPane();
     GridPane grid3 = new GridPane();
     GridPane grid4 = new GridPane();
-    Label label = new Label(Localization.getBundle().getString("brush_eraser"));
+    Label label = new Label(Localization.getBundle().getString("brush_eraser")+": ");
 
     private final WaiterObject<ImageData> waitForImage = new WaiterObject<ImageData>(ImageData.class){
 
