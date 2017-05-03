@@ -12,7 +12,7 @@ import Networking.Chat;
 import Networking.ChatMessage;
 import game.engine.textures.Texture;
 
-public class MessageBox {
+public class MessageBox extends Interface {
 	private Vector2f position;
 	private Vector2f size;
 	private Interface ifce;
@@ -27,13 +27,13 @@ public class MessageBox {
 
 
     public MessageBox(Chat chat){
+    	super(Texture.loadTexture(new BufferedImage(1000,300,BufferedImage.TYPE_INT_ARGB)).load(),new Vector2f(0.0f,-0.95f),new Vector2f(0.4f,0.05f));
     	this.chat=chat;
     	this.message="";
-    	this.position=new Vector2f(0.0f,-0.95f);
+    	this.position=new Vector2f(0.0f,-0.90f);
     	this.size=new Vector2f(0.4f,0.05f);
     	this.messagebox=new BufferedImage(1000,300,BufferedImage.TYPE_INT_ARGB);
     	initialize();
-    	this.ifce=new Interface(Texture.loadTexture(messagebox).nearestFiltering().load(),position,size);
 
     }
     public String cutDisplayedMessage(String string, FontMetrics fm){
@@ -111,8 +111,8 @@ public class MessageBox {
     	g.dispose();
     }
     public void update(){
-    	ifce.getTexture().delete();
-    	ifce.setTexture(Texture.loadTexture(messagebox).nearestFiltering().load());
+    	super.getTexture().delete();
+    	super.setTexture(Texture.loadTexture(messagebox).nearestFiltering().load());
     }
     public BufferedImage getImage(){
     	return this.messagebox;

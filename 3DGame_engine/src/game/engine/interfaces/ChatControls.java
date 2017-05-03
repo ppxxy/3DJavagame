@@ -3,11 +3,12 @@ package game.engine.interfaces;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 
-public class ChatControls {
+public class ChatControls extends Thread{
 	private boolean active=false;
 	private MessageBox msgbox;
 	private ChatBox chatbox;
 	private boolean[] keys = new boolean[65536];
+	private volatile boolean running=true;
 
 	public ChatControls(MessageBox msgbox,ChatBox chatbox){
 		this.msgbox=msgbox;
@@ -21,9 +22,11 @@ public class ChatControls {
 		Keyboard.enableRepeatEvents(true);
 	}
 
-	public void poll(){
+	public void run(){
+		while(running){
 	while(Keyboard.next()) {
 		checkActive();
+		System.out.println("a");
 		if(active){
 		if(Keyboard.getEventKeyState()){
 			keys[Keyboard.getEventKey()]=true;
@@ -34,6 +37,7 @@ public class ChatControls {
 				}else if(keys[Keyboard.KEY_DOWN]){
 					chatbox.scrollDown();
 				}else{
+					System.out.println("a");
 					msgbox.drawChar(Keyboard.getEventCharacter());
 				}
 		}else {
@@ -42,7 +46,7 @@ public class ChatControls {
 
 	}
 	}
-
+		}
 	}
 	public void checkActive(){
 		if(active){
@@ -61,5 +65,7 @@ public class ChatControls {
 			}
 		}
 	}
-
+	public void quit(){
+		running=false;
+	}
 	}

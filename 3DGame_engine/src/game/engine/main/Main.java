@@ -13,6 +13,7 @@ import game.engine.camera.Camera;
 import game.engine.camera.TargetCamera;
 import game.engine.characters.PlayerFactory;
 import game.engine.connection.Connection;
+import game.engine.interfaces.ChatBox;
 import game.engine.interfaces.ChatControls;
 import game.engine.interfaces.Interface;
 import game.engine.interfaces.Inventory;
@@ -31,6 +32,8 @@ public class Main {
 
 	public static View activeView;
 
+	public static Chat chat;
+
 	public Main(){
 
 	}
@@ -40,9 +43,10 @@ public class Main {
 		System.setProperty("org.lwjgl.librarypath", new File("src/lib/jars/natives-win").getAbsolutePath());
 
 		RenderEngine renderEngine = RenderEngine.init();
-
+		chat=new Chat();
 		Interface logging = new Interface(Texture.loadTexture("/res/logging.png").load(), new Vector2f(0f, 0f), new Vector2f(1f, 1f));
 		activeView = new InterfaceView(logging);
+
 
 		connection = new Connection("127.0.0.1", 16304);
 
@@ -54,6 +58,8 @@ public class Main {
 			activeView.update();
 			renderEngine.renderView(activeView);
 			DisplayManager.updateDisplay();
+			chat.getChatbox().update();
+			chat.getMessageBox().update();
 		}
 
 		activeView.cleanUp();
@@ -107,12 +113,11 @@ public class Main {
 		g.fillRect(0, 0, image.getWidth(), image.getHeight());
 		g.dispose();
 		view.addInterface(new Interface(Texture.loadTexture(image).nearestFiltering().load(), new Vector2f(0.5f, 0.5f), new Vector2f(0.2f, 0.2f)));*/
-		Chat chat=new Chat();
 		connection.setChat(chat);
-		view.addInterface(chat.getChatbox().getInterface());
-		view.addInterface(chat.getMessageBox().getInterface());
 		ChatControls chatcontrols = new ChatControls(chat.getMessageBox(),chat.getChatbox());
-
+		view.addInterface(chat.getChatbox());
+		view.addInterface(chat.getMessageBox());
+		chatcontrols.start();
 		Localization.setNewLocale("fi", "FI");
 
 		Thread t = new Thread(){
@@ -124,7 +129,6 @@ public class Main {
 		};
 		t.start();
 	}
-
 	public static GameView getGameView() {
 		return (GameView) activeView;
 	}

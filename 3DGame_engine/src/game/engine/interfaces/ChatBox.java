@@ -13,7 +13,7 @@ import Networking.Chat;
 import Networking.ChatMessage;
 import game.engine.textures.Texture;
 
-public class ChatBox {
+public class ChatBox extends Interface {
 	private Vector2f position;
 	private Vector2f size;
 	private Interface ifce;
@@ -29,14 +29,13 @@ public class ChatBox {
     private int cursorpos;
 
     public ChatBox(Chat chat){
+    	super(Texture.loadTexture(new BufferedImage(1000,300,BufferedImage.TYPE_INT_ARGB)).load(),new Vector2f(0.0f,-0.65f),new Vector2f(0.4f,0.25f));
     	this.chat=chat;
     	this.message="";
     	this.position=new Vector2f(0.0f,-0.65f);
     	this.size=new Vector2f(0.4f,0.25f);
     	this.chatbox=new BufferedImage(1000,300,BufferedImage.TYPE_INT_ARGB);
     	initialize();
-    	ifce=new Interface(Texture.loadTexture(chatbox).nearestFiltering().load(),position,size);
-
     }
     public void scrollUp(){
     	if(scrollpos<99){
@@ -109,7 +108,7 @@ public class ChatBox {
     	}
     }
     public ArrayList<String> cutString(String str, FontMetrics fm){
-    	ArrayList<String> strlist= new ArrayList();
+    	ArrayList<String> strlist= new ArrayList<String>();
     	String strcopy=str;
     	int counter=1;
     	while(fm.stringWidth(str)>chatbox.getWidth()-40){
@@ -125,12 +124,9 @@ public class ChatBox {
     	}
     	return strlist;
     }
-    public Interface getInterface(){
-    	return this.ifce;
-    }
     public void update(){
-    	ifce.getTexture().delete();
-    	ifce.setTexture(Texture.loadTexture(chatbox).nearestFiltering().load());
+    	super.getTexture().delete();
+    	super.setTexture(Texture.loadTexture(chatbox).nearestFiltering().load());
     }
     public BufferedImage getImage(){
     	return this.chatbox;
