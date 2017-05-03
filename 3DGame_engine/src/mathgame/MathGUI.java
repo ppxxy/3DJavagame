@@ -127,7 +127,7 @@ public class MathGUI extends Application implements MathGUI_IF{
 			    		labelTestResult.setText("Oikea vastaus");
 			    		correctAnswers++;
 			    	} else {
-			    		labelTestResult.setText("V‰‰r‰ vastaus, oikea vastaus on: "+count());
+			    		labelTestResult.setText("V‰‰r‰ vastaus, oikea vastaus on: "+controller.count());
 			    	}
 
 		    		switchButtons();
@@ -228,11 +228,6 @@ public class MathGUI extends Application implements MathGUI_IF{
 	@Override
 	public int getValue2(){
 		return value2;
-	}
-
-	@Override
-	public int count(){
-		return value1*value2;
 	}
 
 

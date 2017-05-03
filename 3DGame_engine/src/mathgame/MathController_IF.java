@@ -6,5 +6,6 @@ public interface MathController_IF {
 
 	public abstract ArrayList<Integer> startTest();
 	public abstract boolean checkAnswer(String answer);
+	public abstract int count();
 
 }

@@ -28,6 +28,11 @@ public class MathGame implements MathGame_IF{
 	}
 
 	@Override
+	public int count(int a, int b){
+		return a*b;
+	}
+
+	@Override
 	public boolean giveAnswer(int a, int b, String answer){
 		return a*b==Integer.parseInt(answer);
 	}

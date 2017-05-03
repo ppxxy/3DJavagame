@@ -20,4 +20,8 @@ public class MathController implements MathController_IF{
 	public boolean checkAnswer(String answer){
 		return game.giveAnswer(gui.getValue1(), gui.getValue2(), answer);
 	}
+
+	public int count(){
+		return game.count(gui.getValue1(), gui.getValue2());
+	}
 }
