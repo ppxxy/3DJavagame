@@ -80,7 +80,6 @@ public class Main {
 				Thread t = new Thread(){
 					@Override
 					public void run(){
-						System.out.println("thread start");
 						Whiteboard.launch(Whiteboard.class);
 					}
 				};

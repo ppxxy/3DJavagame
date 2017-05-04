@@ -70,11 +70,8 @@ public class Whiteboard extends Application{
 
 		@Override
 		public void onReceive(ImageData data) {
-			System.out.println("ennen");
 			img = (Image) data.toRenderedImage();
-			System.out.println("jälkeen");
 			synchronized(thread){
-				System.out.println("b");
 				thread.notify();
 			}
 		}
@@ -97,7 +94,6 @@ public class Whiteboard extends Application{
             gc.setLineWidth(1);
             Main.connection.send(RequestData.REQUEST_IMAGE);
 			Main.connection.addWaiter(waitForImage);
-			System.out.println("Waiting for image.");
 			synchronized(thread){
 				try{
 					thread.wait();
@@ -106,7 +102,6 @@ public class Whiteboard extends Application{
 				}
 			}
 			//while(img == null);
-			System.out.println("image received");
             gc.drawImage(img, 0, 0);
             canvas.widthProperty().bind(pane.widthProperty());
 
