@@ -77,7 +77,14 @@ public class Main {
 
 			@Override
 			public boolean activate() {
-				System.out.println("Clicked on taulu.");
+				Thread t = new Thread(){
+					@Override
+					public void run(){
+						System.out.println("thread start");
+						Whiteboard.launch(Whiteboard.class);
+					}
+				};
+				t.start();
 				return true;
 			}
 
@@ -130,15 +137,6 @@ public class Main {
 		view.addInterface(chat.getMessageBox());
 		chatcontrols.start();
 		Localization.setNewLocale("fi", "FI");
-
-		Thread t = new Thread(){
-			@Override
-			public void run(){
-				System.out.println("thread start");
-				Whiteboard.launch(Whiteboard.class);
-			}
-		};
-		t.start();
 	}
 	public static GameView getGameView() {
 		return (GameView) activeView;
