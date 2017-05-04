@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>DBConnection.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">Networking</a> &gt; <span class="el_source">DBConnection.java</span></div><h1>DBConnection.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package Networking;
+
+import java.io.File;
+import java.io.FileInputStream;
+/**
+ *
+ * @author Tomi
+ */
+import java.sql.*;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+
+
+public class DBConnection {
+	private Connection conn;
+	private static final String taulukko = &quot;3Dpeli.Account&quot;;
+
+<span class="nc" id="L24">	public DBConnection() {</span>
+		try {
+<span class="nc" id="L26">			Class.forName(&quot;com.mysql.jdbc.Driver&quot;);</span>
+<span class="nc" id="L27">			conn = DriverManager.getConnection(&quot;jdbc:mysql://mysql-raivoairlines.crenqljciaae.eu-central-1.rds.amazonaws.com:3306/3Dpeli&quot;,&quot;ohjelmauser&quot;,&quot;Salasana159&quot;);</span>
+<span class="nc" id="L28">		} catch (Exception e) {</span>
+			//System.err.println(&quot;Virhe tietokantayhteyden muodostamisessa.&quot;);
+			//System.exit(0);
+<span class="nc" id="L31">			e.printStackTrace();</span>
+		}
+<span class="nc" id="L33">	}</span>
+
+	public boolean createAccount() {
+<span class="nc" id="L36">		PreparedStatement stmt = null;</span>
+		try {
+<span class="nc" id="L38">			stmt = conn.prepareStatement(&quot;INSERT INTO &quot;+taulukko+&quot; VALUES(?,?,?)&quot;);</span>
+<span class="nc" id="L39">			stmt.setDouble(1, 1234);</span>
+<span class="nc" id="L40">			stmt.setString(2, &quot;testinimi&quot;);</span>
+<span class="nc" id="L41">			stmt.setString(3, &quot;testisalasana&quot;);</span>
+<span class="nc" id="L42">			int count = stmt.executeUpdate();</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">			if(count &gt; 0){</span>
+<span class="nc" id="L44">				return true;</span>
+			}
+<span class="nc" id="L46">		} catch (SQLException e) {</span>
+			// TODO Auto-generated catch block
+<span class="nc" id="L48">			e.printStackTrace();</span>
+<span class="nc" id="L49">		} finally {</span>
+			try {
+<span class="nc bnc" id="L51" title="All 8 branches missed.">				if (stmt != null)</span>
+<span class="nc" id="L52">					stmt.close();</span>
+<span class="nc" id="L53">			} catch (Exception e) {</span>
+<span class="nc" id="L54">				e.printStackTrace();</span>
+			}
+<span class="nc" id="L56">		}</span>
+<span class="nc" id="L57">		return false;</span>
+	}
+	
+	//updates the picture in database with the latest version every time user closes the whiteboard.
+	public void updateWhiteboard(){
+<span class="nc" id="L62">		FileInputStream fis = null;</span>
+<span class="nc" id="L63">	    PreparedStatement stmt = null;</span>
+	    try {
+<span class="nc" id="L65">	      conn.setAutoCommit(false);</span>
+<span class="nc" id="L66">	      File file = new File(&quot;/res/whiteboardImg.png&quot;);</span>
+<span class="nc" id="L67">	      fis = new FileInputStream(file);</span>
+<span class="nc" id="L68">	      stmt = conn.prepareStatement(&quot;UPDATE 3Dpeli.Whiteboard SET PICTURE = ?&quot;+ &quot;WHERE NAME = ?&quot;);</span>
+<span class="nc" id="L69">	      stmt.setBinaryStream(1, fis, (int) file.length());</span>
+<span class="nc" id="L70">	      stmt.setString(2, &quot;Whiteboard&quot;);</span>
+<span class="nc" id="L71">	      stmt.executeUpdate();</span>
+<span class="nc" id="L72">	      conn.commit();</span>
+<span class="nc" id="L73">	    } catch(Exception e) {</span>
+<span class="nc" id="L74">	    	e.printStackTrace();</span>
+<span class="nc" id="L75">	    } finally {</span>
+	    	try {
+<span class="nc bnc" id="L77" title="All 6 branches missed.">				if (stmt != null)</span>
+<span class="nc" id="L78">					stmt.close();</span>
+<span class="nc bnc" id="L79" title="All 6 branches missed.">				if(fis != null){</span>
+<span class="nc" id="L80">					fis.close();</span>
+				}
+<span class="nc" id="L82">			} catch (Exception e) {</span>
+<span class="nc" id="L83">				e.printStackTrace();</span>
+			}
+<span class="nc" id="L85">	    }</span>
+<span class="nc" id="L86">	}</span>
+
+	
+	public void insertWhiteboard(){
+
+<span class="nc" id="L91">	    FileInputStream fis = null;</span>
+<span class="nc" id="L92">	    PreparedStatement stmt = null;</span>
+	    try {
+<span class="nc" id="L94">	      conn.setAutoCommit(false);</span>
+<span class="nc" id="L95">	      File file = new File(&quot;whiteboardImg.png&quot;);</span>
+<span class="nc" id="L96">	      fis = new FileInputStream(file);</span>
+<span class="nc" id="L97">	      stmt = conn.prepareStatement(&quot;INSERT INTO 3Dpeli.Whiteboard VALUES(?,?)&quot;);</span>
+<span class="nc" id="L98">	      stmt.setString(1, &quot;Whiteboard&quot;);</span>
+<span class="nc" id="L99">	      stmt.setBinaryStream(2, fis, (int) file.length());</span>
+<span class="nc" id="L100">	      stmt.executeUpdate();</span>
+<span class="nc" id="L101">	      conn.commit();</span>
+<span class="nc" id="L102">	    } catch(Exception e) {</span>
+<span class="nc" id="L103">	    	e.printStackTrace();</span>
+<span class="nc" id="L104">	    } finally {</span>
+	    	try {
+<span class="nc bnc" id="L106" title="All 6 branches missed.">				if (stmt != null)</span>
+<span class="nc" id="L107">					stmt.close();</span>
+<span class="nc bnc" id="L108" title="All 6 branches missed.">				if(fis != null){</span>
+<span class="nc" id="L109">					fis.close();</span>
+				}
+<span class="nc" id="L111">			} catch (Exception e) {</span>
+<span class="nc" id="L112">				e.printStackTrace();</span>
+			}
+<span class="nc" id="L114">	    }</span>
+<span class="nc" id="L115">	}</span>
+
+	protected void finalize() {
+		try {
+<span class="nc bnc" id="L119" title="All 2 branches missed.">			if (conn != null)</span>
+<span class="nc" id="L120">				conn.close();</span>
+<span class="nc" id="L121">		} catch (Exception e) {</span>
+<span class="nc" id="L122">			e.printStackTrace();</span>
+		}
+<span class="nc" id="L124">	}</span>
+
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

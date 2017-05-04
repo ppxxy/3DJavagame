@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Serverside.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">Networking</a> &gt; <span class="el_source">Serverside.java</span></div><h1>Serverside.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package Networking;
+
+/**
+ *
+ * @author Tomi
+ */
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.HashSet;
+
+/**
+ * A multithreaded chat room server.  When a client connects the
+ * server requests a screen name by sending the client the
+ * text &quot;SUBMITNAME&quot;, and keeps requesting a name until
+ * a unique one is received.  After a client submits a unique
+ * name, the server acknowledges with &quot;NAMEACCEPTED&quot;.  Then
+ * all messages from that client will be broadcast to all other
+ * clients that have submitted a unique screen name.  The
+ * broadcast messages are prefixed with &quot;MESSAGE &quot;.
+ *
+ * Because this is just a teaching example to illustrate a simple
+ * chat server, there are a few features that have been left out.
+ * Two are very useful and belong in production code:
+ *
+ *     1. The protocol should be enhanced so that the client can
+ *        send clean disconnect messages to the server.
+ *
+ *     2. The server should do some logging.
+ */
+<span class="nc" id="L39">public class Serverside {</span>
+
+    /**
+     * The port that the server listens on.
+     */
+    private static final int PORT = 9001;
+
+    /**
+     * The set of all names of clients in the chat room.  Maintained
+     * so that we can check that new clients are not registering name
+     * already in use.
+     */
+<span class="nc" id="L51">    private static HashSet&lt;String&gt; names = new HashSet&lt;String&gt;();</span>
+
+    /**
+     * The set of all the print writers for all the clients.  This
+     * set is kept so we can easily broadcast messages.
+     */
+<span class="nc" id="L57">    private static HashSet&lt;PrintWriter&gt; writers = new HashSet&lt;PrintWriter&gt;();</span>
+
+    /**
+     * The appplication main method, which just listens on a port and
+     * spawns handler threads.
+     */
+    public static void main(String[] args) throws Exception {
+<span class="nc" id="L64">        System.out.println(&quot;The chat server is running.&quot;);</span>
+<span class="nc" id="L65">        ServerSocket listener = new ServerSocket(PORT);</span>
+        try {
+<span class="nc" id="L67">            while (true) {</span>
+<span class="nc" id="L68">                new Handler(listener.accept()).start();</span>
+            }
+<span class="nc" id="L70">        } finally {</span>
+<span class="nc" id="L71">            listener.close();</span>
+<span class="nc" id="L72">        }</span>
+    }
+
+    /**
+     * A handler thread class.  Handlers are spawned from the listening
+     * loop and are responsible for a dealing with a single client
+     * and broadcasting its messages.
+     */
+    private static class Handler extends Thread {
+        private String name;
+        private Socket socket;
+        private BufferedReader in;
+        private PrintWriter out;
+
+        /**
+         * Constructs a handler thread, squirreling away the socket.
+         * All the interesting work is done in the run method.
+         */
+<span class="nc" id="L90">        public Handler(Socket socket) {</span>
+<span class="nc" id="L91">            this.socket = socket;</span>
+<span class="nc" id="L92">        }</span>
+
+        /**
+         * Services this thread's client by repeatedly requesting a
+         * screen name until a unique one has been submitted, then
+         * acknowledges the name and registers the output stream for
+         * the client in a global set, then repeatedly gets inputs and
+         * broadcasts them.
+         */
+        public void run() {
+            try {
+
+                // Create character streams for the socket.
+<span class="nc" id="L105">                in = new BufferedReader(new InputStreamReader(</span>
+<span class="nc" id="L106">                    socket.getInputStream()));</span>
+<span class="nc" id="L107">                out = new PrintWriter(socket.getOutputStream(), true);</span>
+
+                // Request a name from this client.  Keep requesting until
+                // a name is submitted that is not already used.  Note that
+                // checking for the existence of a name and adding the name
+                // must be done while locking the set of names.
+                while (true) {
+<span class="nc" id="L114">                    out.println(&quot;SUBMITNAME&quot;);</span>
+<span class="nc" id="L115">                    name = in.readLine();</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">                    if (name == null) {</span>
+<span class="nc" id="L117">                        return;</span>
+                    }
+<span class="nc" id="L119">                    synchronized (names) {</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">                        if (!names.contains(name)) {</span>
+<span class="nc" id="L121">                            names.add(name);</span>
+<span class="nc" id="L122">                            break;</span>
+                        }
+                    }
+                }
+
+                // Now that a successful name has been chosen, add the
+                // socket's print writer to the set of all writers so
+                // this client can receive broadcast messages.
+<span class="nc" id="L130">                out.println(&quot;NAMEACCEPTED&quot;);</span>
+<span class="nc" id="L131">                writers.add(out);</span>
+
+                // Accept messages from this client and broadcast them.
+                // Ignore other clients that cannot be broadcasted to.
+<span class="nc" id="L135">                while (true) {</span>
+<span class="nc" id="L136">                    String input = in.readLine();</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">                    if (input == null) {</span>
+<span class="nc" id="L138">                        return;</span>
+                    }
+<span class="nc bnc" id="L140" title="All 2 branches missed.">                    for (PrintWriter writer : writers) {</span>
+<span class="nc" id="L141">                        writer.println(&quot;MESSAGE &quot; + name + &quot;: &quot; + input);</span>
+                    }
+                }
+<span class="nc" id="L144">            } catch (IOException e) {</span>
+<span class="nc" id="L145">                System.out.println(e);</span>
+<span class="nc" id="L146">            } finally {</span>
+                // This client is going down!  Remove its name and its print
+                // writer from the sets, and close its socket.
+<span class="nc bnc" id="L149" title="All 8 branches missed.">                if (name != null) {</span>
+<span class="nc" id="L150">                    names.remove(name);</span>
+                }
+<span class="nc bnc" id="L152" title="All 8 branches missed.">                if (out != null) {</span>
+<span class="nc" id="L153">                    writers.remove(out);</span>
+                }
+                try {
+<span class="nc" id="L156">                    socket.close();</span>
+<span class="nc" id="L157">                } catch (IOException e) {</span>
+                }
+<span class="nc" id="L159">            }</span>
+<span class="nc" id="L160">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

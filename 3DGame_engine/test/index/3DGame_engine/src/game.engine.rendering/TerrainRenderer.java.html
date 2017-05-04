@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>TerrainRenderer.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.rendering</a> &gt; <span class="el_source">TerrainRenderer.java</span></div><h1>TerrainRenderer.java</h1><pre class="source lang-java linenums">package game.engine.rendering;
+
+import org.lwjgl.opengl.GL11;
+
+import game.engine.camera.Camera;
+import game.engine.shader.ShaderProgram;
+import game.engine.shader.UniformMatrix;
+import game.engine.terrain.TerrainModel;
+import game.engine.tools.OpenGlUtils;
+
+/**
+ * TerrainRenderer is used to render the terrain.
+ * @author Kim
+ *
+ */
+public class TerrainRenderer extends Renderer{
+
+	/**
+	 * Terrain renderer is a renderer used for terrain rendering.
+	 */
+<span class="nc" id="L21">	public TerrainRenderer(){</span>
+<span class="nc" id="L22">		System.out.println(&quot;Starting shader&quot;);</span>
+<span class="nc" id="L23">		this.shader = new TerrainShader();</span>
+<span class="nc" id="L24">		System.out.println(&quot;Shader started&quot;);</span>
+<span class="nc" id="L25">	}</span>
+
+	/**
+	 * Renders terrain using camera's view matrix, binds terrain's vertex data, draws polygons and unbinds the VAO.
+	 * @param terrain Terrain to be rendered.
+	 * @param camera Camera whose projectionViewMatrix will be used on rendering.
+	 */
+	public void render(TerrainModel terrain, Camera camera) {
+<span class="nc" id="L33">		prepare(camera);</span>
+<span class="nc" id="L34">		terrain.getTexture().bindToUnit(0);</span>
+<span class="nc" id="L35">		terrain.getModel().bind(0, 1);</span>
+<span class="nc" id="L36">		GL11.glDrawElements(GL11.GL_TRIANGLES, terrain.getModel().getIndexCount(), GL11.GL_UNSIGNED_INT, 0);</span>
+<span class="nc" id="L37">		terrain.getModel().unbind(0, 1);</span>
+<span class="nc" id="L38">		finish();</span>
+<span class="nc" id="L39">	}</span>
+
+	public void cleanUp(){
+<span class="nc" id="L42">		shader.cleanUp();</span>
+<span class="nc" id="L43">	}</span>
+
+	/**
+	 * Sets shader variables ready for rendering.
+	 * @param camera Camera whose projectionViewMatrix will be used for rendering.
+	 */
+	private void prepare(Camera camera){
+<span class="nc" id="L50">		TerrainShader shader = (TerrainShader) this.shader;</span>
+<span class="nc" id="L51">		shader.start();</span>
+<span class="nc" id="L52">		shader.projectionViewMatrix.loadMatrix(camera.getProjectionViewMatrix());</span>
+<span class="nc" id="L53">		OpenGlUtils.antialias(true);</span>
+<span class="nc" id="L54">		OpenGlUtils.disableBlending();</span>
+<span class="nc" id="L55">		OpenGlUtils.enableDepthTesting(true);</span>
+<span class="nc" id="L56">	}</span>
+
+	/**
+	 * TerrainShader is used to set shader variables.
+	 * @author Kim
+	 *
+	 */
+	private class TerrainShader extends ShaderProgram{
+
+		/**
+		 * Path to terrain vertex shader file.
+		 */
+		private static final String VERTEX_SHADER = &quot;/game/engine/shader/vertexShader.txt&quot;;
+		/**
+		 * Path to terrain fragment shader file.
+		 */
+		private static final String FRAGMENT_SHADER = &quot;/game/engine/shader/fragmentShader.txt&quot;;
+
+		/**
+		 * ProjectionViewMatrix that is passed to vertex shader.
+		 */
+<span class="nc" id="L77">		protected UniformMatrix projectionViewMatrix = new UniformMatrix(&quot;projectionViewMatrix&quot;);</span>
+
+		/**
+		 * Creates connections to shaders.
+		 */
+<span class="nc" id="L82">		public TerrainShader() {</span>
+<span class="nc" id="L83">			super(VERTEX_SHADER, FRAGMENT_SHADER, &quot;position&quot;, &quot;textureCoords&quot;);</span>
+<span class="nc" id="L84">			super.storeUniformLocations(projectionViewMatrix);</span>
+<span class="nc" id="L85">		}</span>
+
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

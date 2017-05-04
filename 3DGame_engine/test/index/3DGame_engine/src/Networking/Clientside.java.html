@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Clientside.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">Networking</a> &gt; <span class="el_source">Clientside.java</span></div><h1>Clientside.java</h1><pre class="source lang-java linenums"><span class="nc" id="L1">/*</span>
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package Networking;
+
+/**
+ *
+ * @author Tomi
+ */
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+/**
+ * A simple Swing-based client for the chat server.  Graphically
+ * it is a frame with a text field for entering messages and a
+ * textarea to see the whole dialog.
+ *
+ * The client follows the Chat Protocol which is as follows.
+ * When the server sends &quot;SUBMITNAME&quot; the client replies with the
+ * desired screen name.  The server will keep sending &quot;SUBMITNAME&quot;
+ * requests as long as the client submits screen names that are
+ * already in use.  When the server sends a line beginning
+ * with &quot;NAMEACCEPTED&quot; the client is now allowed to start
+ * sending the server arbitrary strings to be broadcast to all
+ * chatters connected to the server.  When the server sends a
+ * line beginning with &quot;MESSAGE &quot; then all characters following
+ * this string should be displayed in its message area.
+ */
+public class Clientside {
+    private String serverIP;
+    private String username;
+    BufferedReader in;
+    PrintWriter out;
+<span class="nc" id="L49">    JFrame frame = new JFrame(&quot;Chatter&quot;);</span>
+<span class="nc" id="L50">    JTextField textField = new JTextField(40);</span>
+<span class="nc" id="L51">    JTextArea messageArea = new JTextArea(8, 40);</span>
+
+    /**
+     * Constructs the client by laying out the GUI and registering a
+     * listener with the textfield so that pressing Return in the
+     * listener sends the textfield contents to the server.  Note
+     * however that the textfield is initially NOT editable, and
+     * only becomes editable AFTER the client receives the NAMEACCEPTED
+     * message from the server.
+     */
+<span class="nc" id="L61">    public Clientside(String username) {</span>
+
+        // Layout GUI
+<span class="nc" id="L64">        textField.setEditable(false);</span>
+<span class="nc" id="L65">        messageArea.setEditable(false);</span>
+<span class="nc" id="L66">        frame.getContentPane().add(textField, &quot;North&quot;);</span>
+<span class="nc" id="L67">        frame.getContentPane().add(new JScrollPane(messageArea), &quot;Center&quot;);</span>
+<span class="nc" id="L68">        frame.pack();</span>
+<span class="nc" id="L69">        this.username = username;</span>
+<span class="nc" id="L70">        this.serverIP = &quot;localhost&quot;;</span>
+        try {
+<span class="nc" id="L72">            run();</span>
+<span class="nc" id="L73">        } catch (IOException ex) {</span>
+<span class="nc" id="L74">            Logger.getLogger(Clientside.class.getName()).log(Level.SEVERE, null, ex);</span>
+        }
+
+        // Add Listeners
+<span class="nc" id="L78">        textField.addActionListener(new ActionListener() {</span>
+            /**
+             * Responds to pressing the enter key in the textfield by sending
+             * the contents of the text field to the server.    Then clear
+             * the text area in preparation for the next message.
+             */
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L85">                out.println(textField.getText());</span>
+<span class="nc" id="L86">                textField.setText(&quot;&quot;);</span>
+<span class="nc" id="L87">            }</span>
+        });
+<span class="nc" id="L89">    }</span>
+
+    /**
+     * Prompt for and return the address of the server.
+     */
+    private String getServerAddress() {
+<span class="nc" id="L95">        return this.serverIP;</span>
+    }
+
+    /**
+     * Prompt for and return the desired screen name.
+     */
+    private String getName() {
+<span class="nc" id="L102">        return this.username;</span>
+    }
+
+    /**
+     * Connects to the server then enters the processing loop.
+     */
+    private void run() throws IOException {
+
+        // Make connection and initialize streams
+        //String serverAddress = getServerAddress();
+<span class="nc" id="L112">        Socket socket = new Socket(this.serverIP, 9001);</span>
+<span class="nc" id="L113">        in = new BufferedReader(new InputStreamReader(</span>
+<span class="nc" id="L114">            socket.getInputStream()));</span>
+<span class="nc" id="L115">        out = new PrintWriter(socket.getOutputStream(), true);</span>
+
+        // Process all messages from server, according to the protocol.
+<span class="nc" id="L118">        out.println(this.username);</span>
+<span class="nc" id="L119">    }</span>
+
+    /**
+     * Runs the client as an application with a closeable frame.
+     */
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

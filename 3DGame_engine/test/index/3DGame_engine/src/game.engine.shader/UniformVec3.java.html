@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>UniformVec3.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.shader</a> &gt; <span class="el_source">UniformVec3.java</span></div><h1>UniformVec3.java</h1><pre class="source lang-java linenums">package game.engine.shader;
+
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.util.vector.Vector3f;
+
+public class UniformVec3 extends Uniform {
+	private float currentX;
+	private float currentY;
+	private float currentZ;
+<span class="nc" id="L10">	private boolean used = false;</span>
+
+	public UniformVec3(String name) {
+<span class="nc" id="L13">		super(name);</span>
+<span class="nc" id="L14">	}</span>
+
+	public void loadVec3(Vector3f vector) {
+<span class="nc" id="L17">		loadVec3(vector.x, vector.y, vector.z);</span>
+<span class="nc" id="L18">	}</span>
+
+	public void loadVec3(float x, float y, float z) {
+<span class="nc bnc" id="L21" title="All 8 branches missed.">		if (!used || x != currentX || y != currentY || z != currentZ) {</span>
+<span class="nc" id="L22">			this.currentX = x;</span>
+<span class="nc" id="L23">			this.currentY = y;</span>
+<span class="nc" id="L24">			this.currentZ = z;</span>
+<span class="nc" id="L25">			used = true;</span>
+<span class="nc" id="L26">			GL20.glUniform3f(super.getLocation(), x, y, z);</span>
+		}
+<span class="nc" id="L28">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

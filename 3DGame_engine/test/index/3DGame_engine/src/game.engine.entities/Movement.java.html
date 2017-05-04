@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Movement.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.entities</a> &gt; <span class="el_source">Movement.java</span></div><h1>Movement.java</h1><pre class="source lang-java linenums">package game.engine.entities;
+
+import org.lwjgl.util.vector.Vector2f;
+
+public class Movement {
+
+<span class="nc" id="L7">	private int pos_index = 0;</span>
+
+	private Vector2f current;
+	private Vector2f[] path;
+	private float speed;
+
+	private float rotation;
+
+	private long previousFrame;
+
+<span class="nc" id="L17">	public Movement(long time, Vector2f source, Vector2f target, float speed){</span>
+<span class="nc" id="L18">		this.previousFrame = time;</span>
+<span class="nc" id="L19">		this.current = source;</span>
+<span class="nc" id="L20">		this.path = new Vector2f[]{target};</span>
+<span class="nc" id="L21">		this.speed = speed;</span>
+<span class="nc" id="L22">	}</span>
+
+<span class="nc" id="L24">	public Movement(long time, Vector2f source, Vector2f[] path, float speed){</span>
+<span class="nc" id="L25">		this.previousFrame = time;</span>
+<span class="nc" id="L26">		this.current = source;</span>
+<span class="nc" id="L27">		this.path = path;</span>
+<span class="nc" id="L28">		this.speed = speed;</span>
+<span class="nc" id="L29">	}</span>
+
+	public Vector2f update(){
+<span class="nc bnc" id="L32" title="All 2 branches missed.">		if(pos_index &gt;= path.length){</span>
+<span class="nc" id="L33">			return null;</span>
+		}
+<span class="nc" id="L35">		Vector2f destination = path[pos_index];</span>
+<span class="nc" id="L36">		Vector2f dir_vector = new Vector2f(destination.x-current.x, destination.y-current.y);</span>
+<span class="nc" id="L37">		float dist = dir_vector.length();</span>
+<span class="nc" id="L38">		dir_vector.normalise();</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">		rotation = (float) (Math.toDegrees((dir_vector.y &lt; 0 ? -135 : 0)+Math.atan(dir_vector.x/dir_vector.y)));</span>
+		//entity.setRotY((float) (Math.toDegrees((dir_vector.z &lt; 0 ? -135 : 0)+Math.atan(dir_vector.x/dir_vector.z))));
+<span class="nc" id="L41">		long currentTime = System.currentTimeMillis();</span>
+<span class="nc" id="L42">		float distance = speed*(currentTime-previousFrame)/100f;</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">		if(dist &lt; distance){</span>
+<span class="nc" id="L44">			current = destination;</span>
+<span class="nc" id="L45">			pos_index++;</span>
+<span class="nc" id="L46">		}</span>
+		else{
+<span class="nc" id="L48">			current.translate(dir_vector.x*distance, dir_vector.y*distance);</span>
+		}
+<span class="nc" id="L50">		previousFrame = currentTime;</span>
+		//source.setY(getHeight(source.x, source.z));
+<span class="nc" id="L52">		return current;</span>
+	}
+
+	public float getRotation(){
+<span class="nc" id="L56">		return this.rotation;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

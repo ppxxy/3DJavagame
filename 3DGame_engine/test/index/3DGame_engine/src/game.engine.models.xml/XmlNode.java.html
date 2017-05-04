@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>XmlNode.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.models.xml</a> &gt; <span class="el_source">XmlNode.java</span></div><h1>XmlNode.java</h1><pre class="source lang-java linenums">package game.engine.models.xml;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Represents a node in an XML file. This contains the name of the node, a map
+ * of the attributes and their values, any text data between the start and end
+ * tag, and a list of all its children nodes.
+ * 
+ * @author Karl
+ *
+ */
+public class XmlNode {
+
+	private String name, data;
+	private Map&lt;String, String&gt; attributes;
+	private Map&lt;String, List&lt;XmlNode&gt;&gt; childNodes;
+
+<span class="nc" id="L21">	protected XmlNode(String name) {</span>
+<span class="nc" id="L22">		this.name = name;</span>
+<span class="nc" id="L23">	}</span>
+
+	/**
+	 * @return The name of the XML node.
+	 */
+	public String getName() {
+<span class="nc" id="L29">		return name;</span>
+	}
+
+	/**
+	 * @return Any text data contained between the start and end tag of the
+	 *         node.
+	 */
+	public String getData() {
+<span class="nc" id="L37">		return data;</span>
+	}
+
+	/**
+	 * Gets the value of a certain attribute of the node. Returns {@code null}
+	 * if the attribute doesn't exist.
+	 * 
+	 * @param attr
+	 *            - attribute name.
+	 * @return The value of the attribute.
+	 */
+	public String getAttribute(String attr) {
+<span class="nc bnc" id="L49" title="All 2 branches missed.">		if (attributes != null) {</span>
+<span class="nc" id="L50">			return attributes.get(attr);</span>
+		} else {
+<span class="nc" id="L52">			return null;</span>
+		}
+	}
+
+	/**
+	 * Gets a certain child node of this node.
+	 * 
+	 * @param childName
+	 *            - the name of the child node.
+	 * @return The child XML node with the given name.
+	 */
+	public XmlNode getChild(String childName) {
+<span class="nc bnc" id="L64" title="All 2 branches missed.">		if (childNodes != null) {</span>
+<span class="nc" id="L65">			List&lt;XmlNode&gt; nodes = childNodes.get(childName);</span>
+<span class="nc bnc" id="L66" title="All 4 branches missed.">			if (nodes != null &amp;&amp; !nodes.isEmpty()) {</span>
+<span class="nc" id="L67">				return nodes.get(0);</span>
+			}
+		}
+<span class="nc" id="L70">		return null;</span>
+
+	}
+
+	/**
+	 * Gets a child node with a certain name, and with a given value of a given
+	 * attribute. Used to get a specific child when there are multiple child
+	 * nodes with the same node name.
+	 * 
+	 * @param childName
+	 *            - the name of the child node.
+	 * @param attr
+	 *            - the attribute whose value is to be checked.
+	 * @param value
+	 *            - the value that the attribute must have.
+	 * @return The child node which has the correct name and the correct value
+	 *         for the chosen attribute.
+	 */
+	public XmlNode getChildWithAttribute(String childName, String attr, String value) {
+<span class="nc" id="L89">		List&lt;XmlNode&gt; children = getChildren(childName);</span>
+<span class="nc bnc" id="L90" title="All 4 branches missed.">		if (children == null || children.isEmpty()) {</span>
+<span class="nc" id="L91">			return null;</span>
+		}
+<span class="nc bnc" id="L93" title="All 2 branches missed.">		for (XmlNode child : children) {</span>
+<span class="nc" id="L94">			String val = child.getAttribute(attr);</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">			if (value.equals(val)) {</span>
+<span class="nc" id="L96">				return child;</span>
+			}
+		}
+<span class="nc" id="L99">		return null;</span>
+	}
+
+	/**
+	 * Get the child nodes of this node that have a given name.
+	 * 
+	 * @param name
+	 *            - the name of the child nodes.
+	 * @return A list of the child nodes with the given name. If none exist then
+	 *         an empty list is returned.
+	 */
+	public List&lt;XmlNode&gt; getChildren(String name) {
+<span class="nc bnc" id="L111" title="All 2 branches missed.">		if (childNodes != null) {</span>
+<span class="nc" id="L112">			List&lt;XmlNode&gt; children = childNodes.get(name);</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">			if (children != null) {</span>
+<span class="nc" id="L114">				return children;</span>
+			}
+		}
+<span class="nc" id="L117">		return new ArrayList&lt;XmlNode&gt;();</span>
+	}
+
+	/**
+	 * Adds a new attribute to this node. An attribute has a name and a value.
+	 * Attributes are stored in a HashMap which is initialized in here if it was
+	 * previously null.
+	 * 
+	 * @param attr
+	 *            - the name of the attribute.
+	 * @param value
+	 *            - the value of the attribute.
+	 */
+	protected void addAttribute(String attr, String value) {
+<span class="nc bnc" id="L131" title="All 2 branches missed.">		if (attributes == null) {</span>
+<span class="nc" id="L132">			attributes = new HashMap&lt;String, String&gt;();</span>
+		}
+<span class="nc" id="L134">		attributes.put(attr, value);</span>
+<span class="nc" id="L135">	}</span>
+
+	/**
+	 * Adds a child node to this node.
+	 * 
+	 * @param child
+	 *            - the child node to add.
+	 */
+	protected void addChild(XmlNode child) {
+<span class="nc bnc" id="L144" title="All 2 branches missed.">		if (childNodes == null) {</span>
+<span class="nc" id="L145">			childNodes = new HashMap&lt;String, List&lt;XmlNode&gt;&gt;();</span>
+		}
+<span class="nc" id="L147">		List&lt;XmlNode&gt; list = childNodes.get(child.name);</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">		if (list == null) {</span>
+<span class="nc" id="L149">			list = new ArrayList&lt;XmlNode&gt;();</span>
+<span class="nc" id="L150">			childNodes.put(child.name, list);</span>
+		}
+<span class="nc" id="L152">		list.add(child);</span>
+<span class="nc" id="L153">	}</span>
+
+	/**
+	 * Sets some data for this node.
+	 * 
+	 * @param data
+	 *            - the data for this node (text that is found between the start
+	 *            and end tags of this node).
+	 */
+	protected void setData(String data) {
+<span class="nc" id="L163">		this.data = data;</span>
+<span class="nc" id="L164">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>InventoryInterface.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.interfaces</a> &gt; <span class="el_source">InventoryInterface.java</span></div><h1>InventoryInterface.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package game.engine.interfaces;
+
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
+
+import game.engine.textures.Texture;
+
+/**
+ *
+ * @author Tomi
+ */
+public class InventoryInterface extends Interface implements ActiveInterface{
+
+	public InventoryInterface(Texture texture, Vector2f position, Vector2f size) {
+<span class="nc" id="L20">		super(texture, position, size);</span>
+<span class="nc" id="L21">	}</span>
+
+	@Override
+	public boolean MouseAction(float x, float y) {
+<span class="nc" id="L25">		Matrix4f matrix = this.getMatrix();</span>
+<span class="nc" id="L26">		float left = matrix.m30 - matrix.m00;</span>
+<span class="nc" id="L27">		float right = matrix.m30 + matrix.m00;</span>
+<span class="nc" id="L28">		float top = matrix.m31 - matrix.m11;</span>
+<span class="nc" id="L29">		float bottom = matrix.m31 + matrix.m11;</span>
+<span class="nc" id="L30">		System.out.println(&quot;X: &quot; +left +&quot; &lt; &quot; +x + &quot; &lt; &quot; +right +&quot;, Y:&quot; +top + &quot; &lt; &quot; +y + &quot; &lt; &quot; +bottom);</span>
+<span class="nc bnc" id="L31" title="All 8 branches missed.">		if(x &gt; left &amp;&amp; x &lt; right &amp;&amp; y &gt; top &amp;&amp; y &lt; bottom){</span>
+<span class="nc" id="L32">			System.out.println(&quot;Pressed on interface.&quot;);</span>
+<span class="nc" id="L33">			return true;</span>
+		}
+<span class="nc" id="L35">		return false;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>
