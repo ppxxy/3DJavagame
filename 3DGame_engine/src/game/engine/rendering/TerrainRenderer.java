@@ -65,11 +65,11 @@ public class TerrainRenderer extends Renderer{
 		/**
 		 * Path to terrain vertex shader file.
 		 */
-		private static final String VERTEX_SHADER = "/game/engine/shader/vertexShader.txt";
+		private static final String VERTEX_SHADER = "/game/engine/shader/terrainVertexShader.glsl";
 		/**
 		 * Path to terrain fragment shader file.
 		 */
-		private static final String FRAGMENT_SHADER = "/game/engine/shader/fragmentShader.txt";
+		private static final String FRAGMENT_SHADER = "/game/engine/shader/terrainFragmentShader.glsl";
 
 		/**
 		 * ProjectionViewMatrix that is passed to vertex shader.

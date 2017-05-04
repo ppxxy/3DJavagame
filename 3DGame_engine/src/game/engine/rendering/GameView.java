@@ -3,14 +3,15 @@ package game.engine.rendering;
 import game.connection.objects.MovementDestination;
 import game.engine.camera.ActiveCamera;
 import game.engine.camera.Camera;
-import game.engine.characters.Update;
 import game.engine.entities.AnimatedEntity;
 import game.engine.entities.Entity;
+import game.engine.entities.ObjectActivityHandler;
 import game.engine.interfaces.ActiveInterface;
 import game.engine.interfaces.Interface;
 import game.engine.main.Main;
 import game.engine.main.View;
 import game.engine.physics.MousePicker;
+import game.engine.physics.ObjectBuffer;
 import game.engine.physics.ViewDepthBuffer;
 import game.engine.terrain.Terrain;
 import game.engine.terrain.TerrainModel;
@@ -34,9 +35,11 @@ public class GameView extends View{
 	private final List<AnimatedEntity> animatedEntities = new ArrayList<AnimatedEntity>();
 
 	ViewDepthBuffer depthBuffer;
+	ObjectBuffer objectBuffer;
 
 	public GameView(){
 		this.depthBuffer = new ViewDepthBuffer();
+		this.objectBuffer = new ObjectBuffer();
 		Terrain terrain = new Terrain(0, 0);
 		terrain.loadChunks();
 		this.camera = new Camera(new Vector3f(320, 200, 320));
@@ -46,6 +49,7 @@ public class GameView extends View{
 
 	public GameView(Camera camera) {
 		this.depthBuffer = new ViewDepthBuffer();
+		this.objectBuffer = new ObjectBuffer();
 		Terrain terrain = new Terrain(0, 0);
 		terrain.loadChunks();
 		this.camera = camera;
@@ -152,12 +156,25 @@ public class GameView extends View{
 			if(checkInterfacePress(mouseRelativeX, mouseRelativeY)){
 				return;
 			}
+
+			int id = objectIdAt(Mouse.getX(), Mouse.getY());
+			System.out.println("Clicked object: " +id);
+			if(ObjectActivityHandler.doActivity(id)){
+				//System.out.println("Clicked object: " +id);
+				return;
+			}
+			//System.out.println("Clicked object: " +id);
+
 			float distance = distanceAt(Mouse.getX(), Mouse.getY());
 			if(distance < Camera.FAR_PLANE){
 				Vector2f location = mousePicker.update(distance);
 				Main.connection.send(new MovementDestination.MovementTo(location));
 			}
 		}
+	}
+
+	private int objectIdAt(int x, int y) {
+		return objectBuffer.getId(x, y);
 	}
 
 	@Override
@@ -189,5 +206,9 @@ public class GameView extends View{
 				((AnimatedEntity) e).update();
 			}
 		}
+	}
+
+	public List<Entity> getEntities() {
+		return this.entities;
 	}
 }

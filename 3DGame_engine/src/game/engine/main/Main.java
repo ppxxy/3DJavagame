@@ -1,10 +1,9 @@
 package game.engine.main;
 
 import java.io.File;
-import java.io.IOException;
-
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
 
 import Localization.Localization;
 import Networking.Chat;
@@ -13,18 +12,19 @@ import game.engine.camera.Camera;
 import game.engine.camera.TargetCamera;
 import game.engine.characters.PlayerFactory;
 import game.engine.connection.Connection;
-import game.engine.interfaces.ChatBox;
+import game.engine.entities.ObjectActivity;
+import game.engine.entities.ObjectActivityHandler;
+import game.engine.entities.ObjectEntity;
 import game.engine.interfaces.ChatControls;
 import game.engine.interfaces.Interface;
-import game.engine.interfaces.Inventory;
-import game.engine.interfaces.InventoryInterface;
 import game.engine.interfaces.Whiteboard;
+import game.engine.models.TexturedModel;
+import game.engine.models.obj.OBJLoader;
 import game.engine.rendering.DisplayManager;
 import game.engine.rendering.GameView;
 import game.engine.rendering.RenderEngine;
 import game.engine.textures.Texture;
 import game.engine.view.InterfaceView;
-import javafx.stage.Stage;
 
 public class Main {
 
@@ -33,10 +33,6 @@ public class Main {
 	public static View activeView;
 
 	public static Chat chat;
-
-	public Main(){
-
-	}
 
 	public static void main(String[] args) {
 
@@ -74,6 +70,21 @@ public class Main {
 
 		GameView view = new GameView(camera);
 		view.addEntity(player);
+
+		TexturedModel taulu_model = new TexturedModel(new OBJLoader("/res/whiteboard.obj").loadModel(), Texture.loadTexture("/res/taulu.png").load());
+		ObjectEntity taulu = new ObjectEntity(taulu_model, new Vector3f(0, 15, -3), 0, 0, 0, 1);
+		ObjectActivityHandler.addActivity(taulu_model.getId(), new ObjectActivity(){
+
+			@Override
+			public boolean activate() {
+				System.out.println("Clicked on taulu.");
+				return true;
+			}
+
+		});
+
+		view.addEntity(taulu);
+
 		activeView = view;
 
 		connection.send(RequestData.REQUEST_PLAYERS);

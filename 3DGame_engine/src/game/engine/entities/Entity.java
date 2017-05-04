@@ -3,8 +3,6 @@ package game.engine.entities;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
-import game.engine.models.TexturedModel;
-
 public abstract class Entity {
 
 	protected Vector3f position;

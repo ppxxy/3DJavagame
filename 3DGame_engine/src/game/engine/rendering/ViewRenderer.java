@@ -1,8 +1,9 @@
 package game.engine.rendering;
 
 import game.engine.entities.AnimatedEntity;
+import game.engine.entities.Entity;
+import game.engine.entities.ObjectEntity;
 import game.engine.main.View;
-import game.engine.models.AnimatedModel;
 import game.engine.view.InterfaceView;
 
 import org.lwjgl.opengl.Display;
@@ -10,11 +11,15 @@ import org.lwjgl.opengl.GL11;
 
 public class ViewRenderer {
 
+	private ObjectRenderer objectRenderer;
+	private ObjectIDRenderer objectIDRenderer;
 	private AnimatedModelRenderer animatedModelRenderer;
 	private TerrainRenderer terrainRenderer;
 	private InterfaceRenderer interfaceRenderer;
 
 	protected ViewRenderer(){
+		objectRenderer = new ObjectRenderer();
+		objectIDRenderer = new ObjectIDRenderer();
 		animatedModelRenderer = new AnimatedModelRenderer();
 		terrainRenderer = new TerrainRenderer();
 		interfaceRenderer = new InterfaceRenderer();
@@ -25,14 +30,24 @@ public class ViewRenderer {
 		if(view instanceof GameView){
 			GameView game = (GameView) view;
 			terrainRenderer.render(game.getTerrain(), game.getCamera());
-			for(AnimatedEntity e : game.getAnimatedEntities()){
-				animatedModelRenderer.render(e, game.getCamera(), game.getLightDirection());
+			for(Entity e : game.getEntities()){
+				if(e instanceof AnimatedEntity){
+					animatedModelRenderer.render((AnimatedEntity)e, game.getCamera(), game.getLightDirection());
+				}
+				else{
+					objectRenderer.render((ObjectEntity)e, game.getCamera());
+				}
 			}
 			interfaceRenderer.render(game.getInterfaces(), game.getCamera());
-			//After normal rendering, render depth buffer.
+			//After normal rendering, render object buffer.
+			game.objectBuffer.bind(Display.getWidth(), Display.getHeight());
+			renderObjects(game);
+			game.objectBuffer.unbind();
+			//and after that render depth buffer.
 			game.depthBuffer.bind(Display.getWidth(), Display.getHeight());
 			renderDepth(game);
 			game.depthBuffer.unbind();
+			//and then use the mouse picker
 			game.useMousePicker();
 		}
 		else if(view instanceof InterfaceView){
@@ -49,7 +64,18 @@ public class ViewRenderer {
 		}*/
 	}
 
+	public void renderObjects(GameView view){
+		prepare();
+		for(Entity e : view.getEntities()){
+			if(e instanceof ObjectEntity){
+				objectIDRenderer.render((ObjectEntity) e, view.getCamera());
+			}
+		}
+	}
+
 	public void cleanUp(){
+		objectRenderer.cleanUp();
+		objectIDRenderer.cleanUp();
 		animatedModelRenderer.cleanUp();
 		terrainRenderer.cleanUp();
 		interfaceRenderer.cleanUp();

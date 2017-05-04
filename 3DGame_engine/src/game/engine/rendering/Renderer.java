@@ -1,19 +1,8 @@
 package game.engine.rendering;
 
-import game.engine.entities.Entity;
-import game.engine.entities.StableEntity;
-import game.engine.models.RawModel;
-import game.engine.models.TexturedModel;
-import game.engine.shader.Shader;
 import game.engine.shader.ShaderProgram;
-import game.engine.shader.StaticShader;
-import game.engine.tools.Maths;
-
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 
 public abstract class Renderer {
