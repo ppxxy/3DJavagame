@@ -43,15 +43,9 @@ public class Main {
 		chat=new Chat();
 		Interface logging = new Interface(Texture.loadTexture("/res/logging.png").load(), new Vector2f(0f, 0f), new Vector2f(1f, 1f));
 		
-		System.out.println("3");
-		
 		activeView = new InterfaceView(logging);
-
-		System.out.println("4");
 		
 		connection = new Connection("127.0.0.1", 16304);
-		
-		System.out.println("5");
 
 		/*
 		 * Login screen here!!
