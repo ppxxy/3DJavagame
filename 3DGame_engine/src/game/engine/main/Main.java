@@ -26,7 +26,6 @@ import game.engine.rendering.RenderEngine;
 import game.engine.textures.Texture;
 import game.engine.view.InterfaceView;
 import game.minigames.FXHandler;
-import javafx.application.Platform;
 
 public class Main {
 

@@ -6,7 +6,7 @@ import javafx.stage.Stage;
 
 public class FXHandler {
 
-	private static final FXHandler handler = new FXHandler();
+	private static FXHandler handler;
 	
 	private boolean started;
 	
@@ -15,9 +15,16 @@ public class FXHandler {
 		this.started = false;
 	}
 	
+	public static FXHandler getInstance(){
+		if(handler == null){
+			handler = new FXHandler();
+		}
+		return handler;
+	}
+	
 	public static void runFX(Class<? extends Application> luokka){
-		if(!handler.started){
-			handler.started = true;
+		if(!getInstance().started){
+			getInstance().started = true;
 			Application.launch(luokka);
 		}
 		else{

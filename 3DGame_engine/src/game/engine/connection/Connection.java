@@ -20,7 +20,7 @@ public class Connection implements Runnable{
 	private ObjectInputStream input;
 	private ObjectOutputStream output;
 	
-	private List<WaiterObject> waiters = new ArrayList<WaiterObject>();
+	private List<WaiterObject<?>> waiters = new ArrayList<WaiterObject<?>>();
 
 	public Connection(String ip, int port){
 		try {
