@@ -24,5 +24,10 @@
 	<classpathentry kind="lib" path="src/lib/jars/jsr250-api-1.0.jar"/>
 	<classpathentry kind="lib" path="src/lib/jars/mysql-connector-java.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="src/lib/jars/commons-lang3-3.5-javadoc.jar"/>
+	<classpathentry kind="lib" path="src/lib/jars/commons-lang3-3.5-sources.jar"/>
+	<classpathentry kind="lib" path="src/lib/jars/commons-lang3-3.5-test-sources.jar"/>
+	<classpathentry kind="lib" path="src/lib/jars/commons-lang3-3.5-tests.jar"/>
+	<classpathentry kind="lib" path="src/lib/jars/commons-lang3-3.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

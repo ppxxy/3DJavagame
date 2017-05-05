@@ -18,11 +18,17 @@ public class ViewRenderer {
 	private InterfaceRenderer interfaceRenderer;
 
 	protected ViewRenderer(){
+		System.out.println("1");
 		objectRenderer = new ObjectRenderer();
+		System.out.println("2");
 		objectIDRenderer = new ObjectIDRenderer();
+		System.out.println("3");
 		animatedModelRenderer = new AnimatedModelRenderer();
+		System.out.println("4");
 		terrainRenderer = new TerrainRenderer();
+		System.out.println("5");
 		interfaceRenderer = new InterfaceRenderer();
+		System.out.println("6");
 	}
 
 	public void renderView(View view){

@@ -10,6 +10,7 @@ public class RenderEngine extends ViewRenderer{
 	}
 
 	public static RenderEngine init(){
+		
 		DisplayManager.createDisplay();
 
 		return new RenderEngine();

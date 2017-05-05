@@ -14,7 +14,9 @@ import game.engine.tools.OpenGlUtils;
 public class ObjectRenderer extends Renderer{
 
 	public ObjectRenderer(){
+		System.out.println("1.1");
 		this.shader = new ObjectShader();
+		System.out.println("1.2");
 	}
 
 	public void render(ObjectEntity e, Camera camera){

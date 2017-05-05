@@ -1,7 +1,6 @@
 #version 400 core
 
 in vec2 pass_textureCoordinates;
-in int pass_objectId;
 
 out vec4 out_Color;
 
