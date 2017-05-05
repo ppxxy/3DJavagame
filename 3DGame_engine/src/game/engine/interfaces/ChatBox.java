@@ -99,9 +99,6 @@ public class ChatBox extends Interface {
     	    	cursorpos++;
     		}
     	}else{
-    	if(cursorpos==1){
-    		//System.out.println(metrics.stringWidth(string));
-    	}
     	g.drawString(string ,0 ,chatbox.getHeight()-metrics.getHeight()*cursorpos+scrollpos*metrics.getHeight());
     	cursorpos++;
     	g.dispose();

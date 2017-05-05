@@ -26,7 +26,6 @@ public class ChatControls extends Thread{
 		while(running){
 	while(Keyboard.next()) {
 		checkActive();
-		System.out.println("a");
 		if(active){
 		if(Keyboard.getEventKeyState()){
 			keys[Keyboard.getEventKey()]=true;
@@ -37,7 +36,6 @@ public class ChatControls extends Thread{
 				}else if(keys[Keyboard.KEY_DOWN]){
 					chatbox.scrollDown();
 				}else{
-					System.out.println("a");
 					msgbox.drawChar(Keyboard.getEventCharacter());
 				}
 		}else {
