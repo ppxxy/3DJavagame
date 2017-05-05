@@ -4,6 +4,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
+import org.lwjgl.util.vector.Vector3f;
+
 import game.engine.models.VAO;
 import game.engine.textures.Texture;
 
@@ -66,6 +68,7 @@ public class Terrain{
 	public TerrainModel loadModel(){
 		int w = (CHUNKS_WIDTH*ChunkData.WIDTH-CHUNKS_WIDTH+1), h = (CHUNKS_HEIGHT*ChunkData.HEIGHT-CHUNKS_HEIGHT+1);
 		float[] vertices = new float[3*w*h];
+		float[] normals = new float[3*w*h];
 		float[][] heightMap = new float[w][h];
 		float[] textureCoords = new float[2*w*h];
 		int[] indices = new int[CHUNKS_WIDTH*CHUNKS_HEIGHT*(ChunkData.WIDTH-1)*(ChunkData.HEIGHT-1)*6];
@@ -77,6 +80,10 @@ public class Terrain{
 			vertices[i*3] = x; //x
 			vertices[i*3+1] = y; //y
 			vertices[i*3+2] = z; //z
+			Vector3f normal = chunks[x/ChunkData.WIDTH][z/ChunkData.HEIGHT].getNormal(x%ChunkData.WIDTH, z%ChunkData.HEIGHT);
+			normals[i*3] = normal.x;
+			normals[i*3 + 1] = normal.y;
+			normals[i*3 + 2] = normal.z;
 			heightMap[x][z] = y;
 			textureCoords[i*2] = (float)x/(float)w;
 			textureCoords[i*2+1] = (float)z/(float)h;
@@ -91,7 +98,7 @@ public class Terrain{
 			indices[i*6+4] = a+1;
 			indices[i*6+5] = b+1;
 		}
-		return new TerrainModel(createVao(vertices, textureCoords, indices), heightMap, texture);
+		return new TerrainModel(createVao(vertices, textureCoords, normals, indices), heightMap, texture);
 	}
 
 	/**
@@ -100,12 +107,13 @@ public class Terrain{
 	 * @param indices Indices array containing TerrainModel indices.
 	 * @return VAO that Terrain model data is saved to.
 	 */
-	private VAO createVao(float[] vertices, float[] textureCoords, int[] indices){
+	private VAO createVao(float[] vertices, float[] textureCoords, float[] normals, int[] indices){
 		VAO vao = VAO.create();
 		vao.bind();
 		vao.createIndexBuffer(indices);
 		vao.createAttribute(0, vertices, 3);
 		vao.createAttribute(1, textureCoords, 2);
+		vao.createAttribute(2, normals, 3);
 		vao.unbind();
 		return vao;
 	}

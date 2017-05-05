@@ -29,7 +29,7 @@ public class ViewRenderer {
 		prepare();
 		if(view instanceof GameView){
 			GameView game = (GameView) view;
-			terrainRenderer.render(game.getTerrain(), game.getCamera());
+			terrainRenderer.render(game.getTerrain(), game.getCamera(), game.getLightDirection());
 			for(Entity e : game.getEntities()){
 				if(e instanceof AnimatedEntity){
 					animatedModelRenderer.render((AnimatedEntity)e, game.getCamera(), game.getLightDirection());
@@ -58,7 +58,7 @@ public class ViewRenderer {
 
 	public void renderDepth(GameView view){
 		prepare();
-		terrainRenderer.render(view.getTerrain(), view.getCamera());
+		terrainRenderer.render(view.getTerrain(), view.getCamera(), view.getLightDirection());
 		/*for(AnimatedEntity e : view.getAnimatedEntities()){
 			animatedModelRenderer.render(e, view.getCamera(), view.getLightDirection());
 		}*/
