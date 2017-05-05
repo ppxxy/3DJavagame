@@ -8,13 +8,13 @@ public abstract class WaiterObject<Type>{
 		this.type = type;
 	}
 	
-	public abstract void onReceive(Type object);
+	public abstract boolean onReceive(Type object);
 	
 	@SuppressWarnings("unchecked")
 	public boolean checkType(Object obj){
 		boolean sameType = this.type.isAssignableFrom(obj.getClass());
 		if(sameType){
-			onReceive((Type) obj);
+			return onReceive((Type) obj);
 		}
 		return sameType;
 	}

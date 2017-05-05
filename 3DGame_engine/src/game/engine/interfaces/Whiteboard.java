@@ -8,6 +8,7 @@ import game.connection.objects.RequestData;
 import game.connection.objects.WaiterObject;
 import game.engine.main.Main;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
@@ -69,11 +70,12 @@ public class Whiteboard extends Application{
     private final WaiterObject<ImageData> waitForImage = new WaiterObject<ImageData>(ImageData.class){
 
 		@Override
-		public void onReceive(ImageData data) {
+		public boolean onReceive(ImageData data) {
 			img = (Image) data.toRenderedImage();
 			synchronized(thread){
 				thread.notify();
 			}
+			return true;
 		}
 
 	};
@@ -213,7 +215,13 @@ public class Whiteboard extends Application{
             pane.setBottom(canvas);
 
             stage.setScene(scene);
-            stage.show();
+            Platform.runLater(new Runnable(){
+
+				@Override
+				public void run() {
+					stage.show();
+				}
+            });
 
             //canvas is saved as a picture when the window is closed.
             stage.setOnCloseRequest(new EventHandler<WindowEvent>() {

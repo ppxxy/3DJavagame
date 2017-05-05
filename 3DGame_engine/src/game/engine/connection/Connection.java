@@ -60,7 +60,10 @@ public class Connection implements Runnable{
 			chat.recieveMessage((ChatMessage) o);
 		}else if(waiters.size() > 0){
 			for(WaiterObject<?> waiter : waiters){
-				waiter.checkType(o);
+				if(waiter.checkType(o)){
+					waiters.remove(waiter);
+					break;
+				}
 			}
 		}
 	}
