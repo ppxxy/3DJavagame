@@ -21,9 +21,7 @@ public class TerrainRenderer extends Renderer{
 	 * Terrain renderer is a renderer used for terrain rendering.
 	 */
 	public TerrainRenderer(){
-		System.out.println("Starting shader");
 		this.shader = new TerrainShader();
-		System.out.println("Shader started");
 	}
 
 	/**

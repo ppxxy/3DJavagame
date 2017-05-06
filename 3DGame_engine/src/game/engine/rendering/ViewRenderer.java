@@ -4,6 +4,7 @@ import game.engine.entities.AnimatedEntity;
 import game.engine.entities.Entity;
 import game.engine.entities.ObjectEntity;
 import game.engine.main.View;
+import game.engine.skybox.SkyboxRenderer;
 import game.engine.view.InterfaceView;
 
 import org.lwjgl.opengl.Display;
@@ -16,6 +17,7 @@ public class ViewRenderer {
 	private AnimatedModelRenderer animatedModelRenderer;
 	private TerrainRenderer terrainRenderer;
 	private InterfaceRenderer interfaceRenderer;
+	private SkyboxRenderer skyboxRenderer;
 
 	protected ViewRenderer(){
 		objectRenderer = new ObjectRenderer();
@@ -23,6 +25,7 @@ public class ViewRenderer {
 		animatedModelRenderer = new AnimatedModelRenderer();
 		terrainRenderer = new TerrainRenderer();
 		interfaceRenderer = new InterfaceRenderer();
+		skyboxRenderer = new SkyboxRenderer();
 	}
 
 	public void renderView(View view){
@@ -39,6 +42,7 @@ public class ViewRenderer {
 				}
 			}
 			interfaceRenderer.render(game.getInterfaces(), game.getCamera());
+			skyboxRenderer.render(game.getCamera());
 			//After normal rendering, render object buffer.
 			game.objectBuffer.bind(Display.getWidth(), Display.getHeight());
 			renderObjects(game);
