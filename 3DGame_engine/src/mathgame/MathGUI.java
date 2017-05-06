@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang3.StringUtils;
 
+import Localization.Localization;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -37,6 +38,7 @@ public class MathGUI extends Application implements MathGUI_IF{
 	Button nextButton;
 
 	public void init(){
+		Localization.setNewLocale("ru", "RU");
 		MathGame_IF game = new MathGame();
 		controller = new MathController(this, game);
 	}
@@ -47,11 +49,11 @@ public class MathGUI extends Application implements MathGUI_IF{
 		//main window
 		paneMain = new BorderPane();
 		HBox hboxMain = new HBox();
-		Label labelMain = new Label("Valitse luku: ");
-		Button buttonMain = new Button("Aloita harjoitus");
+		Label labelMain = new Label(Localization.getBundle().getString("math_choose")+": ");
+		Button buttonMain = new Button(Localization.getBundle().getString("math_begin"));
 		ChoiceBox<String> cb = new ChoiceBox<String>();
-		cb.getItems().addAll("Random", "2", "3", "4", "5", "6", "7", "8", "9");
-		cb.setValue("Random");
+		cb.getItems().addAll(Localization.getBundle().getString("random"), "2", "3", "4", "5", "6", "7", "8", "9");
+		cb.setValue(Localization.getBundle().getString("random"));
 		buttonMain.setPadding(new Insets(10,10,10,10));
 		hboxMain.setPadding(new Insets(10,10,10,10));
 		hboxMain.setAlignment(Pos.CENTER);
@@ -69,8 +71,8 @@ public class MathGUI extends Application implements MathGUI_IF{
 		labelTest = new Label();
 		Label labelTestResult = new Label();
 		TextField answerField = new TextField();
-		answerButton = new Button("Vastaa");
-		nextButton = new Button("Next");
+		answerButton = new Button(Localization.getBundle().getString("math_answer"));
+		nextButton = new Button(Localization.getBundle().getString("math_next"));
 		sceneTest = new Scene(paneTest, 300, 200);
 		hboxTest.setPadding(new Insets(10,10,10,10));
 		hboxTest.setAlignment(Pos.CENTER);
@@ -88,8 +90,8 @@ public class MathGUI extends Application implements MathGUI_IF{
 		paneResults = new BorderPane();
 		HBox hboxResults = new HBox();
 		Label labelResults = new Label();
-		Button newTestButton = new Button("New test");
-		Button exitButton = new Button("Exit");
+		Button newTestButton = new Button(Localization.getBundle().getString("math_new_test"));
+		Button exitButton = new Button(Localization.getBundle().getString("math_exit"));
 		//hboxResults.setPadding(new Insets(10,10,10,10));
 		hboxResults.setSpacing(15);
 		hboxResults.setAlignment(Pos.CENTER);
@@ -119,13 +121,13 @@ public class MathGUI extends Application implements MathGUI_IF{
 		answerButton.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override public void handle(ActionEvent e) {
 		    	if(!StringUtils.isNumeric(answerField.getText())){
-		    		labelTestResult.setText("Syötä kokonaisluku vastauskenttään");
+		    		labelTestResult.setText(Localization.getBundle().getString("math_input_error"));
 		    	} else {
 		    		if(controller.checkAnswer(answerField.getText())){
-			    		labelTestResult.setText("Oikea vastaus");
+			    		labelTestResult.setText(Localization.getBundle().getString("math_correct"));
 			    		correctAnswers++;
 			    	} else {
-			    		labelTestResult.setText("Väärä vastaus, oikea vastaus on: "+controller.count());
+			    		labelTestResult.setText(Localization.getBundle().getString("math_wrong")+": "+controller.count());
 			    	}
 
 		    		switchButtons();
@@ -147,7 +149,7 @@ public class MathGUI extends Application implements MathGUI_IF{
 		    		switchButtons();
 		    		answerField.clear();
 			    	labelTestResult.setVisible(false);
-		    		labelResults.setText("Vastasit oikein "+correctAnswers+" / 5 kysymykseen");
+		    		labelResults.setText(Localization.getBundle().getString("math_result1")+" "+correctAnswers+" / 5 "+Localization.getBundle().getString("math_result2"));
 		    		stage.setScene(sceneResults);
 		    	}
 
@@ -202,7 +204,7 @@ public class MathGUI extends Application implements MathGUI_IF{
 	@Override
 	public void printTask(){
 		value2 = list.get(apu);
-		if(selectedValue.equals("Random")){
+		if(selectedValue.equals(Localization.getBundle().getString("random"))){
     		value1 = list.get(apu+4);
     		updateTestLabel();
     		apu++;

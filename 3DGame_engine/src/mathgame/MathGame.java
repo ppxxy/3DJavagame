@@ -3,6 +3,8 @@ package mathgame;
 import java.util.ArrayList;
 import java.util.Random;
 
+import Localization.Localization;
+
 public class MathGame implements MathGame_IF{
 	Random random = new Random();
 	ArrayList<Integer> list;
@@ -10,7 +12,7 @@ public class MathGame implements MathGame_IF{
 	@Override
 	public ArrayList<Integer> getTasks(String selectedValue) {
 		list = new ArrayList<Integer>();
-		if(selectedValue.equals("Random")){
+		if(selectedValue.equals(Localization.getBundle().getString("random"))){
 			for(int i=0; i<10; i++){
 				list.add(giveRandom());
 			}

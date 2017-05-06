@@ -36,16 +36,16 @@ public class Main {
 	public static Chat chat;
 
 	public static void main(String[] args) {
-		
+
 		System.setProperty("org.lwjgl.librarypath", new File("src/lib/jars/natives-win").getAbsolutePath());
-		
+
 		RenderEngine renderEngine = RenderEngine.init();
-		
+
 		chat=new Chat();
 		Interface logging = new Interface(Texture.loadTexture("/res/logging.png").load(), new Vector2f(0f, 0f), new Vector2f(1f, 1f));
-		
+
 		activeView = new InterfaceView(logging);
-		
+
 		connection = new Connection("127.0.0.1", 16304);
 
 		/*
@@ -102,7 +102,7 @@ public class Main {
 		view.addInterface(chat.getChatbox());
 		view.addInterface(chat.getMessageBox());
 		chatcontrols.start();
-		Localization.setNewLocale("fi", "FI");
+		Localization.setNewLocale("ru", "RU");
 	}
 	public static GameView getGameView() {
 		return (GameView) activeView;
