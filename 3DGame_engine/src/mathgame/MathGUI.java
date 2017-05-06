@@ -22,6 +22,17 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+
+/**
+* <h1>MathGame</h1>
+* The MathGUI program implements an user interface for an application that
+* can used to practice multiplication tables
+* <p>
+
+* @author  Tomi Lehto
+* @version 1.0
+*/
+
 public class MathGUI extends Application implements MathGUI_IF{
 	Scene sceneMain, sceneTest, sceneResults;
 	BorderPane paneMain, paneTest, paneResults;
@@ -215,16 +226,28 @@ public class MathGUI extends Application implements MathGUI_IF{
     	}
 	}
 
+	/**
+	 *
+	 * @return current selectedValue ("random" or a number between 1 and 9)
+	 */
 	@Override
 	public String getSelectedValue(){
 		return selectedValue;
 	}
 
+	/**
+	 *
+	 * @return value1 of the current multiplication exercise (1-9)
+	 */
 	@Override
 	public int getValue1(){
 		return value1;
 	}
 
+	/**
+	 *
+	 * @return value2 of the current multiplication exercise (1-9)
+	 */
 	@Override
 	public int getValue2(){
 		return value2;

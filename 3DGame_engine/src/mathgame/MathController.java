@@ -2,6 +2,15 @@ package mathgame;
 
 import java.util.ArrayList;
 
+/**
+* <h1>MathController</h1>
+* The MathController class works as a mediator between the MathGUI and MathGame classes
+* <p>
+
+* @author  Tomi Lehto
+* @version 1.0
+*/
+
 public class MathController implements MathController_IF{
 	MathGUI_IF gui;
 	MathGame_IF game;
