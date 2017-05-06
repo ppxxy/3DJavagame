@@ -52,12 +52,36 @@ public class TextureLoader {
 		return new TextureData(buffer, width, height);
 	}
 
+	protected static TextureData decodeTextureFileRGBA(String path){
+		int width = 0, height = 0;
+		ByteBuffer buffer = null;
+		InputStream in = Class.class.getResourceAsStream(path);
+		try{
+			PNGDecoder decoder = new PNGDecoder(in);
+			width = decoder.getWidth();
+			height = decoder.getHeight();
+			buffer = ByteBuffer.allocateDirect(4 * width * height);
+			decoder.decode(buffer, width * 4, Format.RGBA);
+			buffer.flip();
+		} catch(IOException e){
+			e.printStackTrace();
+		} finally{
+			try {
+				in.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return new TextureData(buffer, width, height);
+	}
+
 	public static int loadCubeMap(String[] textureFiles){
-		int texID = GL11.glGenTextures()+10;
+		int texID = GL11.glGenTextures();
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, texID);
 		for(int i = 0; i < textureFiles.length; i++){
-			TextureData data = decodeTextureFile("/game/engine/skybox/" +textureFiles[i] +".png");
+			TextureData data = decodeTextureFileRGBA("/game/engine/skybox/" +textureFiles[i] +".png");
 			GL11.glTexImage2D(GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL11.GL_RGBA, data.getWidth(), data.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, data.getBuffer());
 		}
 		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);

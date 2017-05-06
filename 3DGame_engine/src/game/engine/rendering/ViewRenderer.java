@@ -41,8 +41,8 @@ public class ViewRenderer {
 					objectRenderer.render((ObjectEntity)e, game.getCamera());
 				}
 			}
-			interfaceRenderer.render(game.getInterfaces(), game.getCamera());
 			skyboxRenderer.render(game.getCamera());
+			interfaceRenderer.render(game.getInterfaces(), game.getCamera());
 			//After normal rendering, render object buffer.
 			game.objectBuffer.bind(Display.getWidth(), Display.getHeight());
 			renderObjects(game);

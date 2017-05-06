@@ -10,7 +10,7 @@ public class Camera {
 	protected float pitch = 45f, yaw=270f, roll;
 
 	public static final float FOV = 70;
-	public static final float NEAR_PLANE = 0.5f, FAR_PLANE = 400.0f;
+	public static final float NEAR_PLANE = 0.5f, FAR_PLANE = 1000.0f;
 
 	private Matrix4f projectionMatrix;
 	private Matrix4f viewMatrix = new Matrix4f();

@@ -2,6 +2,7 @@ package game.engine.skybox;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
+import org.lwjgl.util.vector.Matrix4f;
 
 import game.engine.camera.Camera;
 import game.engine.models.TexturedModel;
@@ -47,7 +48,12 @@ public class SkyboxRenderer extends Renderer{
 	private void prepare(Camera camera){
 		SkyboxShader shader = (SkyboxShader) this.shader;
 		shader.start();
-		shader.projectionViewMatrix.loadMatrix(camera.getProjectionViewMatrix());
+		shader.projectionMatrix.loadMatrix(camera.getProjectionMatrix());
+		Matrix4f viewMatrix = camera.getViewMatrix();
+		viewMatrix.m30 = 0;
+		viewMatrix.m31 = 0;
+		viewMatrix.m32 = 0;
+		shader.viewMatrix.loadMatrix(viewMatrix);
 	}
 
 	private class SkyboxShader extends ShaderProgram{
@@ -55,12 +61,13 @@ public class SkyboxRenderer extends Renderer{
 		private static final String VERTEX_SHADER = "/game/engine/shader/skyboxVertexShader.glsl";
 		private static final String FRAGMENT_SHADER = "/game/engine/shader/skyboxFragmentShader.glsl";
 
-		protected UniformMatrix projectionViewMatrix = new UniformMatrix("projectionViewMatrix");
+		protected UniformMatrix projectionMatrix = new UniformMatrix("projectionMatrix");
+		protected UniformMatrix viewMatrix = new UniformMatrix("viewMatrix");
 
 
 		private SkyboxShader(){
 			super(VERTEX_SHADER, FRAGMENT_SHADER, "position");
-			super.storeUniformLocations(projectionViewMatrix);
+			super.storeUniformLocations(projectionMatrix, viewMatrix);
 		}
 	}
 

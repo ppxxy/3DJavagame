@@ -30,7 +30,7 @@ public class TargetCamera extends Camera implements ActiveCamera{
 		if(pitch < 90 && Keyboard.isKeyDown(Keyboard.KEY_UP)){
 			pitch += pitchSens;
 		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_DOWN)){
+		if(pitch > 0 && Keyboard.isKeyDown(Keyboard.KEY_DOWN)){
 			pitch -= pitchSens;
 		}
 		float pitch = (float) Math.toRadians(this.pitch);
