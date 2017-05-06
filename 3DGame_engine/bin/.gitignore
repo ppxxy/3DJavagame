@@ -1,11 +1,12 @@
+/index/
 /lib/
 /res/
-/index/
-/report.dtd
-/test.xml
 /Dummies/
 /Networking/
 /game/
 /login/
 /mathgame/
-/temp_chunk_data/
+/report.dtd
+/test.xml
+/Localization/
+/test.csv

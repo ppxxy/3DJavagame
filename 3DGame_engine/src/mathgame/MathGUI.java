@@ -26,7 +26,7 @@ import javafx.stage.Stage;
 /**
 * <h1>MathGame</h1>
 * The MathGUI program implements an user interface for an application that
-* can used to practice multiplication tables
+* can used to practice multiplication tables.
 * <p>
 
 * @author  Tomi Lehto
