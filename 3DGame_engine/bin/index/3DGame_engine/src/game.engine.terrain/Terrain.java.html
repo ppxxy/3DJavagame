@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Terrain.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.terrain</a> &gt; <span class="el_source">Terrain.java</span></div><h1>Terrain.java</h1><pre class="source lang-java linenums">package game.engine.terrain;
+
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
+import game.engine.models.VAO;
+import game.engine.textures.Texture;
+
+/**
+ * Terrain class contains data of surrounding chunks {@link ChunkData}.
+ * @author Kim
+ *
+ */
+public class Terrain{
+
+	/**
+	 * Determines how many chunks are loaded.
+	 */
+	private static final int CHUNKS_WIDTH = 10, CHUNKS_HEIGHT = 10;
+	private ChunkData[][] chunks;
+	private Texture texture;
+
+	private int currentChunkX, currentChunkZ;
+
+	/**
+	 * Creates terrain object with CenterChunk(x, z)
+	 * @param x Coordinate of the center chunk.
+	 * @param z Coordinate of the center chunk.
+	 */
+<span class="nc" id="L31">	public Terrain(int x, int z){</span>
+<span class="nc" id="L32">		this.chunks = new ChunkData[CHUNKS_WIDTH][CHUNKS_HEIGHT];</span>
+<span class="nc" id="L33">		this.currentChunkX = x;</span>
+<span class="nc" id="L34">		this.currentChunkZ = z;</span>
+<span class="nc" id="L35">	}</span>
+
+	/**
+	 * Method loads all the surrounding chunks.
+	 */
+	public void loadChunks(){
+<span class="nc" id="L41">		BufferedImage image = new BufferedImage(CHUNKS_WIDTH*ChunkData.WIDTH, CHUNKS_HEIGHT*ChunkData.HEIGHT, BufferedImage.TYPE_INT_ARGB);</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">		for(int x = 0; x &lt; CHUNKS_WIDTH; x++){</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">			for(int z = 0; z &lt; CHUNKS_HEIGHT; z++){</span>
+				try {
+<span class="nc" id="L45">					ObjectInputStream chunkLoader = new ObjectInputStream(Class.class.getResourceAsStream(&quot;/res/chunks/&quot; +(x+10*z) +&quot;.chk&quot;));</span>
+<span class="nc" id="L46">					ChunkData chunk = (ChunkData) chunkLoader.readObject();</span>
+<span class="nc" id="L47">					chunks[x][z] = chunk;</span>
+<span class="nc" id="L48">					image.setRGB(x*ChunkData.WIDTH, z*ChunkData.HEIGHT, ChunkData.WIDTH, ChunkData.HEIGHT, chunk.getTexture(), 0, ChunkData.WIDTH);</span>
+<span class="nc" id="L49">				} catch (IOException e) {</span>
+					// TODO Auto-generated catch block
+<span class="nc" id="L51">					e.printStackTrace();</span>
+<span class="nc" id="L52">				} catch (ClassNotFoundException e) {</span>
+					// TODO Auto-generated catch block
+<span class="nc" id="L54">					e.printStackTrace();</span>
+				}
+			}
+		}
+<span class="nc" id="L58">		texture = Texture.loadTexture(image).anisotropic().load();</span>
+<span class="nc" id="L59">	}</span>
+
+	/**
+	 * Method that is used to load terrain model. Creates vertices array containing every vertex point as well as indices array
+	 * containing every line connecting different vertices.
+	 * @return TerrainModel object that represents mesh data of the terrain.
+	 */
+	public TerrainModel loadModel(){
+<span class="nc" id="L67">		int w = (CHUNKS_WIDTH*ChunkData.WIDTH-CHUNKS_WIDTH+1), h = (CHUNKS_HEIGHT*ChunkData.HEIGHT-CHUNKS_HEIGHT+1);</span>
+<span class="nc" id="L68">		float[] vertices = new float[3*w*h];</span>
+<span class="nc" id="L69">		float[][] heightMap = new float[w][h];</span>
+<span class="nc" id="L70">		float[] textureCoords = new float[2*w*h];</span>
+<span class="nc" id="L71">		int[] indices = new int[CHUNKS_WIDTH*CHUNKS_HEIGHT*(ChunkData.WIDTH-1)*(ChunkData.HEIGHT-1)*6];</span>
+		//System.out.println(vertices.length +&quot;, &quot; +indices.length);
+<span class="nc bnc" id="L73" title="All 2 branches missed.">		for(int i = 0; i &lt; vertices.length/3; i++){</span>
+<span class="nc" id="L74">			int x = i%w;</span>
+<span class="nc" id="L75">			int z = i/w;</span>
+<span class="nc" id="L76">			float y = chunks[x/ChunkData.WIDTH][z/ChunkData.HEIGHT].getHeight(x%ChunkData.WIDTH, z%ChunkData.HEIGHT);</span>
+<span class="nc" id="L77">			vertices[i*3] = x; //x</span>
+<span class="nc" id="L78">			vertices[i*3+1] = y; //y</span>
+<span class="nc" id="L79">			vertices[i*3+2] = z; //z</span>
+<span class="nc" id="L80">			heightMap[x][z] = y;</span>
+<span class="nc" id="L81">			textureCoords[i*2] = (float)x/(float)w;</span>
+<span class="nc" id="L82">			textureCoords[i*2+1] = (float)z/(float)h;</span>
+		}
+<span class="nc bnc" id="L84" title="All 2 branches missed.">		for(int i = 0; i &lt; indices.length/6; i++){</span>
+<span class="nc" id="L85">			int a = i+i/(CHUNKS_WIDTH*ChunkData.WIDTH-CHUNKS_WIDTH);</span>
+<span class="nc" id="L86">			indices[i*6]=a;</span>
+<span class="nc" id="L87">			indices[i*6+1] = a+1;</span>
+<span class="nc" id="L88">			int b = a+(CHUNKS_WIDTH*ChunkData.WIDTH-CHUNKS_WIDTH+1);</span>
+<span class="nc" id="L89">			indices[i*6+2] = b;</span>
+<span class="nc" id="L90">			indices[i*6+3] = b;</span>
+<span class="nc" id="L91">			indices[i*6+4] = a+1;</span>
+<span class="nc" id="L92">			indices[i*6+5] = b+1;</span>
+		}
+<span class="nc" id="L94">		return new TerrainModel(createVao(vertices, textureCoords, indices), heightMap, texture);</span>
+	}
+
+	/**
+	 * Saves Terrain model into a VAO.
+	 * @param vertices Vertices array containing TerrainModel vertices.
+	 * @param indices Indices array containing TerrainModel indices.
+	 * @return VAO that Terrain model data is saved to.
+	 */
+	private VAO createVao(float[] vertices, float[] textureCoords, int[] indices){
+<span class="nc" id="L104">		VAO vao = VAO.create();</span>
+<span class="nc" id="L105">		vao.bind();</span>
+<span class="nc" id="L106">		vao.createIndexBuffer(indices);</span>
+<span class="nc" id="L107">		vao.createAttribute(0, vertices, 3);</span>
+<span class="nc" id="L108">		vao.createAttribute(1, textureCoords, 2);</span>
+<span class="nc" id="L109">		vao.unbind();</span>
+<span class="nc" id="L110">		return vao;</span>
+	}
+
+	/**
+	 * Sets the current chunk of this terrain. Terrain data should be reloaded after call to this method.
+	 * @param x X coordinate of the new center chunk.
+	 * @param z Z coordinate of the new center chunk.
+	 */
+	public void setCurrentChunk(int x, int z){
+<span class="nc" id="L119">		this.currentChunkX = x;</span>
+<span class="nc" id="L120">		this.currentChunkZ = z;</span>
+<span class="nc" id="L121">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

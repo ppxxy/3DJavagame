@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>JointData.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.models.collada</a> &gt; <span class="el_source">JointData.java</span></div><h1>JointData.java</h1><pre class="source lang-java linenums">package game.engine.models.collada;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.lwjgl.util.vector.Matrix4f;
+
+public class JointData {
+
+	public final int index;
+	public final String name;
+	public final Matrix4f bindLocalTransform;
+	
+<span class="nc" id="L14">	public final List&lt;JointData&gt; children = new ArrayList&lt;JointData&gt;();</span>
+	
+	/**
+	 * Joint object
+	 * @param index Determine the amount of parent joints.
+	 * @param name Name of this joint.
+	 * @param bindLocalTransform Transformation of this joint. Transformation, rotation and scale.
+	 */
+<span class="nc" id="L22">	protected JointData(int index, String name, Matrix4f bindLocalTransform){</span>
+<span class="nc" id="L23">		this.index = index;</span>
+<span class="nc" id="L24">		this.name = name;</span>
+<span class="nc" id="L25">		this.bindLocalTransform = bindLocalTransform;</span>
+<span class="nc" id="L26">	}</span>
+	
+	/**
+	 * Method used to add child joint for this joint.
+	 * @param child Child node to add.
+	 */
+	public void addChild(JointData child){
+<span class="nc" id="L33">		children.add(child);</span>
+<span class="nc" id="L34">	}</span>
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

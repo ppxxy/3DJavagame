@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Quaternion.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.animation</a> &gt; <span class="el_source">Quaternion.java</span></div><h1>Quaternion.java</h1><pre class="source lang-java linenums">package game.engine.animation;
+
+import org.lwjgl.util.vector.Matrix4f;
+
+/**
+ * A quaternion simply represents a 3D rotation. The maths behind it is quite
+ * complex (literally; it involves complex numbers) so I wont go into it in too
+ * much detail. The important things to note are that it represents a 3d
+ * rotation, it's very easy to interpolate between two quaternion rotations
+ * (which would not be easy to do correctly with Euler rotations or rotation
+ * matrices), and you can convert to and from matrices fairly easily. So when we
+ * need to interpolate between rotations we'll represent them as quaternions,
+ * but when we need to apply the rotations to anything we'll convert back to a
+ * matrix.
+ * 
+ * @author Karl
+ *
+ */
+public class Quaternion {
+
+	private float x, y, z, w;
+
+	/**
+	 * Creates a quaternion and normalizes it.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param w
+	 */
+<span class="nc" id="L31">	public Quaternion(float x, float y, float z, float w) {</span>
+<span class="nc" id="L32">		this.x = x;</span>
+<span class="nc" id="L33">		this.y = y;</span>
+<span class="nc" id="L34">		this.z = z;</span>
+<span class="nc" id="L35">		this.w = w;</span>
+<span class="nc" id="L36">		normalize();</span>
+<span class="nc" id="L37">	}</span>
+
+	/**
+	 * Extracts the rotation part of a transformation matrix and converts it to
+	 * a quaternion using the magic of maths.
+	 * 
+	 * @param matrix
+	 *            - the transformation matrix containing the rotation which this
+	 *            quaternion shall represent.
+	 */
+<span class="nc" id="L47">	public Quaternion(Matrix4f matrix) {</span>
+<span class="nc" id="L48">		float diagonal = matrix.m00 + matrix.m11 + matrix.m22;</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">		if (diagonal &gt; 0) {</span>
+<span class="nc" id="L50">			float w4 = (float) (Math.sqrt(diagonal + 1f) * 2f);</span>
+<span class="nc" id="L51">			this.w = w4 / 4f;</span>
+<span class="nc" id="L52">			this.x = (matrix.m21 - matrix.m12) / w4;</span>
+<span class="nc" id="L53">			this.y = (matrix.m02 - matrix.m20) / w4;</span>
+<span class="nc" id="L54">			this.z = (matrix.m10 - matrix.m01) / w4;</span>
+<span class="nc bnc" id="L55" title="All 4 branches missed.">		} else if ((matrix.m00 &gt; matrix.m11) &amp;&amp; (matrix.m00 &gt; matrix.m22)) {</span>
+<span class="nc" id="L56">			float x4 = (float) (Math.sqrt(1f + matrix.m00 - matrix.m11 - matrix.m22) * 2f);</span>
+<span class="nc" id="L57">			this.w = (matrix.m21 - matrix.m12) / x4;</span>
+<span class="nc" id="L58">			this.x = x4 / 4f;</span>
+<span class="nc" id="L59">			this.y = (matrix.m01 + matrix.m10) / x4;</span>
+<span class="nc" id="L60">			this.z = (matrix.m02 + matrix.m20) / x4;</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">		} else if (matrix.m11 &gt; matrix.m22) {</span>
+<span class="nc" id="L62">			float y4 = (float) (Math.sqrt(1f + matrix.m11 - matrix.m00 - matrix.m22) * 2f);</span>
+<span class="nc" id="L63">			this.w = (matrix.m02 - matrix.m20) / y4;</span>
+<span class="nc" id="L64">			this.x = (matrix.m01 + matrix.m10) / y4;</span>
+<span class="nc" id="L65">			this.y = y4 / 4f;</span>
+<span class="nc" id="L66">			this.z = (matrix.m12 + matrix.m21) / y4;</span>
+<span class="nc" id="L67">		} else {</span>
+<span class="nc" id="L68">			float z4 = (float) (Math.sqrt(1f + matrix.m22 - matrix.m00 - matrix.m11) * 2f);</span>
+<span class="nc" id="L69">			this.w = (matrix.m10 - matrix.m01) / z4;</span>
+<span class="nc" id="L70">			this.x = (matrix.m02 + matrix.m20) / z4;</span>
+<span class="nc" id="L71">			this.y = (matrix.m12 + matrix.m21) / z4;</span>
+<span class="nc" id="L72">			this.z = z4 / 4f;</span>
+		}
+<span class="nc" id="L74">		this.normalize();</span>
+<span class="nc" id="L75">	}</span>
+
+	/**
+	 * Converts the quaternion to a 4x4 matrix representing the exact same
+	 * rotation as this quaternion. (The rotation is only contained in the
+	 * top-left 3x3 part, but a 4x4 matrix is returned here for convenience
+	 * seeing as it will be multiplied with other 4x4 matrices).
+	 * 
+	 * @return The rotation matrix which represents the exact same rotation as
+	 *         this quaternion.
+	 */
+	public Matrix4f toRotationMatrix() {
+<span class="nc" id="L87">		Matrix4f matrix = new Matrix4f();</span>
+<span class="nc" id="L88">		final float xy = x * y;</span>
+<span class="nc" id="L89">		final float xz = x * z;</span>
+<span class="nc" id="L90">		final float xw = x * w;</span>
+<span class="nc" id="L91">		final float yz = y * z;</span>
+<span class="nc" id="L92">		final float yw = y * w;</span>
+<span class="nc" id="L93">		final float zw = z * w;</span>
+<span class="nc" id="L94">		final float xSquared = x * x;</span>
+<span class="nc" id="L95">		final float ySquared = y * y;</span>
+<span class="nc" id="L96">		final float zSquared = z * z;</span>
+<span class="nc" id="L97">		matrix.m00 = 1 - 2 * (ySquared + zSquared);</span>
+<span class="nc" id="L98">		matrix.m01 = 2 * (xy - zw);</span>
+<span class="nc" id="L99">		matrix.m02 = 2 * (xz + yw);</span>
+<span class="nc" id="L100">		matrix.m03 = 0;</span>
+<span class="nc" id="L101">		matrix.m10 = 2 * (xy + zw);</span>
+<span class="nc" id="L102">		matrix.m11 = 1 - 2 * (xSquared + zSquared);</span>
+<span class="nc" id="L103">		matrix.m12 = 2 * (yz - xw);</span>
+<span class="nc" id="L104">		matrix.m13 = 0;</span>
+<span class="nc" id="L105">		matrix.m20 = 2 * (xz - yw);</span>
+<span class="nc" id="L106">		matrix.m21 = 2 * (yz + xw);</span>
+<span class="nc" id="L107">		matrix.m22 = 1 - 2 * (xSquared + ySquared);</span>
+<span class="nc" id="L108">		matrix.m23 = 0;</span>
+<span class="nc" id="L109">		matrix.m30 = 0;</span>
+<span class="nc" id="L110">		matrix.m31 = 0;</span>
+<span class="nc" id="L111">		matrix.m32 = 0;</span>
+<span class="nc" id="L112">		matrix.m33 = 1;</span>
+<span class="nc" id="L113">		return matrix;</span>
+	}
+
+	/**
+	 * Normalizes the quaternion.
+	 */
+	public void normalize() {
+<span class="nc" id="L120">		float mag = (float) Math.sqrt(w * w + x * x + y * y + z * z);</span>
+<span class="nc" id="L121">		w /= mag;</span>
+<span class="nc" id="L122">		x /= mag;</span>
+<span class="nc" id="L123">		y /= mag;</span>
+<span class="nc" id="L124">		z /= mag;</span>
+<span class="nc" id="L125">	}</span>
+
+	/**
+	 * Interpolates between two quaternion rotations and returns a new
+	 * quaternion which represents a rotation somewhere in between the two input
+	 * rotations.
+	 * 
+	 * @param start
+	 *            - the starting rotation.
+	 * @param end
+	 *            - the end rotation.
+	 * @param progression
+	 *            - a value between 0 and 1 indicating how much to interpolate
+	 *            between the two rotations. 0 would retrun the start rotation,
+	 *            and 1 would return the end rotation.
+	 * @return The interpolated rotation as a quaternion.
+	 */
+	public static Quaternion slerp(Quaternion start, Quaternion end, float progression) {
+<span class="nc" id="L143">		start.normalize();</span>
+<span class="nc" id="L144">		end.normalize();</span>
+<span class="nc" id="L145">		final float d = start.x * end.x + start.y * end.y + start.z * end.z + start.w * end.w;</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">		float absDot = d &lt; 0f ? -d : d;</span>
+<span class="nc" id="L147">		float scale0 = 1f - progression;</span>
+<span class="nc" id="L148">		float scale1 = progression;</span>
+
+<span class="nc bnc" id="L150" title="All 2 branches missed.">		if ((1 - absDot) &gt; 0.1f) {</span>
+
+<span class="nc" id="L152">			final float angle = (float) Math.acos(absDot);</span>
+<span class="nc" id="L153">			final float invSinTheta = 1f / (float) Math.sin(angle);</span>
+<span class="nc" id="L154">			scale0 = ((float) Math.sin((1f - progression) * angle) * invSinTheta);</span>
+<span class="nc" id="L155">			scale1 = ((float) Math.sin((progression * angle)) * invSinTheta);</span>
+		}
+
+<span class="nc bnc" id="L158" title="All 2 branches missed.">		if (d &lt; 0f) {</span>
+<span class="nc" id="L159">			scale1 = -scale1;</span>
+		}
+<span class="nc" id="L161">		float newX = (scale0 * start.x) + (scale1 * end.x);</span>
+<span class="nc" id="L162">		float newY = (scale0 * start.y) + (scale1 * end.y);</span>
+<span class="nc" id="L163">		float newZ = (scale0 * start.z) + (scale1 * end.z);</span>
+<span class="nc" id="L164">		float newW = (scale0 * start.w) + (scale1 * end.w);</span>
+<span class="nc" id="L165">		return new Quaternion(newX, newY, newZ, newW);</span>
+	}
+
+	@Override
+	public String toString() {
+<span class="nc" id="L170">		return x + &quot;, &quot; + y + &quot;, &quot; + z + &quot;, &quot; + w;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

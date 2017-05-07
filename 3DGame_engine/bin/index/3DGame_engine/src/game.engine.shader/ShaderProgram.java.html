@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>ShaderProgram.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.shader</a> &gt; <span class="el_source">ShaderProgram.java</span></div><h1>ShaderProgram.java</h1><pre class="source lang-java linenums">package game.engine.shader;
+
+import game.engine.main.Main;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
+
+public abstract class ShaderProgram {
+
+	private int programID;
+
+<span class="nc" id="L16">	public ShaderProgram(String vertexFile, String fragmentFile, String... inVariables){</span>
+<span class="nc" id="L17">		int vertexShaderID = loadShader(vertexFile, GL20.GL_VERTEX_SHADER);</span>
+		//Breaks on fragmentShader
+<span class="nc" id="L19">		int fragmentShaderID = loadShader(fragmentFile, GL20.GL_FRAGMENT_SHADER);</span>
+<span class="nc" id="L20">		programID = GL20.glCreateProgram();</span>
+<span class="nc" id="L21">		GL20.glAttachShader(programID, vertexShaderID);</span>
+<span class="nc" id="L22">		GL20.glAttachShader(programID, fragmentShaderID);</span>
+<span class="nc" id="L23">		bindAttributes(inVariables);</span>
+<span class="nc" id="L24">		GL20.glLinkProgram(programID);</span>
+<span class="nc" id="L25">		GL20.glDetachShader(programID, vertexShaderID);</span>
+<span class="nc" id="L26">		GL20.glDetachShader(programID, fragmentShaderID);</span>
+<span class="nc" id="L27">		GL20.glDeleteShader(vertexShaderID);</span>
+<span class="nc" id="L28">		GL20.glDeleteShader(fragmentShaderID);</span>
+<span class="nc" id="L29">	}</span>
+
+	protected void storeUniformLocations(Uniform... uniforms){
+<span class="nc bnc" id="L32" title="All 2 branches missed.">		for(Uniform uniform : uniforms){</span>
+<span class="nc" id="L33">			uniform.storeUniformLocation(programID);</span>
+		}
+<span class="nc" id="L35">		GL20.glValidateProgram(programID);</span>
+<span class="nc" id="L36">	}</span>
+
+	protected int getUniformLocation(String uniformName){
+<span class="nc" id="L39">		return GL20.glGetUniformLocation(programID, uniformName);</span>
+	}
+
+	public void start(){
+<span class="nc" id="L43">		GL20.glUseProgram(programID);</span>
+<span class="nc" id="L44">	}</span>
+
+	public void stop(){
+<span class="nc" id="L47">		GL20.glUseProgram(0);</span>
+<span class="nc" id="L48">	}</span>
+	public void cleanUp(){
+<span class="nc" id="L50">		stop();</span>
+<span class="nc" id="L51">		GL20.glDeleteProgram(programID);</span>
+<span class="nc" id="L52">	}</span>
+
+	private void bindAttributes(String[] inVariables){
+<span class="nc bnc" id="L55" title="All 2 branches missed.">		for(int i = 0; i &lt; inVariables.length; i++){</span>
+<span class="nc" id="L56">			GL20.glBindAttribLocation(programID, i, inVariables[i]);</span>
+		}
+<span class="nc" id="L58">	}</span>
+
+	private static int loadShader(String file, int type){
+<span class="nc" id="L61">		StringBuilder shaderSource = new StringBuilder();</span>
+<span class="nc" id="L62">		BufferedReader reader = null;</span>
+		try{
+<span class="nc" id="L64">			reader = new BufferedReader(new InputStreamReader(Main.class.getResourceAsStream(file)));</span>
+			String line;
+<span class="nc bnc" id="L66" title="All 2 branches missed.">			while((line = reader.readLine()) != null){</span>
+<span class="nc" id="L67">				shaderSource.append(line).append(System.lineSeparator());</span>
+			}
+<span class="nc" id="L69">			reader.close();</span>
+<span class="nc" id="L70">		} catch(IOException e){</span>
+<span class="nc" id="L71">			e.printStackTrace();</span>
+<span class="nc" id="L72">			System.exit(-1);</span>
+<span class="nc" id="L73">		} finally{</span>
+			try {
+<span class="nc bnc" id="L75" title="All 6 branches missed.">				if(reader != null)</span>
+<span class="nc" id="L76">				reader.close();</span>
+<span class="nc" id="L77">			} catch (IOException e) {</span>
+				// TODO Auto-generated catch block
+<span class="nc" id="L79">				e.printStackTrace();</span>
+			}
+<span class="nc" id="L81">		}</span>
+
+<span class="nc" id="L83">		int shaderID = GL20.glCreateShader(type);</span>
+<span class="nc" id="L84">		GL20.glShaderSource(shaderID, shaderSource);</span>
+<span class="nc" id="L85">		GL20.glCompileShader(shaderID);</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">		if(GL20.glGetShaderi(shaderID, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE){</span>
+<span class="nc" id="L87">			System.exit(-1);</span>
+		}
+<span class="nc" id="L89">		return shaderID;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

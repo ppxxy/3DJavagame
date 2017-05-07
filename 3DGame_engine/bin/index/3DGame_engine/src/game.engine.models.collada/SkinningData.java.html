@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>SkinningData.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.models.collada</a> &gt; <span class="el_source">SkinningData.java</span></div><h1>SkinningData.java</h1><pre class="source lang-java linenums">package game.engine.models.collada;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import game.engine.models.xml.XmlNode;
+
+/**
+ * SkinningData contains data of vertex movement during animation.
+ */
+
+public class SkinningData {
+	
+	public final List&lt;String&gt; jointOrder;
+	public final List&lt;VertexSkinData&gt; verticesSkinData;
+	
+<span class="nc" id="L18">	public SkinningData(List&lt;String&gt; joints, List&lt;VertexSkinData&gt; vertexWeights) {</span>
+<span class="nc" id="L19">		this.jointOrder = joints;</span>
+<span class="nc" id="L20">		this.verticesSkinData = vertexWeights;</span>
+<span class="nc" id="L21">	}</span>
+
+	public static class SkinLoader{
+		
+		private final XmlNode skinningData;
+		private final int maxWeights;
+		
+		/**
+		 * Create SkinLoader that loads Skin data.
+		 * 
+		 * @param node Node that contains the skin data.
+		 * @param maxWeights Maximum amount of connected joints per vertex.
+		 */
+<span class="nc" id="L34">		public SkinLoader(XmlNode node, int maxWeights){</span>
+<span class="nc" id="L35">			this.skinningData = node.getChild(&quot;controller&quot;).getChild(&quot;skin&quot;);</span>
+<span class="nc" id="L36">			this.maxWeights = maxWeights;</span>
+<span class="nc" id="L37">		}</span>
+		
+		/**
+		 * Method used to transform skinning data from Xml to SkinningData object.
+		 * Which contains data of every vertex's joint connection.
+		 * @return SkinningData object, containing Joint, Vertex connections.
+		 */
+		
+		public SkinningData extractSkinData() {
+<span class="nc" id="L46">			XmlNode weightsDataNode = skinningData.getChild(&quot;vertex_weights&quot;);</span>
+<span class="nc" id="L47">			List&lt;String&gt; joints = loadJoints(weightsDataNode);</span>
+<span class="nc" id="L48">			float[] weights = loadWeights(weightsDataNode);</span>
+<span class="nc" id="L49">			int[] effectorJointCounts = getEffectiveJointsCounts(weightsDataNode);</span>
+<span class="nc" id="L50">			List&lt;VertexSkinData&gt; vertexWeights = getSkinData(weightsDataNode, effectorJointCounts, weights);</span>
+<span class="nc" id="L51">			return new SkinningData(joints, vertexWeights);</span>
+		}
+		
+		/**
+		 * Method used to load joint data from the XMLdata inside the Collada file.
+		 * @param weightsDataNode 
+		 * 
+		 * @param weightsDataNode XmlNode containing joints data
+		 * 
+		 * @return List of joints
+		 */
+		public List&lt;String&gt; loadJoints(XmlNode weightsDataNode){
+<span class="nc" id="L63">			XmlNode inputNode = skinningData.getChild(&quot;vertex_weights&quot;);</span>
+<span class="nc" id="L64">			String jointId = inputNode.getChildWithAttribute(&quot;input&quot;, &quot;semantic&quot;, &quot;JOINT&quot;).getAttribute(&quot;source&quot;)</span>
+<span class="nc" id="L65">					.substring(1);</span>
+<span class="nc" id="L66">			XmlNode jointsNode = skinningData.getChildWithAttribute(&quot;source&quot;, &quot;id&quot;, jointId).getChild(&quot;Name_array&quot;);</span>
+<span class="nc" id="L67">			return Arrays.asList(jointsNode.getData().split(&quot; &quot;));</span>
+		}
+		
+		/**
+		 * Method used to load weights of different joints. Weight determines how much vertices
+		 * are affected by each joint's movement.
+		 * 
+		 * @param weightsDataNode XmlNode containing weight data of each vertex. 
+		 * 
+		 * @return Weight values of each joint.
+		 */
+		
+		public float[] loadWeights(XmlNode weightsDataNode){
+<span class="nc" id="L80">			XmlNode inputNode = skinningData.getChild(&quot;vertex_weights&quot;);</span>
+<span class="nc" id="L81">			String weightsId = inputNode.getChildWithAttribute(&quot;input&quot;, &quot;semantic&quot;, &quot;WEIGHT&quot;).getAttribute(&quot;source&quot;)</span>
+<span class="nc" id="L82">					.substring(1);</span>
+<span class="nc" id="L83">			XmlNode weightsNode = skinningData.getChildWithAttribute(&quot;source&quot;, &quot;id&quot;, weightsId).getChild(&quot;float_array&quot;);</span>
+<span class="nc" id="L84">			String[] rawData = weightsNode.getData().split(&quot; &quot;);</span>
+<span class="nc" id="L85">			float[] weights = new float[rawData.length];</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">			for(int i = 0; i &lt; weights.length; i++){</span>
+<span class="nc" id="L87">				weights[i] = Float.parseFloat(rawData[i]);</span>
+			}
+<span class="nc" id="L89">			return weights;</span>
+		}
+		
+		/**
+		 * Method used to get the number of joints affecting each vertice's motion.
+		 * 
+		 * @param weightsDataNode XmlNode that contains weight data of each vertex.
+		 * 
+		 * @return Array containing number joints that affect each vertice.
+		 */
+		private int[] getEffectiveJointsCounts(XmlNode weightsDataNode){
+<span class="nc" id="L100">			String[] rawData = weightsDataNode.getChild(&quot;vcount&quot;).getData().split(&quot; &quot;);</span>
+<span class="nc" id="L101">			int[] counts = new int[rawData.length];</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">			for(int i = 0; i &lt; rawData.length; i++){</span>
+<span class="nc" id="L103">				counts[i] = Integer.parseInt(rawData[i]);</span>
+			}
+<span class="nc" id="L105">			return counts;</span>
+		}
+		
+		/**
+		 * Method that returns skin data of each vertex.
+		 * 
+		 * @param weightsDataNode Node that contains weight information for each vertex.
+		 * @param counts The number of joints affecting each vertex.
+		 * @param weights Weight value of each vertex, joint connection.
+		 * @return List of skin data objects.
+		 */
+		private List&lt;VertexSkinData&gt; getSkinData(XmlNode weightsDataNode, int[] counts, float[] weights){
+			//Data of each vertex
+<span class="nc" id="L118">			String[] rawData = weightsDataNode.getChild(&quot;v&quot;).getData().split(&quot; &quot;);</span>
+<span class="nc" id="L119">			List&lt;VertexSkinData&gt; skinningData = new ArrayList&lt;VertexSkinData&gt;();</span>
+<span class="nc" id="L120">			int pointer = 0;</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">			for(int count : counts){</span>
+<span class="nc" id="L122">				VertexSkinData skinData = new VertexSkinData();</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">				for (int i = 0; i &lt; count; i++) {</span>
+<span class="nc" id="L124">					int jointId = Integer.parseInt(rawData[pointer++]);</span>
+<span class="nc" id="L125">					int weightId = Integer.parseInt(rawData[pointer++]);</span>
+<span class="nc" id="L126">					skinData.addJointConnection(jointId, weights[weightId]);</span>
+				}
+<span class="nc" id="L128">				skinData.evaluate(maxWeights);</span>
+<span class="nc" id="L129">				skinningData.add(skinData);</span>
+			}
+<span class="nc" id="L131">			return skinningData;</span>
+		}
+		
+	}
+
+<span class="nc" id="L136">	public static class VertexSkinData {</span>
+		
+<span class="nc" id="L138">		final List&lt;Integer&gt; jointIds = new ArrayList&lt;Integer&gt;();</span>
+<span class="nc" id="L139">		final List&lt;Float&gt; weights = new ArrayList&lt;Float&gt;();</span>
+		
+		/**
+		 * Make connection between this vertex and joint.
+		 * 
+		 * @param jointId id of the connected joint.
+		 * @param weight weight of the given joint. The amount joint's movement affects the movement of this vertex.
+		 */
+		private void addJointConnection(int jointId, float weight){
+			//Orders connections so that the most meaningful weight comes always first in the list.
+<span class="nc bnc" id="L149" title="All 2 branches missed.">			for(int i = 0; i &lt; weights.size(); i++){</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">				if(weight &gt; weights.get(i)){</span>
+<span class="nc" id="L151">					jointIds.add(i, jointId);</span>
+<span class="nc" id="L152">					weights.add(i, weight);</span>
+<span class="nc" id="L153">					return;</span>
+				}
+			}
+<span class="nc" id="L156">			jointIds.add(jointId);</span>
+<span class="nc" id="L157">			weights.add(weight);</span>
+<span class="nc" id="L158">		}</span>
+		
+		/**
+		 * Limits amount of joints to max. Calculates the proportion of each weight
+		 * making total weight 1.
+		 * 
+		 * @param max The maximum amount of joint connections for each joint.
+		 */
+		private void evaluate(int max){
+			//remove excessive connections
+			//Note: Saving to temporary variable is faster, because it allows to calculate total weight at the same time.
+<span class="nc bnc" id="L169" title="All 2 branches missed.">			if(jointIds.size() &gt; max){</span>
+<span class="nc" id="L170">				float[] topWeights = new float[max];</span>
+<span class="nc" id="L171">				float total = 0;</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">				for(int i = 0; i &lt; topWeights.length; i++){</span>
+<span class="nc" id="L173">					total += weights.get(i);</span>
+<span class="nc" id="L174">					topWeights[i] = weights.get(i);</span>
+				}
+<span class="nc bnc" id="L176" title="All 2 branches missed.">				while(jointIds.size() &gt; max){</span>
+<span class="nc" id="L177">					jointIds.remove(jointIds.size()-1);</span>
+				}
+			//calculate weight[i]/total for each
+<span class="nc" id="L180">				weights.clear();</span>
+<span class="nc bnc" id="L181" title="All 2 branches missed.">				for(float f : topWeights){</span>
+					//using Math.min here to make sure it doesn't round to over 1. That would lead to an error.
+<span class="nc" id="L183">					weights.add(Math.min(f/total, 1));</span>
+				}
+			}
+			/*else if(jointIds.size() &lt; max){
+				while(jointIds.size() &lt; max){
+					jointIds.add(0);
+					weights.add(0f);
+				}
+			}*/
+<span class="nc" id="L192">		}</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

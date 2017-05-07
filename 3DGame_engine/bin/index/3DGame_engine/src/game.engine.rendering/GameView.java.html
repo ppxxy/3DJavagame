@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>GameView.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.rendering</a> &gt; <span class="el_source">GameView.java</span></div><h1>GameView.java</h1><pre class="source lang-java linenums">package game.engine.rendering;
+
+import game.connection.objects.MovementDestination;
+import game.engine.camera.ActiveCamera;
+import game.engine.camera.Camera;
+import game.engine.characters.Update;
+import game.engine.entities.AnimatedEntity;
+import game.engine.entities.Entity;
+import game.engine.interfaces.ActiveInterface;
+import game.engine.interfaces.Interface;
+import game.engine.main.Main;
+import game.engine.main.View;
+import game.engine.physics.MousePicker;
+import game.engine.physics.ViewDepthBuffer;
+import game.engine.terrain.Terrain;
+import game.engine.terrain.TerrainModel;
+import game.engine.tools.Maths;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
+
+public class GameView extends View{
+
+<span class="nc" id="L29">	private final List&lt;Entity&gt; entities = new ArrayList&lt;Entity&gt;();</span>
+<span class="nc" id="L30">	private final List&lt;Interface&gt; interfaces = new ArrayList&lt;Interface&gt;();</span>
+	private final MousePicker mousePicker;
+	private TerrainModel terrain;
+<span class="nc" id="L33">	private Vector3f lightDirection = new Vector3f(0, -1, 0);</span>
+<span class="nc" id="L34">	private final List&lt;AnimatedEntity&gt; animatedEntities = new ArrayList&lt;AnimatedEntity&gt;();</span>
+
+	ViewDepthBuffer depthBuffer;
+
+<span class="nc" id="L38">	public GameView(){</span>
+<span class="nc" id="L39">		this.depthBuffer = new ViewDepthBuffer();</span>
+<span class="nc" id="L40">		Terrain terrain = new Terrain(0, 0);</span>
+<span class="nc" id="L41">		terrain.loadChunks();</span>
+<span class="nc" id="L42">		this.camera = new Camera(new Vector3f(320, 200, 320));</span>
+<span class="nc" id="L43">		this.mousePicker = new MousePicker(camera);</span>
+<span class="nc" id="L44">		this.terrain = terrain.loadModel();</span>
+<span class="nc" id="L45">	}</span>
+
+<span class="nc" id="L47">	public GameView(Camera camera) {</span>
+<span class="nc" id="L48">		this.depthBuffer = new ViewDepthBuffer();</span>
+<span class="nc" id="L49">		Terrain terrain = new Terrain(0, 0);</span>
+<span class="nc" id="L50">		terrain.loadChunks();</span>
+<span class="nc" id="L51">		this.camera = camera;</span>
+<span class="nc" id="L52">		this.mousePicker = new MousePicker(camera);</span>
+<span class="nc" id="L53">		this.terrain = terrain.loadModel();</span>
+<span class="nc" id="L54">	}</span>
+
+	public void addEntity(Entity entity){
+<span class="nc" id="L57">		entities.add(entity);</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">		if(entity instanceof AnimatedEntity){</span>
+<span class="nc" id="L59">			animatedEntities.add((AnimatedEntity) entity);</span>
+		}
+<span class="nc" id="L61">	}</span>
+
+	public void addInterface(Interface inter){
+<span class="nc" id="L64">		this.interfaces.add(inter);</span>
+<span class="nc" id="L65">	}</span>
+
+	/**
+	 * Remove interface by giving the interface object as a parameter.
+	 * @param inter Interface object to remove.
+	 */
+	public void removeInterface(Interface inter){
+<span class="nc" id="L72">		this.interfaces.remove(inter);</span>
+<span class="nc" id="L73">	}</span>
+
+	/**
+	 * Remove interface by index.
+	 * @param index Index of interface to remove.
+	 */
+	public void removeInterface(int index){
+<span class="nc" id="L80">		this.interfaces.remove(index);</span>
+<span class="nc" id="L81">	}</span>
+
+	/**
+	 * Get the camera of this view.
+	 * @return Camera object of this view.
+	 */
+	public Camera getCamera(){
+<span class="nc" id="L88">		return camera;</span>
+	}
+
+	/**
+	 * Get list of AnimatedModels on this view.
+	 * @return List of AnimatedModels on this view.
+	 */
+	public List&lt;AnimatedEntity&gt; getAnimatedEntities(){
+<span class="nc" id="L96">		return animatedEntities;</span>
+	}
+
+	/**
+	 * Get Vector3f representing light direction within this view. This needs to be changed later on.
+	 * @return Light direction.
+	 */
+	public Vector3f getLightDirection() {
+<span class="nc" id="L104">		return lightDirection;</span>
+	}
+
+	public float getHeightAt(float x, float z){
+<span class="nc" id="L108">		float[][] heightmap = terrain.getHeightMap();</span>
+		Vector3f a, b, c;
+<span class="nc bnc" id="L110" title="All 2 branches missed.">		if(x%1 &lt;= 1-z%1){</span>
+<span class="nc" id="L111">			a = new Vector3f((int) 0, heightmap[(int) x][(int) z], (int) 0);</span>
+<span class="nc" id="L112">		}</span>
+		else{
+<span class="nc" id="L114">			a = new Vector3f((int) 1, heightmap[(int) x+1][(int) z+1], (int) 1);</span>
+		}
+<span class="nc" id="L116">		b = new Vector3f((int) 0, heightmap[(int) x][(int) z+1], (int) 1);</span>
+<span class="nc" id="L117">		c = new Vector3f((int) 1, heightmap[(int) x+1][(int) z], (int) 0);</span>
+<span class="nc" id="L118">		return Maths.barryCentric(a, b, c, new Vector2f(x%1, z%1));</span>
+	}
+
+	public void setLightDirection(Vector3f lightDir) {
+<span class="nc" id="L122">		this.lightDirection.set(lightDir);</span>
+<span class="nc" id="L123">	}</span>
+
+	private boolean checkInterfacePress(float x, float y){
+<span class="nc bnc" id="L126" title="All 2 branches missed.">		for(Interface inter : interfaces){</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">			if(inter instanceof ActiveInterface){</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">				if(((ActiveInterface)inter).MouseAction(x, y)){</span>
+<span class="nc" id="L129">					return true;</span>
+				}
+			}
+		}
+<span class="nc" id="L133">		return false;</span>
+	}
+
+	public TerrainModel getTerrain() {
+<span class="nc" id="L137">		return this.terrain;</span>
+	}
+
+	private float distanceAt(int x, int y){
+<span class="nc" id="L141">		return depthBuffer.getDepth(x, y);</span>
+	}
+
+	public List&lt;Interface&gt; getInterfaces() {
+<span class="nc" id="L145">		return this.interfaces;</span>
+	}
+
+	public void useMousePicker() {
+<span class="nc bnc" id="L149" title="All 6 branches missed.">		if(Mouse.next() &amp;&amp; Mouse.getEventButton() == 0 &amp;&amp; Mouse.getEventButtonState()){</span>
+<span class="nc" id="L150">			float mouseRelativeX = Mouse.getX()/Display.getWidth();</span>
+<span class="nc" id="L151">			float mouseRelativeY = Mouse.getY()/Display.getHeight();</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">			if(checkInterfacePress(mouseRelativeX, mouseRelativeY)){</span>
+<span class="nc" id="L153">				return;</span>
+			}
+<span class="nc" id="L155">			float distance = distanceAt(Mouse.getX(), Mouse.getY());</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">			if(distance &lt; Camera.FAR_PLANE){</span>
+<span class="nc" id="L157">				Vector2f location = mousePicker.update(distance);</span>
+<span class="nc" id="L158">				Main.connection.send(new MovementDestination.MovementTo(location));</span>
+			}
+		}
+<span class="nc" id="L161">	}</span>
+
+	@Override
+	public void cleanUp() {
+<span class="nc" id="L165">		this.depthBuffer.cleanUp();</span>
+<span class="nc" id="L166">	}</span>
+
+	public AnimatedEntity getEntityById(int id) {
+<span class="nc bnc" id="L169" title="All 2 branches missed.">		for(AnimatedEntity e : animatedEntities){</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">			if(e.getId() == id){</span>
+<span class="nc" id="L171">				return e;</span>
+			}
+		}
+<span class="nc" id="L174">		return null;</span>
+	}
+
+	public void setCamera(Camera camera) {
+<span class="nc" id="L178">		this.camera = camera;</span>
+<span class="nc" id="L179">	}</span>
+
+	@Override
+	public void update() {
+<span class="nc" id="L183">		super.update();</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">		if(camera instanceof ActiveCamera){</span>
+<span class="nc" id="L185">			((ActiveCamera) camera).update();</span>
+		}
+<span class="nc bnc" id="L187" title="All 2 branches missed.">		for(Entity e : entities){</span>
+<span class="nc bnc" id="L188" title="All 2 branches missed.">			if(e instanceof AnimatedEntity){</span>
+<span class="nc" id="L189">				((AnimatedEntity) e).update();</span>
+			}
+		}
+<span class="nc" id="L192">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

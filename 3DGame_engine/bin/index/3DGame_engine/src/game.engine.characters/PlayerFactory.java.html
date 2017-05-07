@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>PlayerFactory.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.characters</a> &gt; <span class="el_source">PlayerFactory.java</span></div><h1>PlayerFactory.java</h1><pre class="source lang-java linenums">package game.engine.characters;
+
+import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
+
+import game.engine.animation.Animation;
+import game.engine.entities.Entity;
+import game.engine.main.Main;
+import game.engine.models.collada.ModelLoader;
+
+<span class="nc" id="L11">public class PlayerFactory {</span>
+
+	private static final String modelFile = &quot;/res/model.dae&quot;;
+	private static final String textureFile = &quot;/res/diffuse.png&quot;;
+
+	public static game.engine.characters.Character createPlayer(int id){
+<span class="nc" id="L17">		game.engine.characters.Character player = Character.loadCharacter(id, modelFile, textureFile);</span>
+<span class="nc" id="L18">		Animation animation = ModelLoader.loadColladaAnimation(modelFile);</span>
+<span class="nc" id="L19">		player.getModel().doAnimation(animation);</span>
+<span class="nc" id="L20">		return player;</span>
+	}
+
+	public static Entity createPlayer(int id, Vector2f location) {
+<span class="nc" id="L24">		game.engine.characters.Character player = createPlayer(id);</span>
+<span class="nc" id="L25">		player.setPosition(new Vector3f(location.x, Main.getGameView().getHeightAt(location.x, location.y), location.y));</span>
+<span class="nc" id="L26">		return player;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

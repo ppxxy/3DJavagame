@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>MathGameTest.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">test</a> &gt; <a href="index.source.html" class="el_package">mathgame</a> &gt; <span class="el_source">MathGameTest.java</span></div><h1>MathGameTest.java</h1><pre class="source lang-java linenums">package mathgame;
+
+import static org.junit.Assert.*;
+
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+<span class="fc" id="L9">public class MathGameTest {</span>
+<span class="fc" id="L10">	MathGame mGame = new MathGame();</span>
+
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+
+<span class="fc" id="L15">	}</span>
+
+	@Before
+	public void setUp() throws Exception {
+<span class="fc" id="L19">	}</span>
+
+	@Test
+	public void testGiveAnswer() {
+<span class="fc" id="L23">		assertEquals(&quot;Oikea vastaus&quot;,true, mGame.giveAnswer(2, 2, &quot;4&quot;));</span>
+<span class="fc" id="L24">		assertEquals(&quot;Väärä vastaus&quot;, false, mGame.giveAnswer(2, 2, &quot;5&quot;));</span>
+<span class="fc" id="L25">	}</span>
+
+	@Test
+	public void countTest(){
+<span class="fc" id="L29">		assertEquals(&quot;Kertolasku testi 0*2&quot;, 0*2, mGame.count(0, 2));</span>
+<span class="fc" id="L30">		assertEquals(&quot;Kertolasku testi 2*2&quot;, 2*2, mGame.count(2, 2));</span>
+<span class="fc" id="L31">	}</span>
+
+	@Test
+	public void giveRandomTest(){
+<span class="fc" id="L35">		int high = 9;</span>
+<span class="fc" id="L36">		int low = 1;</span>
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">		assertTrue(&quot;Random below max&quot;, high &gt;= mGame.giveRandom());</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">		assertTrue(&quot;Random below max&quot;, low &lt;= mGame.giveRandom());</span>
+<span class="fc" id="L39">	}</span>
+
+	@Test
+	public void getTasksTest(){
+<span class="fc" id="L43">		assertEquals(&quot;Random parametri palauttaa 10 lukua&quot;, 10, mGame.getTasks(&quot;Random&quot;).size());</span>
+<span class="fc" id="L44">		assertEquals(&quot;Muu parametri palauttaa 5 lukua&quot;, 5, mGame.getTasks(&quot;1&quot;).size());</span>
+<span class="fc" id="L45">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

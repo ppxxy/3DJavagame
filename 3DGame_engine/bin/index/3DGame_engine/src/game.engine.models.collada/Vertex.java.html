@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Vertex.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.models.collada</a> &gt; <span class="el_source">Vertex.java</span></div><h1>Vertex.java</h1><pre class="source lang-java linenums">package game.engine.models.collada;
+
+import game.engine.models.collada.SkinningData.VertexSkinData;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.lwjgl.util.vector.Vector3f;
+
+public class Vertex {
+
+	/**
+	 * Default values of texturedIndex and normalIndex are -1.
+	 */
+	private static final int NO_INDEX = -1;
+	
+	private Vector3f position;
+<span class="nc" id="L18">	private int textureIndex = NO_INDEX, normalIndex = NO_INDEX;</span>
+	/**
+	 * Duplicate vertices are vertices that share same position, but have different texture and normal data.
+	 */
+<span class="nc" id="L22">	private Vertex duplicateVertex = null;</span>
+	private int index;
+	private float length;
+<span class="nc" id="L25">	private List&lt;Vector3f&gt; tangents = new ArrayList&lt;Vector3f&gt;();</span>
+<span class="nc" id="L26">	private Vector3f averagedTangent = new Vector3f(0, 0, 0);</span>
+	
+	private VertexSkinData skinningData;
+	
+	/**
+	 * Vertex object represents one Vertex point on collada model object.
+	 * @param index Index of this vertex. Running number on model.
+	 * @param position Vertex position in three dimensional space.
+	 * @param weightsData Weight values with different joints.
+	 */
+<span class="nc" id="L36">	public Vertex(int index, Vector3f position, VertexSkinData skinningData){</span>
+<span class="nc" id="L37">		this.index = index;</span>
+<span class="nc" id="L38">		this.skinningData = skinningData;</span>
+<span class="nc" id="L39">		this.position = position;</span>
+<span class="nc" id="L40">		this.length = position.length();</span>
+<span class="nc" id="L41">	}</span>
+	
+	/**
+	 * Method used to receive skinning data of this vertex.
+	 * @return Skinning data.
+	 */
+	public VertexSkinData getSkinData(){
+<span class="nc" id="L48">		return skinningData;</span>
+	}
+	
+	/**
+	 * Method used to add this vertex new tangent vector.
+	 * @param tangent Vector to be added.
+	 */
+	public void addTangent(Vector3f tangent){
+<span class="nc" id="L56">		tangents.add(tangent);</span>
+<span class="nc" id="L57">	}</span>
+	
+	/**
+	 * Updates average tangent using current tangent vectors.
+	 */
+	public void averageTangents(){
+<span class="nc bnc" id="L63" title="All 2 branches missed.">		if(tangents.isEmpty()){</span>
+<span class="nc" id="L64">			return;</span>
+		}
+<span class="nc bnc" id="L66" title="All 2 branches missed.">		for(Vector3f tangent : tangents){</span>
+<span class="nc" id="L67">			Vector3f.add(averagedTangent, tangent, averagedTangent);</span>
+		}
+<span class="nc" id="L69">		averagedTangent.normalise();</span>
+<span class="nc" id="L70">	}</span>
+	
+	/**
+	 * Used to receive current average tangent. To update average tangent, see averageTangents();
+	 * @return Averaged tangent vector.
+	 */
+	public Vector3f getAverageTangent(){
+<span class="nc" id="L77">		return averagedTangent;</span>
+	}
+	
+	/**
+	 * Method to get this vertice's index in the mesh that it belongs to.
+	 * @return Index of this vertex.
+	 */
+	public int getIndex(){
+<span class="nc" id="L85">		return index;</span>
+	}
+	
+	/**
+	 * The length of this vertices position vector. In other words, the distance from the origin.
+	 * @return distance from the origin.
+	 */
+	public float getLength(){
+<span class="nc" id="L93">		return length;</span>
+	}
+	
+	/**
+	 * Method used to define, if vertex has been applied texture and normal data.
+	 * @return True, if vertex has texture and index data applied. False otherwise.
+	 */
+	public boolean isSet(){
+<span class="nc bnc" id="L101" title="All 4 branches missed.">		return textureIndex != NO_INDEX &amp;&amp; normalIndex != NO_INDEX;</span>
+	}
+	
+	/**
+	 * Check if vertex has given texture and normal indices.
+	 * @param textureIndexOther Texture index to compare with.
+	 * @param normalIndexOther Normal index to compare with.
+	 * @return True if texture and normal indices match, false otherwise.
+	 */
+	public boolean compareTextureAndNormal(int textureIndexOther, int normalIndexOther){
+<span class="nc bnc" id="L111" title="All 4 branches missed.">		return textureIndexOther == textureIndex &amp;&amp; normalIndexOther == normalIndex;</span>
+	}
+	
+	/**
+	 * Method to set this vertex's texture index.
+	 * @param textureIndex Texture index this vector points to.
+	 */
+	public void setTextureIndex(int textureIndex){
+<span class="nc" id="L119">		this.textureIndex = textureIndex;</span>
+<span class="nc" id="L120">	}</span>
+	
+	/**
+	 * Method to set this vertex's normal index.
+	 * @param normalIndex Normal index this vector points to.
+	 */
+	public void setNormalIndex(int normalIndex){
+<span class="nc" id="L127">		this.normalIndex = normalIndex;</span>
+<span class="nc" id="L128">	}</span>
+	
+	/**
+	 * Method to get this vertex's position.
+	 * @return Position of this vertex.
+	 */
+	public Vector3f getPosition(){
+<span class="nc" id="L135">		return position;</span>
+	}
+	
+	/**
+	 * Method to get texture point this vertex refers to.
+	 * @return Index of texture point this vertex refers to.
+	 */
+	public int getTextureIndex(){
+<span class="nc" id="L143">		return textureIndex;</span>
+	}
+	
+	/**
+	 * Method to get normal this vertex refers to.
+	 * @return Index of normal this vertex refers to.
+	 */
+	public int getNormalIndex(){
+<span class="nc" id="L151">		return normalIndex;</span>
+	}
+	
+	/**
+	 * Method to get this vertex's duplicate vertex. Duplicate vertex share the same location, but has different Texture and Normal data.
+	 * All vertices that share the same location are stacked using duplicateVertex values.
+	 * @return Duplicate vertex of this vertex.
+	 */
+	public Vertex getDuplicateVertex(){
+<span class="nc" id="L160">		return duplicateVertex;</span>
+	}
+	
+	/**
+	 * Method to set this vertex's duplicate vertex. Duplicate vertex share the same location, but has different Texture and Normal data.
+	 * All vertices that share the same location are stacked using duplicateVertex values.
+	 * @param duplicateVertex Duplicate vertex to set.
+	 */
+	public void setDuplicateVertex(Vertex duplicateVertex){
+<span class="nc" id="L169">		this.duplicateVertex = duplicateVertex;</span>
+<span class="nc" id="L170">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

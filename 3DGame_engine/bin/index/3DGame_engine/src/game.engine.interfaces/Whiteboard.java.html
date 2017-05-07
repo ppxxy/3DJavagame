@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Whiteboard.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.interfaces</a> &gt; <span class="el_source">Whiteboard.java</span></div><h1>Whiteboard.java</h1><pre class="source lang-java linenums"><span class="nc" id="L1">package game.engine.interfaces;</span>
+
+import java.awt.image.RenderedImage;
+import Localization.Localization;
+import Networking.WhiteboardConnection;
+import game.connection.objects.ImageData;
+import game.connection.objects.RequestData;
+import game.connection.objects.WaiterObject;
+import game.engine.main.Main;
+import javafx.application.Application;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+
+public class Whiteboard extends Application{
+
+    Image img;
+<span class="nc" id="L45">    Canvas canvas = new Canvas(800, 500);</span>
+    GraphicsContext gc;
+<span class="nc" id="L47">    ColorPicker cPicker = new ColorPicker();</span>
+<span class="nc" id="L48">    ChoiceBox&lt;Integer&gt; cb = new ChoiceBox&lt;Integer&gt;();</span>
+<span class="nc" id="L49">    Image penImage = new Image(getClass().getResourceAsStream(&quot;/res/paintbrush.png&quot;));</span>
+<span class="nc" id="L50">    Image eraserImage = new Image(getClass().getResourceAsStream(&quot;/res/eraser.png&quot;));</span>
+<span class="nc" id="L51">    ToggleGroup tGroup = new ToggleGroup();</span>
+<span class="nc" id="L52">    ToggleButton penButton = new ToggleButton();</span>
+<span class="nc" id="L53">    ToggleButton eraserButton = new ToggleButton();</span>
+<span class="nc" id="L54">    Boolean erase = false; //tells if eraser is selected</span>
+
+<span class="nc" id="L56">    Button clearButton = new Button(Localization.getBundle().getString(&quot;clear_canvas&quot;));</span>
+
+    Thread thread;
+
+<span class="nc" id="L60">    BorderPane pane = new BorderPane();</span>
+<span class="nc" id="L61">    Scene scene = new Scene(pane, 800, 500);</span>
+<span class="nc" id="L62">    HBox hbox = new HBox();</span>
+<span class="nc" id="L63">    GridPane grid = new GridPane();</span>
+<span class="nc" id="L64">    GridPane grid2 = new GridPane();</span>
+<span class="nc" id="L65">    GridPane grid3 = new GridPane();</span>
+<span class="nc" id="L66">    GridPane grid4 = new GridPane();</span>
+<span class="nc" id="L67">    Label label = new Label(Localization.getBundle().getString(&quot;brush_eraser&quot;)+&quot;: &quot;);</span>
+
+<span class="nc" id="L69">    private final WaiterObject&lt;ImageData&gt; waitForImage = new WaiterObject&lt;ImageData&gt;(ImageData.class){</span>
+
+		@Override
+		public void onReceive(ImageData data) {
+<span class="nc" id="L73">			System.out.println(&quot;ennen&quot;);</span>
+<span class="nc" id="L74">			img = (Image) data.toRenderedImage();</span>
+<span class="nc" id="L75">			System.out.println(&quot;jälkeen&quot;);</span>
+<span class="nc" id="L76">			synchronized(thread){</span>
+<span class="nc" id="L77">				System.out.println(&quot;b&quot;);</span>
+<span class="nc" id="L78">				thread.notify();</span>
+			}
+<span class="nc" id="L80">		}</span>
+
+	};
+
+<span class="nc" id="L84">    public Whiteboard(){</span>
+
+<span class="nc" id="L86">    }</span>
+
+
+    @Override
+    public void start(final Stage stage){
+<span class="nc" id="L91">    	thread = Thread.currentThread();</span>
+        try {
+<span class="nc" id="L93">            stage.setResizable(false);</span>
+<span class="nc" id="L94">            pane.setStyle(&quot;-fx-background-color: white&quot;); //set background and eraser the same colour.</span>
+<span class="nc" id="L95">            gc = canvas.getGraphicsContext2D();</span>
+<span class="nc" id="L96">            gc.setStroke(Color.BLACK);</span>
+<span class="nc" id="L97">            gc.setLineWidth(1);</span>
+<span class="nc" id="L98">            Main.connection.send(RequestData.REQUEST_IMAGE);</span>
+<span class="nc" id="L99">			Main.connection.addWaiter(waitForImage);</span>
+<span class="nc" id="L100">			System.out.println(&quot;Waiting for image.&quot;);</span>
+<span class="nc" id="L101">			synchronized(thread){</span>
+				try{
+<span class="nc" id="L103">					thread.wait();</span>
+<span class="nc" id="L104">				} catch(InterruptedException e){</span>
+<span class="nc" id="L105">					e.printStackTrace();</span>
+				}
+			}
+			//while(img == null);
+<span class="nc" id="L109">			System.out.println(&quot;image received&quot;);</span>
+<span class="nc" id="L110">            gc.drawImage(img, 0, 0);</span>
+<span class="nc" id="L111">            canvas.widthProperty().bind(pane.widthProperty());</span>
+
+
+<span class="nc" id="L114">            cPicker.setValue(Color.BLACK); //default value for the ColorPicker.</span>
+<span class="nc" id="L115">            cPicker.setOnAction(new EventHandler&lt;ActionEvent&gt;() {</span>
+                @Override
+                public void handle(ActionEvent e) {
+<span class="nc bnc" id="L118" title="All 2 branches missed.">                    if(!erase){</span>
+<span class="nc" id="L119">                        gc.setStroke(cPicker.getValue());</span>
+                    }
+<span class="nc" id="L121">                }</span>
+            });
+
+            //add different integers to the choiceBox.
+<span class="nc" id="L125">            cb.getItems().addAll(1,2,3,4,5,6,7,8,9,10);</span>
+<span class="nc" id="L126">            cb.setValue(1); //default value</span>
+            //adding listener to the ChoiceBox to change the width of the brush based on the selected value.
+<span class="nc" id="L128">            cb.valueProperty().addListener(new InvalidationListener() {</span>
+                @Override
+                public void invalidated(Observable e) {
+<span class="nc" id="L131">                    int width = cb.getValue();</span>
+<span class="nc" id="L132">                    gc.setLineWidth(width);</span>
+<span class="nc" id="L133">                }</span>
+            });
+
+            //handles what to do when mouse is pressed (starting to draw)
+<span class="nc" id="L137">            canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler&lt;MouseEvent&gt;() {</span>
+                @Override
+                public void handle(MouseEvent e) {
+<span class="nc" id="L140">                    gc.beginPath(); //start a new line when mouse is pressed again, without the old line would always be connected to the new mouseclick location automatically.</span>
+<span class="nc" id="L141">                    gc.lineTo(e.getX(), e.getY());</span>
+<span class="nc" id="L142">                    gc.stroke();</span>
+<span class="nc" id="L143">                }</span>
+            });
+
+            //handles what to do when mouse is dragged on the screen
+<span class="nc" id="L147">            canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, new EventHandler&lt;MouseEvent&gt;() {</span>
+                @Override
+                public void handle(MouseEvent e) {
+<span class="nc" id="L150">                    gc.lineTo(e.getX(), e.getY());</span>
+<span class="nc" id="L151">                    gc.stroke();</span>
+<span class="nc" id="L152">                }</span>
+            });
+
+<span class="nc" id="L155">            eraserButton.setUserData(Color.WHITE); //set background and eraser the same colour.</span>
+
+            //checks when and which togglebutton is pressed and executes the lines if there are changes.
+<span class="nc" id="L158">            tGroup.selectedToggleProperty().addListener(new ChangeListener&lt;Toggle&gt;(){</span>
+                public void changed(ObservableValue&lt;? extends Toggle&gt; ov,
+                    Toggle toggle, Toggle new_toggle) {
+<span class="nc bnc" id="L161" title="All 2 branches missed.">                        if (new_toggle == eraserButton){</span>
+<span class="nc" id="L162">                            erase = true;</span>
+<span class="nc" id="L163">                            gc.setStroke((Color) tGroup.getSelectedToggle().getUserData());</span>
+<span class="nc" id="L164">                        } else {</span>
+<span class="nc" id="L165">                            erase = false;</span>
+<span class="nc" id="L166">                            gc.setStroke(cPicker.getValue());</span>
+                        }
+
+<span class="nc" id="L169">                     }</span>
+            });
+
+<span class="nc" id="L172">            clearButton.setOnAction(new EventHandler&lt;ActionEvent&gt;() {</span>
+                @Override public void handle(ActionEvent e) {
+<span class="nc bnc" id="L174" title="All 2 branches missed.">                    if(WBConfirmationBox.Display()){</span>
+<span class="nc" id="L175">                        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight()); //Clears the whole canvas</span>
+                    }
+<span class="nc" id="L177">                }</span>
+            });
+
+            //add image to the toggleButtons.
+<span class="nc" id="L181">            ImageView penIV = new ImageView(penImage);</span>
+<span class="nc" id="L182">            ImageView eraserIV = new ImageView(eraserImage);</span>
+<span class="nc" id="L183">            penButton.setGraphic(penIV);</span>
+<span class="nc" id="L184">            eraserButton.setGraphic(eraserIV);</span>
+
+<span class="nc" id="L186">            penButton.setToggleGroup(tGroup); //make the togglebuttons work like radiobuttons.</span>
+<span class="nc" id="L187">            penButton.setSelected(true); //pen is selected when the program is opened.</span>
+<span class="nc" id="L188">            eraserButton.setToggleGroup(tGroup);</span>
+
+            //layout of the buttons and boxes.
+<span class="nc" id="L191">            grid.addRow(0, cPicker);</span>
+<span class="nc" id="L192">            grid.setHgap(20);</span>
+<span class="nc" id="L193">            grid.setAlignment(Pos.TOP_LEFT);</span>
+<span class="nc" id="L194">            grid.setPadding(new Insets(20,0,0,20));</span>
+
+<span class="nc" id="L196">            grid2.addRow(0, label, cb);</span>
+<span class="nc" id="L197">            grid2.setAlignment(Pos.TOP_LEFT);</span>
+<span class="nc" id="L198">            grid2.setPadding(new Insets(20,0,0,20));</span>
+
+<span class="nc" id="L200">            grid3.addRow(0, penButton, eraserButton);</span>
+<span class="nc" id="L201">            grid3.setHgap(5);</span>
+<span class="nc" id="L202">            grid3.setAlignment(Pos.TOP_LEFT);</span>
+<span class="nc" id="L203">            grid3.setPadding(new Insets(20,0,0,20));</span>
+
+<span class="nc" id="L205">            grid4.addRow(0, clearButton);</span>
+<span class="nc" id="L206">            grid4.setAlignment(Pos.TOP_RIGHT);</span>
+<span class="nc" id="L207">            grid4.setPadding(new Insets(20,0,0,40));</span>
+
+
+
+
+<span class="nc" id="L212">            hbox.getChildren().addAll(grid, grid2, grid3, grid4);</span>
+<span class="nc" id="L213">            hbox.setPadding(new Insets(0,0,10,0));</span>
+
+<span class="nc" id="L215">            Line line = new Line(0,0,800,0);</span>
+<span class="nc" id="L216">            pane.setTop(hbox);</span>
+<span class="nc" id="L217">            pane.setCenter(line);</span>
+<span class="nc" id="L218">            pane.setBottom(canvas);</span>
+
+<span class="nc" id="L220">            stage.setScene(scene);</span>
+<span class="nc" id="L221">            stage.show();</span>
+
+            //canvas is saved as a picture when the window is closed.
+<span class="nc" id="L224">            stage.setOnCloseRequest(new EventHandler&lt;WindowEvent&gt;() {</span>
+                  public void handle(WindowEvent we) {
+<span class="nc" id="L226">                      captureAndSaveDisplay();</span>
+<span class="nc" id="L227">                      stage.close();</span>
+<span class="nc" id="L228">                  }</span>
+              });
+
+<span class="nc" id="L231">        } catch(Exception e){</span>
+<span class="nc" id="L232">            e.printStackTrace();</span>
+        }
+
+<span class="nc" id="L235">    }</span>
+
+
+    public void captureAndSaveDisplay(){
+<span class="nc" id="L239">    	WritableImage writableImage = new WritableImage((int)canvas.getWidth(),</span>
+<span class="nc" id="L240">				(int)canvas.getHeight());</span>
+<span class="nc" id="L241">		writableImage = canvas.snapshot(null, writableImage);</span>
+<span class="nc" id="L242">		RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);</span>
+
+<span class="nc" id="L244">		String dataurl = WhiteboardConnection.imageToDataUrl(renderedImage);</span>
+<span class="nc" id="L245">		Main.connection.send(new ImageData(dataurl));</span>
+<span class="nc" id="L246">    }</span>
+
+
+    public static void main(String[] args) {
+<span class="nc" id="L250">        launch(args);</span>
+<span class="nc" id="L251">    }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>
