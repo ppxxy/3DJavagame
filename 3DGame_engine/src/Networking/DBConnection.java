@@ -16,6 +16,13 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
+/**
+* <h1>DBConnection</h1>
+* This class handles the connection to a database.
+* <p>
+
+* @version 1.0
+*/
 
 public class DBConnection {
 	private Connection conn;
@@ -32,6 +39,10 @@ public class DBConnection {
 		}
 	}
 
+	/**
+	   * Creates a new account to the Database
+	   * @return boolean Returns true if the addition was successful, otherwise returns false.
+	   */
 	public boolean createAccount() {
 		PreparedStatement stmt = null;
 		try {
@@ -56,8 +67,15 @@ public class DBConnection {
 		}
 		return false;
 	}
-	
-	//updates the picture in database with the latest version every time user closes the whiteboard.
+
+
+	/**
+	 * Updates the picture of the Whiteboard canvas in database
+	 * with the latest version every time user closes the whiteboard.
+	 *
+	 * @deprecated The picture isn't saved to a database anymore.
+	 */
+	@Deprecated
 	public void updateWhiteboard(){
 		FileInputStream fis = null;
 	    PreparedStatement stmt = null;
@@ -85,7 +103,12 @@ public class DBConnection {
 	    }
 	}
 
-	
+	/**
+	 * Inserts a picture captured from a canvas in the Whiteboard class to the database.
+	 *
+	 * @deprecated The picture isn't saved to a database anymore.
+	 */
+	@Deprecated
 	public void insertWhiteboard(){
 
 	    FileInputStream fis = null;

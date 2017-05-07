@@ -13,6 +13,16 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+/**
+* <h1>WBConfirmationBox</h1>
+* Creates a confirmation box for when the user wants to
+* clear the canvas in the Whiteboard class.
+* <p>
+
+* @author  Tomi Lehto
+* @version 1.0
+*/
+
 public class WBConfirmationBox {
 	private static Stage window;
 	private static boolean clear = false;

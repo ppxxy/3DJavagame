@@ -11,9 +11,15 @@ import org.lwjgl.util.vector.Vector2f;
 import game.engine.textures.Texture;
 
 /**
- *
- * @author Tomi
- */
+* <h1>InventoryInterface</h1>
+* Creates an interface for the inventory in game and adds a mouseaction listener to it
+* <p>
+
+* @author  Tomi Lehto
+* @version 1.0
+* @deprecated Item/Inventory system isn't in use
+*/
+
 public class InventoryInterface extends Interface implements ActiveInterface{
 
 	public InventoryInterface(Texture texture, Vector2f position, Vector2f size) {

@@ -117,6 +117,7 @@ public class MathGUI extends Application implements MathGUI_IF{
 		stage.setScene(sceneMain);
 		stage.show();
 
+		//starts the exercise.
 		buttonMain.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override public void handle(ActionEvent e) {
 		    	correctAnswers = 0;
@@ -129,6 +130,7 @@ public class MathGUI extends Application implements MathGUI_IF{
 		    }
 		});
 
+		//sends the users answer to MathGame and prints if it was correct or not.
 		answerButton.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override public void handle(ActionEvent e) {
 		    	if(!StringUtils.isNumeric(answerField.getText())){
@@ -149,6 +151,7 @@ public class MathGUI extends Application implements MathGUI_IF{
 		    }
 		});
 
+		//loads a new exercise after the previous has been answered.
 		nextButton.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override public void handle(ActionEvent e) {
 		    	if(apu < 5){
@@ -167,18 +170,21 @@ public class MathGUI extends Application implements MathGUI_IF{
 		    }
 		});
 
+		//starts a new test after the user is done with the old one.
 		newTestButton.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override public void handle(ActionEvent e) {
 		    	stage.setScene(sceneMain);
 		    }
 		});
 
+		//exits the program.
 		exitButton.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override public void handle(ActionEvent e) {
 		    	Platform.exit();
 		    }
 		});
 
+		//allows the use of enter key to submit (click answer button) textfield input.
 		answerField.setOnKeyPressed(new EventHandler<KeyEvent>()
 	    {
 	        @Override
@@ -195,10 +201,16 @@ public class MathGUI extends Application implements MathGUI_IF{
 
 	}
 
+	/**
+	   * Updates the labels in the gui for the new task values.
+	   */
 	public void updateTestLabel(){
 		labelTest.setText(value1+" x "+value2+" = ");
 	}
 
+	/**
+	   * Switch the visibility of answer and next buttons.
+	   */
 	public void switchButtons(){
 		if(answerVisible){
 			answerButton.setVisible(false);
@@ -212,6 +224,9 @@ public class MathGUI extends Application implements MathGUI_IF{
 
 	}
 
+	/**
+	   * This method is used to print the task generated in MathGame to the GUI.
+	   */
 	@Override
 	public void printTask(){
 		value2 = list.get(apu);
@@ -237,7 +252,7 @@ public class MathGUI extends Application implements MathGUI_IF{
 
 	/**
 	 *
-	 * @return value1 of the current multiplication exercise (1-9)
+	 * @return value1 of the current multiplication exercise (value between 1 and 9)
 	 */
 	@Override
 	public int getValue1(){
@@ -246,7 +261,7 @@ public class MathGUI extends Application implements MathGUI_IF{
 
 	/**
 	 *
-	 * @return value2 of the current multiplication exercise (1-9)
+	 * @return value2 of the current multiplication exercise (value between 1 and 9)
 	 */
 	@Override
 	public int getValue2(){

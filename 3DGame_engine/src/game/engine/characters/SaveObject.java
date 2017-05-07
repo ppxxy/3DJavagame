@@ -6,6 +6,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+/**
+* <h1>SaveObject</h1>
+* Saves CharacterData objects containing information and experience of characters to the harddrive.
+* <p>
+
+* @author  Tomi Lehto
+* @version 1.0
+*/
+
 public class SaveObject {
 	private String filename = "C:/Users/Tomi/git/3DJavaGame/3DGame_engine/src/res/characterData.ser";
 
@@ -19,6 +28,10 @@ public class SaveObject {
 	}
 
 
+	/**
+	   * Writes the character data to the harddrive
+	   * @param character CharacterData that is to be saved on the disk
+	   */
 	public void writeCharacter(CharacterData character){
 		FileOutputStream fout = null;
 		ObjectOutputStream oout = null;
@@ -55,6 +68,10 @@ public class SaveObject {
 		}
 	}
 
+	/**
+	   * Reads the file where characterData is saved
+	   * @return characterData Returns characterData that is saved on the disk
+	   */
 	public CharacterData readCharacter(){
 		CharacterData character = null;
 

@@ -10,8 +10,23 @@ import javax.xml.bind.DatatypeConverter;
 
 import javafx.scene.image.Image;
 
+/**
+* <h1>WhiteboardConnection</h1>
+* This class handles the conversion of image to dataUrl and
+* dataUrl to image so that it can be sent to the server.
+* <p>
+
+* @author  Tomi Lehto
+* @version 1.0
+*/
+
 public class WhiteboardConnection {
 
+	/**
+	   * Converts an image to dataUrl String.
+	   * @param img Image that is converted to dataUrl.
+	   * @return String Returns the dataUrl String of the given image.
+	   */
 	public static String imageToDataUrl(RenderedImage img) {
 	    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
@@ -28,6 +43,11 @@ public class WhiteboardConnection {
 	    return dataUrl;
 	}
 
+	/**
+	   * Converts a dataUrl String to an image.
+	   * @param String DataUrl String that is to be converted to an image.
+	   * @return Image Returns the image of the given dataUrl.
+	   */
 	public static Image dataUrlToImage(String dataUrl) {
 	    String data = dataUrl.substring(dataUrl.indexOf(',')+1);
 	    byte[] bytes = DatatypeConverter.parseBase64Binary(data);

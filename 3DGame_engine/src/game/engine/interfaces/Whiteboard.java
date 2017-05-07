@@ -40,6 +40,17 @@ import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+/**
+* <h1>Whiteboard</h1>
+* The Whiteboard program implements an application that
+* can used to draw on a canvas that is saved and loaded
+* from server everytime the app is used
+* <p>
+
+* @author  Tomi Lehto
+* @version 1.0
+*/
+
 public class Whiteboard extends Application{
 
     Image img;
@@ -67,8 +78,10 @@ public class Whiteboard extends Application{
     GridPane grid4 = new GridPane();
     Label label = new Label(Localization.getBundle().getString("brush_eraser")+": ");
 
+    //WaiterObject waits for the app to receive an image of canvas from the server.
     private final WaiterObject<ImageData> waitForImage = new WaiterObject<ImageData>(ImageData.class){
 
+    	//wakes up the app when image is received.
 		@Override
 		public boolean onReceive(ImageData data) {
 			img = (Image) data.toRenderedImage();
@@ -94,8 +107,8 @@ public class Whiteboard extends Application{
             gc = canvas.getGraphicsContext2D();
             gc.setStroke(Color.BLACK);
             gc.setLineWidth(1);
-            Main.connection.send(RequestData.REQUEST_IMAGE);
-			Main.connection.addWaiter(waitForImage);
+            Main.connection.send(RequestData.REQUEST_IMAGE); //request the canvas image from server.
+			Main.connection.addWaiter(waitForImage); //adds a waiter that will wait until the image is received.
 			synchronized(thread){
 				try{
 					thread.wait();
@@ -103,7 +116,6 @@ public class Whiteboard extends Application{
 					e.printStackTrace();
 				}
 			}
-			//while(img == null);
             gc.drawImage(img, 0, 0);
             canvas.widthProperty().bind(pane.widthProperty());
 
@@ -166,6 +178,7 @@ public class Whiteboard extends Application{
                      }
             });
 
+            //clears the canvas
             clearButton.setOnAction(new EventHandler<ActionEvent>() {
                 @Override public void handle(ActionEvent e) {
                     if(WBConfirmationBox.Display()){
@@ -237,7 +250,9 @@ public class Whiteboard extends Application{
 
     }
 
-
+    /**
+	   * Captures and saves the current canvas and sends it to the server
+	   */
     public void captureAndSaveDisplay(){
     	WritableImage writableImage = new WritableImage((int)canvas.getWidth(),
 				(int)canvas.getHeight());

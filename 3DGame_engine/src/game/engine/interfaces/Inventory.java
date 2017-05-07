@@ -7,6 +7,16 @@ import game.engine.interfaces.Interface;
 import game.engine.main.Main;
 import game.engine.textures.Texture;
 
+/**
+* <h1>InventoryInterface</h1>
+* Creates an interface for the button that opens the inventory interface in game.
+* <p>
+
+* @author  Tomi Lehto
+* @version 1.0
+* @deprecated Item/Inventory system isn't in use
+*/
+
 public class Inventory extends Interface implements ActiveInterface{
 
 
