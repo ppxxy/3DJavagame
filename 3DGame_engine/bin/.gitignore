@@ -1,12 +1,13 @@
-/index/
+/game/
+/hibernate.cfg.xml
 /lib/
 /res/
+/index/
 /Dummies/
 /Networking/
-/game/
 /login/
 /mathgame/
 /report.dtd
-/test.xml
-/Localization/
+/temp_chunk_data/
 /test.csv
+/test.xml

@@ -38,7 +38,7 @@ public class MousePicker {
 		if(further){
 			float pitch = (float) Math.toRadians(camera.getPitch());
 			float yaw = (float) Math.toRadians(camera.getYaw());
-			System.out.println(currentRay.z);
+			//System.out.println(currentRay.z);
 			distance /= (Math.sin(pitch)*(currentRay.y)+Math.cos(pitch)*(Math.cos(yaw)*currentRay.z-Math.sin(yaw)*currentRay.x));
 		}
 		return getIntersectionPoint(distance);

@@ -35,7 +35,7 @@ public class ObjectBuffer {
 	}
 
 	public void bind(int width, int height){
-        GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, idBuffer);
+        GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, idBuffer);
         GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, idData);
         GL11.glViewport(0, 0, width, height);
     }

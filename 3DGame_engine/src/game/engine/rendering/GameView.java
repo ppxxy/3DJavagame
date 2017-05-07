@@ -158,7 +158,6 @@ public class GameView extends View{
 			}
 
 			int id = objectIdAt(Mouse.getX(), Mouse.getY());
-			System.out.println("Clicked object: " +id);
 			if(ObjectActivityHandler.doActivity(id)){
 				//System.out.println("Clicked object: " +id);
 				return;
@@ -166,6 +165,7 @@ public class GameView extends View{
 			//System.out.println("Clicked object: " +id);
 
 			float distance = distanceAt(Mouse.getX(), Mouse.getY());
+			System.out.println(distance);
 			if(distance < Camera.FAR_PLANE){
 				Vector2f location = mousePicker.update(distance);
 				Main.connection.send(new MovementDestination.MovementTo(location));

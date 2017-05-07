@@ -91,7 +91,11 @@ public class Main {
 
 		});
 
+		TexturedModel tree_model1 = new TexturedModel(new OBJLoader("/res/tree1.obj").loadModel(), Texture.loadTexture("/res/Walnut_L.png").load());
+		ObjectEntity tree1 = new ObjectEntity(tree_model1, new Vector3f(40, 20, 40), 0, 0, 0, 60);
+
 		view.addEntity(taulu);
+		view.addEntity(tree1);
 
 		activeView = view;
 
