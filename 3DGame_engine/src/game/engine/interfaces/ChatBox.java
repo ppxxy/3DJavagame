@@ -16,9 +16,7 @@ import game.engine.textures.Texture;
 public class ChatBox extends Interface {
 	private Vector2f position;
 	private Vector2f size;
-	private Interface ifce;
     private BufferedImage chatbox;
-    private String message;
     private Chat chat;
     private Color fontcolor;
     private Font font;
@@ -31,7 +29,6 @@ public class ChatBox extends Interface {
     public ChatBox(Chat chat){
     	super(Texture.loadTexture(new BufferedImage(1000,300,BufferedImage.TYPE_INT_ARGB)).load(),new Vector2f(0.0f,-0.65f),new Vector2f(0.4f,0.25f));
     	this.chat=chat;
-    	this.message="";
     	this.position=new Vector2f(0.0f,-0.65f);
     	this.size=new Vector2f(0.4f,0.25f);
     	this.chatbox=new BufferedImage(1000,300,BufferedImage.TYPE_INT_ARGB);
@@ -123,7 +120,7 @@ public class ChatBox extends Interface {
     }
     public void update(){
     	super.getTexture().delete();
-    	super.setTexture(Texture.loadTexture(chatbox).nearestFiltering().load());
+    	super.setTexture(Texture.loadTexture(chatbox).anisotropic().clampEdges().load());
     }
     public BufferedImage getImage(){
     	return this.chatbox;

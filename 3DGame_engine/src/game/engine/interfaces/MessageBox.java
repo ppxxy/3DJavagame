@@ -10,13 +10,13 @@ import org.lwjgl.util.vector.Vector2f;
 
 import Networking.Chat;
 import Networking.ChatMessage;
+import game.engine.characters.Update;
 import game.engine.textures.Texture;
 
-public class MessageBox extends Interface {
+public class MessageBox extends Interface implements Update {
 	private Vector2f position;
 	private Vector2f size;
-	private Interface ifce;
-    private BufferedImage messagebox;
+	private BufferedImage messagebox;
     private String message;
     private Chat chat;
     private Color fontcolor;
@@ -27,7 +27,7 @@ public class MessageBox extends Interface {
 
 
     public MessageBox(Chat chat){
-    	super(Texture.loadTexture(new BufferedImage(1000,300,BufferedImage.TYPE_INT_ARGB)).load(),new Vector2f(0.0f,-0.95f),new Vector2f(0.4f,0.05f));
+    	super(Texture.loadTexture(new BufferedImage(1000,300,BufferedImage.TYPE_INT_ARGB)).clampEdges().load(),new Vector2f(0.0f,-0.95f),new Vector2f(0.4f,0.05f));
     	this.chat=chat;
     	this.message="";
     	this.position=new Vector2f(0.0f,-0.90f);
@@ -63,7 +63,10 @@ public class MessageBox extends Interface {
     }
     public void activate(){;
 		this.backgroundcolor=new Color(119,136,153,150);
+		clearInput();
     	drawString("*",0,70);
+    	message="";
+    	//clearInput();
     }
     public void deactivate(){
     	this.backgroundcolor=new Color(0,0,0,150);
@@ -75,15 +78,15 @@ public class MessageBox extends Interface {
     	this.message=msg;
     }
     public void backspace(){
-    	if(message.length()>1){
+    	if(message.length()>0){
     		message=message.substring(0, message.length()-1);
     		clearInput();
     		drawString(message+"*",0,70);
     	}
     }
     public void send(){
-    	if(message.length()>1){
-    		chat.sendMessage(message.substring(1,message.length()));
+    	if(message.length()>0){
+    		chat.sendMessage(message.substring(0,message.length()));
     		message="";
     		clearInput();
     	}
@@ -110,9 +113,10 @@ public class MessageBox extends Interface {
     	g.drawString(string ,x ,y);
     	g.dispose();
     }
+    @Override
     public void update(){
     	super.getTexture().delete();
-    	super.setTexture(Texture.loadTexture(messagebox).nearestFiltering().load());
+    	super.setTexture(Texture.loadTexture(messagebox).anisotropic().load());
     }
     public BufferedImage getImage(){
     	return this.messagebox;
@@ -122,8 +126,5 @@ public class MessageBox extends Interface {
     }
     public Vector2f getPosition(){
     	return this.position;
-    }
-    public Interface getInterface(){
-    	return this.ifce;
     }
 }
