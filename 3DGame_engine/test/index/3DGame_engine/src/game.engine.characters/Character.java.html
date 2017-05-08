@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Character.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.characters</a> &gt; <span class="el_source">Character.java</span></div><h1>Character.java</h1><pre class="source lang-java linenums">package game.engine.characters;
+
+import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
+
+import game.engine.entities.AnimatedEntity;
+import game.engine.entities.Movement;
+import game.engine.main.Main;
+import game.engine.models.AnimatedModel;
+import game.engine.models.Joint;
+import game.engine.models.VAO;
+import game.engine.models.collada.AnimatedModelData;
+import game.engine.models.collada.JointsData;
+import game.engine.models.collada.ModelLoader;
+import game.engine.textures.Texture;
+import game.engine.tools.GeneralSettings;
+
+public class Character extends AnimatedEntity{
+
+    private Movement movement;
+
+    public Character(int id, Vector3f position, float rotX, float rotY, float rotZ, float scale, AnimatedModel animatedModel) {
+<span class="nc" id="L23">        super(id, position, rotX, rotY, rotZ, scale, animatedModel);</span>
+<span class="nc" id="L24">    }</span>
+
+    @Override
+    public void update(){
+<span class="nc" id="L28">        super.update();</span>
+<span class="nc bnc" id="L29" title="All 2 branches missed.">        if(this.movement != null){</span>
+<span class="nc" id="L30">        	Vector2f move = this.movement.update();</span>
+<span class="nc bnc" id="L31" title="All 2 branches missed.">        	if(move == null){</span>
+<span class="nc" id="L32">        		this.movement = null;</span>
+<span class="nc" id="L33">        		return;</span>
+        	}
+<span class="nc" id="L35">        	this.position.set(move.x, Main.getGameView().getHeightAt(move.x, move.y), move.y);</span>
+<span class="nc" id="L36">        	this.setRotY(movement.getRotation());</span>
+        }
+<span class="nc" id="L38">    }</span>
+
+    public static Character loadCharacter(int id, String modelFile, String textureFile){
+<span class="nc" id="L41">        AnimatedModelData entityData = ModelLoader.loadColladaModel(modelFile, GeneralSettings.MAX_WEIGHTS);</span>
+<span class="nc" id="L42">        VAO vao = createVao(entityData.getMesh());</span>
+<span class="nc" id="L43">        Texture texture = loadTexture(textureFile);</span>
+<span class="nc" id="L44">        JointsData skeletonData = entityData.getJointsData();</span>
+<span class="nc" id="L45">        Joint rootJoint = createJoints(skeletonData.rootJoint);</span>
+<span class="nc" id="L46">        AnimatedModel model = new AnimatedModel(vao, texture, rootJoint, skeletonData.jointCount);</span>
+<span class="nc" id="L47">        return new Character(id, new Vector3f(1, 1, 1), 0, 0, 0, 1, model);</span>
+    }
+
+	public void setMovement(Movement movement) {
+<span class="nc" id="L51">		this.movement = movement;</span>
+<span class="nc" id="L52">	}</span>
+
+	public Vector2f getLocation(){
+<span class="nc" id="L55">		return new Vector2f(this.position.x, this.position.z);</span>
+	}
+
+	public void setMoveTo(long startTime, Vector2f destination, float speed) {
+<span class="nc" id="L59">		this.movement = new Movement(startTime, getLocation(), destination, speed);</span>
+<span class="nc" id="L60">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

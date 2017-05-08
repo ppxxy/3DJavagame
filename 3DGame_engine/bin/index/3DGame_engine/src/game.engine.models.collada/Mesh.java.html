@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Mesh.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.models.collada</a> &gt; <span class="el_source">Mesh.java</span></div><h1>Mesh.java</h1><pre class="source lang-java linenums">package game.engine.models.collada;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
+
+import game.engine.models.collada.SkinningData.VertexSkinData;
+import game.engine.models.xml.XmlNode;
+
+public class Mesh{
+
+	private static final int DIMENSIONS = 3;
+
+	private float[] vertices, textureCoords, normals, vertexWeights;
+	private int[] indices, jointIds;
+	private float furthestPoint;
+
+	/**
+	 * Mesh data of collada object
+	 * @param vertices Vertices array.
+	 * @param textureCoords Texture coodrinates array.
+	 * @param normals Normals array.
+	 * @param indices Indices array.
+	 * @param jointIds JointIds array.
+	 * @param vertexWeights Vertex weights array.
+	 * @param furthestPoint Furthest point of the model.
+	 */
+<span class="nc" id="L32">	public Mesh(float[] vertices, float[] textureCoords, float[] normals, int[] indices, int[] jointIds, float[] vertexWeights, int furthestPoint){</span>
+<span class="nc" id="L33">		this.vertices = vertices;</span>
+<span class="nc" id="L34">		this.textureCoords = textureCoords;</span>
+<span class="nc" id="L35">		this.normals = normals;</span>
+<span class="nc" id="L36">		this.indices = indices;</span>
+<span class="nc" id="L37">		this.jointIds = jointIds;</span>
+<span class="nc" id="L38">		this.vertexWeights = vertexWeights;</span>
+<span class="nc" id="L39">		this.furthestPoint = furthestPoint;</span>
+<span class="nc" id="L40">	}</span>
+
+	public float[] getVertices() {
+<span class="nc" id="L43">		return vertices;</span>
+	}
+
+	public float[] getTextureCoords() {
+<span class="nc" id="L47">		return textureCoords;</span>
+	}
+
+	public float[] getNormals() {
+<span class="nc" id="L51">		return normals;</span>
+	}
+
+	public float[] getVertexWeights() {
+<span class="nc" id="L55">		return vertexWeights;</span>
+	}
+
+	public int[] getIndices() {
+<span class="nc" id="L59">		return indices;</span>
+	}
+
+	public int[] getJointIds() {
+<span class="nc" id="L63">		return jointIds;</span>
+	}
+
+	public float getFurthestPoint() {
+<span class="nc" id="L67">		return furthestPoint;</span>
+	}
+
+	public int getVertexCount(){
+<span class="nc" id="L71">		return vertices.length / DIMENSIONS;</span>
+	}
+
+	public static class Loader{
+
+		private final XmlNode meshNode;
+		private final List&lt;VertexSkinData&gt; vertexWeights;
+
+		private float[] verticesArray, normalsArray, texturesArray, weightsArray;
+		private int[] indicesArray, jointIdsArray;
+
+<span class="nc" id="L82">		private List&lt;Vertex&gt; vertices = new ArrayList&lt;Vertex&gt;();</span>
+<span class="nc" id="L83">		private List&lt;Vector3f&gt; normals = new ArrayList&lt;Vector3f&gt;();</span>
+<span class="nc" id="L84">		private List&lt;Vector2f&gt; textures = new ArrayList&lt;Vector2f&gt;();</span>
+<span class="nc" id="L85">		private List&lt;Integer&gt; indices = new ArrayList&lt;Integer&gt;();</span>
+
+<span class="nc" id="L87">		private Matrix4f correction = new Matrix4f().rotate((float) Math.toRadians(-90), new Vector3f(1, 0,0));</span>
+
+		/**
+		 * Creates mesh loader using the given node and VertexSkinData.
+		 * @param geometryNode Node containing mesh geometry.
+		 * @param verticesSkinData List containing vertex-joint connections.
+		 */
+<span class="nc" id="L94">		public Loader(XmlNode geometryNode, List&lt;VertexSkinData&gt; verticesSkinData) {</span>
+<span class="nc" id="L95">			this.meshNode = geometryNode.getChild(&quot;geometry&quot;).getChild(&quot;mesh&quot;);</span>
+<span class="nc" id="L96">			this.vertexWeights = verticesSkinData;</span>
+<span class="nc" id="L97">		}</span>
+
+		/**
+		 * Creates Mesh object.
+		 * @return Mesh object containing model geometry.
+		 */
+		public Mesh extractModelData(){
+<span class="nc" id="L104">			readRawData();</span>
+<span class="nc" id="L105">			createPolygons();</span>
+<span class="nc" id="L106">			removeUnusedVertices();</span>
+<span class="nc" id="L107">			initArrays();</span>
+<span class="nc" id="L108">			saveDataToArrays();</span>
+<span class="nc" id="L109">			convertIndicesListToArray();</span>
+<span class="nc" id="L110">			return new Mesh(verticesArray, texturesArray, normalsArray, indicesArray, jointIdsArray, weightsArray, 1);</span>
+		}
+
+		/**
+		 * Reads model's vertices, normals and texture coordinates.
+		 */
+		private void readRawData(){
+<span class="nc" id="L117">			readVertices();</span>
+<span class="nc" id="L118">			readNormals();</span>
+<span class="nc" id="L119">			readTextureCoords();</span>
+<span class="nc" id="L120">		}</span>
+
+		/**
+		 * Reads vertice data of the mesh, creates Vertice objects and adds them to vertices -list.
+		 */
+		private void readVertices(){
+<span class="nc" id="L126">			String verticeId = meshNode.getChild(&quot;vertices&quot;).getChild(&quot;input&quot;).getAttribute(&quot;source&quot;).substring(1);</span>
+<span class="nc" id="L127">			XmlNode verticesData = meshNode.getChildWithAttribute(&quot;source&quot;, &quot;id&quot;, verticeId).getChild(&quot;float_array&quot;);</span>
+<span class="nc" id="L128">			int count = Integer.parseInt(verticesData.getAttribute(&quot;count&quot;));</span>
+<span class="nc" id="L129">			String[] vertData = verticesData.getData().split(&quot; &quot;);</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">			for(int i = 0; i &lt; count/DIMENSIONS; i++){</span>
+<span class="nc" id="L131">				float x = Float.parseFloat(vertData[i * DIMENSIONS]);</span>
+<span class="nc" id="L132">				float y = Float.parseFloat(vertData[i * DIMENSIONS + 1]);</span>
+<span class="nc" id="L133">				float z = Float.parseFloat(vertData[i * DIMENSIONS + 2]);</span>
+<span class="nc" id="L134">				Vector4f position = new Vector4f(x, y, z, 1);</span>
+<span class="nc" id="L135">				Matrix4f.transform(correction, position, position);</span>
+<span class="nc" id="L136">				vertices.add(new Vertex(vertices.size(), new Vector3f(position.x, position.y, position.z), vertexWeights.get(vertices.size())));</span>
+			}
+<span class="nc" id="L138">		}</span>
+
+		/**
+		 * Reads normals data of the mesh, creates normal vectors and adds them to normals -list.
+		 */
+		private void readNormals(){
+<span class="nc" id="L144">			String normalsId = meshNode.getChild(&quot;polylist&quot;).getChildWithAttribute(&quot;input&quot;, &quot;semantic&quot;, &quot;NORMAL&quot;).getAttribute(&quot;source&quot;).substring(1);</span>
+<span class="nc" id="L145">			XmlNode normalsData = meshNode.getChildWithAttribute(&quot;source&quot;, &quot;id&quot;, normalsId).getChild(&quot;float_array&quot;);</span>
+<span class="nc" id="L146">			int count = Integer.parseInt(normalsData.getAttribute(&quot;count&quot;));</span>
+<span class="nc" id="L147">			String[] normData = normalsData.getData().split(&quot; &quot;);</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">			for(int i = 0; i &lt; count/DIMENSIONS; i++){</span>
+<span class="nc" id="L149">				float x = Float.parseFloat(normData[i * DIMENSIONS]);</span>
+<span class="nc" id="L150">				float y = Float.parseFloat(normData[i * DIMENSIONS + 1]);</span>
+<span class="nc" id="L151">				float z = Float.parseFloat(normData[i * DIMENSIONS + 2]);</span>
+<span class="nc" id="L152">				Vector4f norm = new Vector4f(x, y, z, 0f);</span>
+<span class="nc" id="L153">				Matrix4f.transform(correction, norm, norm);</span>
+<span class="nc" id="L154">				normals.add(new Vector3f(norm.x, norm.y, norm.z));</span>
+			}
+<span class="nc" id="L156">		}</span>
+		/**
+		 * Reads textures data of the mesh, creates texture vectors and adds them to textures -list.
+		 */
+		private void readTextureCoords(){
+<span class="nc" id="L161">			String texCoordsId = meshNode.getChild(&quot;polylist&quot;).getChildWithAttribute(&quot;input&quot;, &quot;semantic&quot;, &quot;TEXCOORD&quot;).getAttribute(&quot;source&quot;).substring(1);</span>
+<span class="nc" id="L162">			XmlNode textCoordsData = meshNode.getChildWithAttribute(&quot;source&quot;, &quot;id&quot;, texCoordsId).getChild(&quot;float_array&quot;);</span>
+<span class="nc" id="L163">			int count = Integer.parseInt(textCoordsData.getAttribute(&quot;count&quot;));</span>
+<span class="nc" id="L164">			String[] textData = textCoordsData.getData().split(&quot; &quot;);</span>
+			//Textures are 2Dimensional so final variable DIMENSIONS can't be used here.
+<span class="nc bnc" id="L166" title="All 2 branches missed.">			for(int i = 0; i &lt; count/2; i++){</span>
+<span class="nc" id="L167">				float u = Float.parseFloat(textData[i * 2]);</span>
+<span class="nc" id="L168">				float v = Float.parseFloat(textData[i * 2 + 1]);</span>
+<span class="nc" id="L169">				textures.add(new Vector2f(u, v));</span>
+			}
+<span class="nc" id="L171">		}</span>
+
+		/**
+		 * Method assembles vertices, normals and texture coordinates.
+		 */
+		private void createPolygons(){
+<span class="nc" id="L177">			XmlNode polygon = meshNode.getChild(&quot;polylist&quot;);</span>
+<span class="nc" id="L178">			int typeCount = polygon.getChildren(&quot;input&quot;).size();</span>
+<span class="nc" id="L179">			String[] indexData = polygon.getChild(&quot;p&quot;).getData().split(&quot; &quot;);</span>
+<span class="nc bnc" id="L180" title="All 2 branches missed.">			for(int i = 0; i &lt; indexData.length/typeCount; i++){</span>
+<span class="nc" id="L181">				int positionIndex = Integer.parseInt(indexData[i * typeCount]);</span>
+<span class="nc" id="L182">				int normalIndex = Integer.parseInt(indexData[i * typeCount + 1]);</span>
+<span class="nc" id="L183">				int textCoordIndex = Integer.parseInt(indexData[i * typeCount + 2]);</span>
+<span class="nc" id="L184">				processVertex(positionIndex, normalIndex, textCoordIndex);</span>
+			}
+<span class="nc" id="L186">		}</span>
+
+		/**
+		 * Link normal data and texture data to this vertex. If vertex already has texture and normal data linked to it, calls processAgain.
+		 * @param posIndex Index of vertex to process.
+		 * @param normIndex Index of normal to process.
+		 * @param textIndex Index of texture data to process.
+		 * @return Edited vertex.
+		 */
+		private Vertex processVertex(int posIndex, int normIndex, int textIndex){
+<span class="nc" id="L196">			Vertex vertex = vertices.get(posIndex);</span>
+			//vertex at that position doesn't have any texture/normal data.
+<span class="nc bnc" id="L198" title="All 2 branches missed.">			if(!vertex.isSet()){</span>
+<span class="nc" id="L199">				vertex.setTextureIndex(textIndex);</span>
+<span class="nc" id="L200">				vertex.setNormalIndex(normIndex);</span>
+<span class="nc" id="L201">				indices.add(posIndex);</span>
+<span class="nc" id="L202">				return vertex;</span>
+			}
+			//Atleast one vertex at those coordinates has texture &amp; norm data.
+			else{
+<span class="nc" id="L206">				return processAgain(vertex, normIndex, textIndex);</span>
+			}
+		}
+
+		/**
+		 * Converts indices list into primitive type int array.
+		 * @return Created array.
+		 */
+		private int[] convertIndicesListToArray() {
+<span class="nc" id="L215">			this.indicesArray = new int[indices.size()];</span>
+<span class="nc bnc" id="L216" title="All 2 branches missed.">			for (int i = 0; i &lt; indicesArray.length; i++) {</span>
+<span class="nc" id="L217">				indicesArray[i] = indices.get(i);</span>
+			}
+<span class="nc" id="L219">			return indicesArray;</span>
+		}
+
+		/**
+		 * Saves vertices data into arrays.
+		 * @return Distance of furthest vertex.
+		 */
+		private float saveDataToArrays(){
+<span class="nc" id="L227">			float furthestPoint = 0;</span>
+<span class="nc bnc" id="L228" title="All 2 branches missed.">			for(int i = 0; i &lt; vertices.size(); i++){</span>
+<span class="nc" id="L229">				Vertex current = vertices.get(i);</span>
+<span class="nc bnc" id="L230" title="All 2 branches missed.">				if(current.getLength() &gt; furthestPoint){</span>
+<span class="nc" id="L231">					furthestPoint = current.getLength();</span>
+				}
+<span class="nc" id="L233">				Vector3f position = current.getPosition();</span>
+<span class="nc" id="L234">				Vector2f textureCoord = textures.get(current.getTextureIndex());</span>
+<span class="nc" id="L235">				Vector3f normalVector = normals.get(current.getNormalIndex());</span>
+<span class="nc" id="L236">				verticesArray[i * 3] = position.x;</span>
+<span class="nc" id="L237">				verticesArray[i * 3 + 1] = position.y;</span>
+<span class="nc" id="L238">				verticesArray[i * 3 + 2] = position.z;</span>
+<span class="nc" id="L239">				texturesArray[i * 2] = textureCoord.x;</span>
+<span class="nc" id="L240">				texturesArray[i * 2 + 1] = 1 - textureCoord.y;</span>
+<span class="nc" id="L241">				normalsArray[i * 3] = normalVector.x;</span>
+<span class="nc" id="L242">				normalsArray[i * 3 + 1] = normalVector.y;</span>
+<span class="nc" id="L243">				normalsArray[i * 3 + 2] = normalVector.z;</span>
+<span class="nc" id="L244">				VertexSkinData weights = current.getSkinData();</span>
+				//Amount of joints connected to each vertex may vary.
+<span class="nc bnc" id="L246" title="All 2 branches missed.">				for(int j = 0; j &lt; weights.jointIds.size(); j++){</span>
+<span class="nc" id="L247">					jointIdsArray[i * 3 + j] = weights.jointIds.get(j);</span>
+<span class="nc" id="L248">					weightsArray[i * 3 + j] = weights.weights.get(j);</span>
+				}
+			}
+<span class="nc" id="L251">			return furthestPoint;</span>
+		}
+
+		/**
+		 * Process vertex that has already been processed. Goes through all the duplicateVertices in recursive loop to see if
+		 * vertice with same normData and textData exists. If not, creates new duplicateVertice. Note: Recursive method.
+		 * @param vertex Vertex to check for identity with norm index and text index.
+		 * @param normIndex Normal Index to link with this vertex. If vertex like that doesn't exist yet.
+		 * @param textIndex Texture Index to link with this vertex. If vertex like that doesn't exist yet.
+		 * @return Vertex with given normal index and texture index. Creates new duplicateVertex if equal vertex can't be found.
+		 */
+		private Vertex processAgain(Vertex vertex, int normIndex, int textIndex){
+			//if this already has given norm &amp; texture attached.
+<span class="nc bnc" id="L264" title="All 2 branches missed.">			if(vertex.compareTextureAndNormal(textIndex, normIndex)){</span>
+<span class="nc" id="L265">				indices.add(vertex.getIndex());</span>
+<span class="nc" id="L266">				return vertex;</span>
+			}
+			//else this has other texture and normal added
+			else{
+<span class="nc" id="L270">				Vertex anotherVertex = vertex.getDuplicateVertex();</span>
+				//go through all the sub vertices to see if this one is already added.
+<span class="nc bnc" id="L272" title="All 2 branches missed.">				if(anotherVertex != null){</span>
+<span class="nc" id="L273">					return processAgain(anotherVertex, normIndex, textIndex);</span>
+				}
+				//couldn't find vertex with given norm &amp; texture data -&gt; create new duplicate.
+				else{
+<span class="nc" id="L277">					Vertex duplicateVertex = new Vertex(vertices.size(), vertex.getPosition(), vertex.getSkinData());</span>
+<span class="nc" id="L278">					duplicateVertex.setTextureIndex(textIndex);</span>
+<span class="nc" id="L279">					duplicateVertex.setNormalIndex(normIndex);</span>
+<span class="nc" id="L280">					vertex.setDuplicateVertex(duplicateVertex);</span>
+<span class="nc" id="L281">					vertices.add(duplicateVertex);</span>
+<span class="nc" id="L282">					indices.add(duplicateVertex.getIndex());</span>
+<span class="nc" id="L283">					return duplicateVertex;</span>
+				}
+			}
+		}
+
+		/**
+		 * Initializes arrays according to amount of vertices.
+		 */
+		private void initArrays(){
+<span class="nc" id="L292">			this.verticesArray = new float[vertices.size() * 3];</span>
+<span class="nc" id="L293">			this.texturesArray = new float[vertices.size() * 2];</span>
+<span class="nc" id="L294">			this.normalsArray = new float[vertices.size() * 3];</span>
+<span class="nc" id="L295">			this.jointIdsArray = new int[vertices.size() * 3];</span>
+<span class="nc" id="L296">			this.weightsArray = new float[vertices.size() * 3];</span>
+<span class="nc" id="L297">		}</span>
+
+		/**
+		 * Updates average tangents of each vertex and resets unused vertices.
+		 */
+		private void removeUnusedVertices(){
+<span class="nc bnc" id="L303" title="All 2 branches missed.">			for(Vertex v : vertices){</span>
+<span class="nc" id="L304">				v.averageTangents();</span>
+<span class="nc bnc" id="L305" title="All 2 branches missed.">				if(!v.isSet()){</span>
+<span class="nc" id="L306">					v.setTextureIndex(0);</span>
+<span class="nc" id="L307">					v.setNormalIndex(0);</span>
+				}
+			}
+<span class="nc" id="L310">		}</span>
+
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

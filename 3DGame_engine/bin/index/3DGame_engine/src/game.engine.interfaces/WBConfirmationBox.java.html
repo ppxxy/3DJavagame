@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>WBConfirmationBox.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.interfaces</a> &gt; <span class="el_source">WBConfirmationBox.java</span></div><h1>WBConfirmationBox.java</h1><pre class="source lang-java linenums"><span class="nc" id="L1">package game.engine.interfaces;</span>
+
+import Localization.Localization;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
+<span class="nc" id="L16">public class WBConfirmationBox {</span>
+	private static Stage window;
+<span class="nc" id="L18">	private static boolean clear = false;</span>
+
+	public static boolean Display(){
+<span class="nc" id="L21">		window = new Stage();</span>
+
+<span class="nc" id="L23">		window.initModality(Modality.APPLICATION_MODAL); //block events to other windows</span>
+<span class="nc" id="L24">		window.setTitle(Localization.getBundle().getString(&quot;confirm&quot;));</span>
+<span class="nc" id="L25">		window.setMinWidth(250);</span>
+<span class="nc" id="L26">		window.setMinHeight(150);</span>
+
+<span class="nc" id="L28">		Label label = new Label();</span>
+<span class="nc" id="L29">		label.setText(Localization.getBundle().getString(&quot;clear_canvas_confirmation_message&quot;));</span>
+<span class="nc" id="L30">		Button okButton = new Button(Localization.getBundle().getString(&quot;yes&quot;));</span>
+<span class="nc" id="L31">		Button cancelButton = new Button(Localization.getBundle().getString(&quot;cancel&quot;));</span>
+
+
+<span class="nc" id="L34">		cancelButton.setOnAction(new EventHandler&lt;ActionEvent&gt;() {</span>
+		    @Override public void handle(ActionEvent e) {
+<span class="nc" id="L36">		    	clear = false;</span>
+<span class="nc" id="L37">		    	window.close();</span>
+<span class="nc" id="L38">		    }</span>
+		});
+
+<span class="nc" id="L41">		okButton.setOnAction(new EventHandler&lt;ActionEvent&gt;() {</span>
+		    @Override public void handle(ActionEvent e) {
+<span class="nc" id="L43">		    	clear = true;</span>
+<span class="nc" id="L44">		    	window.close();</span>
+<span class="nc" id="L45">		    }</span>
+		});
+
+<span class="nc" id="L48">		VBox vbox = new VBox(10);</span>
+<span class="nc" id="L49">		HBox hbox = new HBox(10);</span>
+<span class="nc" id="L50">		hbox.setAlignment(Pos.CENTER);</span>
+<span class="nc" id="L51">		hbox.setPadding(new Insets(10,0,10,0));</span>
+<span class="nc" id="L52">		hbox.getChildren().addAll(okButton, cancelButton);</span>
+<span class="nc" id="L53">		vbox.getChildren().addAll(label, hbox);</span>
+<span class="nc" id="L54">		vbox.setAlignment(Pos.CENTER);</span>
+
+<span class="nc" id="L56">		Scene scene = new Scene(vbox);</span>
+<span class="nc" id="L57">		window.setScene(scene);</span>
+<span class="nc" id="L58">		window.showAndWait();</span>
+<span class="nc" id="L59">		return clear;</span>
+
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

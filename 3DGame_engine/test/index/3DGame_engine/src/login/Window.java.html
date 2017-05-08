@@ -1,0 +1,634 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Window.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">login</a> &gt; <span class="el_source">Window.java</span></div><h1>Window.java</h1><pre class="source lang-java linenums"><span class="nc" id="L1">package login;</span>
+
+
+import Networking.Clientside;
+import Networking.Connect;
+
+//javax.mail saatavissa osoitteesta https://java.net/projects/javamail/pages/Home#Download_JavaMail_Release
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
+
+import Localization.Localization;
+
+
+public class Window extends JPanel implements ActionListener{
+
+    private static final long serialVersionUID = 7116463709442422088L;
+
+
+    Connect connect;
+
+    //missa ikkunassa kayttaja on
+<span class="nc" id="L45">    private int ikkuna = 0;</span>
+
+    //alustetaan muuttujia
+<span class="nc" id="L48">    private int securityCode = 0;</span>
+<span class="nc" id="L49">    private boolean usernameDoesntContainSpecialChars = true;</span>
+<span class="nc" id="L50">    private boolean usernameDoesntContainForbiddenWords = true;</span>
+    private String text;
+
+    //esitell��n luokat
+    //Email emailClass = new Email();
+<span class="nc" id="L55">    Borders borders = new Borders();</span>
+
+    //luodaan frame ja panel
+<span class="nc" id="L58">    JFrame frame = new JFrame();</span>
+<span class="nc" id="L59">    JPanel panel = this;</span>
+
+    //Luodaan buttonit
+<span class="nc" id="L62">    JButton newUserButton = new JButton();</span>
+<span class="nc" id="L63">    JButton exUserButton = new JButton();</span>
+<span class="nc" id="L64">    JButton createUser = new JButton(Localization.getBundle().getString(&quot;login_window_create_user&quot;));</span>
+<span class="nc" id="L65">    JButton login = new JButton();</span>
+<span class="nc" id="L66">    JButton backButton = new JButton();</span>
+<span class="nc" id="L67">    JButton securityButton = new JButton();</span>
+<span class="nc" id="L68">    JButton resetPasswordButton = new JButton();</span>
+<span class="nc" id="L69">    JButton emailVerificationButton = new JButton(Localization.getBundle().getString(&quot;login_window_security_code&quot;));</span>
+<span class="nc" id="L70">    JButton changePasswordButton = new JButton(Localization.getBundle().getString(&quot;login_window_change_password&quot;));</span>
+
+    //luodaaan tekstit
+<span class="nc" id="L73">    JLabel username = new JLabel(Localization.getBundle().getString(&quot;login_window_username&quot;)+&quot;:&quot;);</span>
+<span class="nc" id="L74">    JLabel password = new JLabel(Localization.getBundle().getString(&quot;login_window_password&quot;)+&quot;:&quot;);</span>
+<span class="nc" id="L75">    JLabel retypepass = new JLabel(Localization.getBundle().getString(&quot;login_window_password_retype&quot;)+&quot;:&quot;);</span>
+<span class="nc" id="L76">    JLabel email = new JLabel(Localization.getBundle().getString(&quot;login_window_email&quot;)+&quot;:&quot;);</span>
+<span class="nc" id="L77">    JLabel warning = new JLabel(Localization.getBundle().getString(&quot;login_window_warning&quot;)+&quot;:&quot;);</span>
+<span class="nc" id="L78">    JLabel recoveryQuestion1 = new JLabel(Localization.getBundle().getString(&quot;login_window_recovery_question_1&quot;)+&quot;:&quot;);</span>
+<span class="nc" id="L79">    JLabel recoveryQuestionAns = new JLabel(Localization.getBundle().getString(&quot;login_window_question_1_answer&quot;)+&quot;:&quot;);</span>
+<span class="nc" id="L80">    JLabel securityCodeText = new JLabel(Localization.getBundle().getString(&quot;login_window_security_code&quot;)+&quot;:&quot;);</span>
+<span class="nc" id="L81">    JLabel securityPassInfo = new JLabel(Localization.getBundle().getString(&quot;login_window_email_reminder&quot;)+&quot;.&quot;);</span>
+<span class="nc" id="L82">    JLabel passwordSuccessText = new JLabel(Localization.getBundle().getString(&quot;login_window_password_change_success&quot;)+&quot;!&quot;);</span>
+<span class="nc" id="L83">    JLabel passwordFailureText = new JLabel(Localization.getBundle().getString(&quot;login_window_password_change_failure&quot;)+&quot;.&quot;);</span>
+
+    //luodaan tekstikentat
+<span class="nc" id="L86">    JTextField usernameField = new JTextField();</span>
+<span class="nc" id="L87">    JTextField emailField = new JTextField();</span>
+<span class="nc" id="L88">    JTextField securityCodeField = new JTextField();</span>
+
+    //luodaan salasanakentat
+<span class="nc" id="L91">    JPasswordField passwordField = new JPasswordField();</span>
+<span class="nc" id="L92">    JPasswordField retypepassField = new JPasswordField();</span>
+
+    //luodaan TextAreat
+<span class="nc" id="L95">    JTextArea recoveryQuestionArea1 = new JTextArea();</span>
+<span class="nc" id="L96">    JTextArea recoveryQuestionAnswer1 = new JTextArea();</span>
+
+    //Luodaan listat eri komponenteista
+<span class="nc" id="L99">    ArrayList&lt;String&gt; forbidden = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L100">    ArrayList&lt;JButton&gt; buttons = new ArrayList&lt;JButton&gt;();</span>
+<span class="nc" id="L101">    ArrayList&lt;JTextField&gt; textFields = new ArrayList&lt;JTextField&gt;();</span>
+<span class="nc" id="L102">    ArrayList&lt;JPasswordField&gt; passFields = new ArrayList&lt;JPasswordField&gt;();</span>
+<span class="nc" id="L103">    ArrayList&lt;JTextArea&gt; textAreas = new ArrayList&lt;JTextArea&gt;();</span>
+
+    //Tyhja kontruktori
+<span class="nc" id="L106">    public Window(){}</span>
+
+    //konstruktori jossa asetetaan ikkunan asetukset
+<span class="nc" id="L109">    public Window(String title){</span>
+
+<span class="nc" id="L111">    	buttons.addAll(Arrays.asList(backButton, newUserButton, exUserButton, createUser, login, securityButton, resetPasswordButton, emailVerificationButton, changePasswordButton));</span>
+<span class="nc" id="L112">    	textFields.addAll(Arrays.asList(usernameField, emailField, securityCodeField));</span>
+<span class="nc" id="L113">    	passFields.addAll(Arrays.asList(passwordField, retypepassField));</span>
+<span class="nc" id="L114">    	textAreas.addAll(Arrays.asList(recoveryQuestionArea1, recoveryQuestionAnswer1));</span>
+
+<span class="nc" id="L116">        frame.setTitle(title);</span>
+<span class="nc" id="L117">        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</span>
+<span class="nc" id="L118">        frame.setResizable(false);</span>
+<span class="nc" id="L119">        frame.setMaximumSize(new Dimension(1280,720));</span>
+<span class="nc" id="L120">        frame.setMinimumSize(new Dimension(1280,720));</span>
+<span class="nc" id="L121">        frame.setSize(new Dimension(1280,720));</span>
+<span class="nc" id="L122">        frame.setLocationRelativeTo(null);</span>
+<span class="nc" id="L123">        frame.add(panel);</span>
+<span class="nc" id="L124">        frame.setVisible(true);</span>
+<span class="nc" id="L125">        panel.setLayout(null);</span>
+
+<span class="nc" id="L127">        panel.add(newUserButton);</span>
+<span class="nc" id="L128">        newUserButton.setBounds(panel.getWidth()/2-280, panel.getHeight()/2-40, 300, 80);</span>
+<span class="nc" id="L129">        newUserButton.addActionListener(this);</span>
+<span class="nc" id="L130">        newUserButton.setBorder(BorderFactory.createEmptyBorder());</span>
+<span class="nc" id="L131">        newUserButton.setContentAreaFilled(false);</span>
+<span class="nc" id="L132">        panel.add(exUserButton);</span>
+<span class="nc" id="L133">        exUserButton.setBounds(panel.getWidth()/2+30, panel.getHeight()/2-40, 300, 80);</span>
+<span class="nc" id="L134">        exUserButton.addActionListener(this);</span>
+<span class="nc" id="L135">        exUserButton.setContentAreaFilled(false);</span>
+<span class="nc" id="L136">        exUserButton.setBorder(BorderFactory.createEmptyBorder());</span>
+<span class="nc" id="L137">        panel.add(securityButton);</span>
+<span class="nc" id="L138">        securityButton.setBounds(panel.getWidth()-315, panel.getHeight()-95, 300, 80);</span>
+<span class="nc" id="L139">        securityButton.setContentAreaFilled(false);</span>
+<span class="nc" id="L140">        securityButton.setBorder(BorderFactory.createEmptyBorder());</span>
+
+<span class="nc" id="L142">        securityButton.addActionListener(this);</span>
+<span class="nc" id="L143">        backButton.addActionListener(this);</span>
+<span class="nc" id="L144">        backButton.setContentAreaFilled(false);</span>
+<span class="nc" id="L145">        backButton.setBorder(BorderFactory.createEmptyBorder());</span>
+<span class="nc" id="L146">        resetPasswordButton.addActionListener(this);</span>
+<span class="nc" id="L147">        login.setContentAreaFilled(false);</span>
+<span class="nc" id="L148">        login.setBorder(BorderFactory.createEmptyBorder());</span>
+<span class="nc" id="L149">        emailVerificationButton.addActionListener(this);</span>
+<span class="nc" id="L150">        changePasswordButton.addActionListener(this);</span>
+<span class="nc" id="L151">        resetPasswordButton.setContentAreaFilled(false);</span>
+<span class="nc" id="L152">        resetPasswordButton.setBorder(BorderFactory.createEmptyBorder());</span>
+
+<span class="nc" id="L154">        borders.addButtonBorders(buttons);</span>
+<span class="nc" id="L155">        borders.addTextFieldBorders(textFields);</span>
+<span class="nc" id="L156">        borders.addPassFieldBorders(passFields);</span>
+<span class="nc" id="L157">        borders.addTextAreaBorders(textAreas);</span>
+
+
+<span class="nc" id="L160">        addForbidden();</span>
+<span class="nc" id="L161">        limitChars();</span>
+<span class="nc" id="L162">        resize();</span>
+
+<span class="nc" id="L164">    }</span>
+
+    //repaint metodi joka on overridattu ja johon lisatty resize metodi
+    @Override
+    public void repaint(){
+<span class="nc" id="L169">        resize();</span>
+<span class="nc" id="L170">        super.repaint();</span>
+<span class="nc" id="L171">    }</span>
+
+    @Override
+    protected void paintComponent(Graphics g) {
+<span class="nc" id="L175">		super.paintComponent(g);</span>
+
+		BufferedImage image;
+
+<span class="nc bnc" id="L179" title="All 2 branches missed.">		if(ikkuna == 0){</span>
+			try {
+<span class="nc" id="L181">				image = ImageIO.read(getClass().getResource(&quot;/res/loginscreenphoto.png&quot;));</span>
+<span class="nc" id="L182">				g.drawImage(image, 0, 0, this);</span>
+<span class="nc" id="L183">			} catch (IOException e) {</span>
+<span class="nc" id="L184">				e.printStackTrace();</span>
+			}
+		}
+<span class="nc bnc" id="L187" title="All 2 branches missed.">		if(ikkuna == 2){</span>
+			try {
+<span class="nc" id="L189">				image = ImageIO.read(getClass().getResource(&quot;/res/loginscreen2photo.png&quot;));</span>
+<span class="nc" id="L190">				g.drawImage(image, 0, 0, this);</span>
+<span class="nc" id="L191">			} catch (IOException e) {</span>
+<span class="nc" id="L192">				e.printStackTrace();</span>
+			}
+		}
+<span class="nc bnc" id="L195" title="All 2 branches missed.">		if(ikkuna == 4){</span>
+			try {
+<span class="nc" id="L197">				image = ImageIO.read(getClass().getResource(&quot;/res/settingsphoto.png&quot;));</span>
+<span class="nc" id="L198">				g.drawImage(image, 0, 0, this);</span>
+<span class="nc" id="L199">			} catch (IOException e) {</span>
+<span class="nc" id="L200">				e.printStackTrace();</span>
+			}
+		}
+<span class="nc" id="L203">    }</span>
+
+    //buttoneiden actionlistenerit. Maariteaan mita tapahtuu kun nappia painetaan.
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+<span class="nc bnc" id="L209" title="All 2 branches missed.">        if(e.getSource() == newUserButton){</span>
+<span class="nc" id="L210">            ikkuna = 1;</span>
+<span class="nc" id="L211">            panel.removeAll();</span>
+<span class="nc" id="L212">            panel.repaint();</span>
+<span class="nc" id="L213">            panel.add(username);</span>
+<span class="nc" id="L214">            username.setBounds(panel.getWidth()/20, panel.getHeight()/14, 200, 30);</span>
+<span class="nc" id="L215">            panel.add(email);</span>
+<span class="nc" id="L216">            email.setBounds(panel.getWidth()/20, username.getY()+username.getHeight()+10, 200, 30);</span>
+<span class="nc" id="L217">            panel.add(password);</span>
+<span class="nc" id="L218">            password.setBounds(panel.getWidth()/20, email.getY()+email.getHeight()+10, 200, 30);</span>
+<span class="nc" id="L219">            panel.add(retypepass);</span>
+<span class="nc" id="L220">            retypepass.setBounds(panel.getWidth()/20, password.getY()+password.getHeight()+10, 200, 30);</span>
+<span class="nc" id="L221">            panel.add(usernameField);</span>
+<span class="nc" id="L222">            usernameField.setBounds(username.getX()+username.getWidth()-55, username.getY(),200, 30);</span>
+<span class="nc" id="L223">            panel.add(emailField);</span>
+<span class="nc" id="L224">            emailField.setBounds(email.getX()+email.getWidth()-55, email.getY(), 200, 30);</span>
+<span class="nc" id="L225">            panel.add(passwordField);</span>
+<span class="nc" id="L226">            passwordField.setBounds(password.getX()+password.getWidth()-55, password.getY(), 200, 30);</span>
+<span class="nc" id="L227">            panel.add(retypepassField);</span>
+<span class="nc" id="L228">            retypepassField.setBounds(retypepass.getX()+retypepass.getWidth()-55, retypepass.getY(), 200, 30);</span>
+<span class="nc" id="L229">            panel.add(backButton);</span>
+<span class="nc" id="L230">            backButton.setBounds(panel.getWidth()/60, panel.getHeight()-60, 100, 40);</span>
+<span class="nc" id="L231">            backButton.addActionListener(this);</span>
+<span class="nc" id="L232">            panel.add(recoveryQuestionArea1);</span>
+<span class="nc" id="L233">            recoveryQuestionArea1.setBounds(retypepassField.getX(), recoveryQuestion1.getY()+5, 200, 40);</span>
+<span class="nc" id="L234">            panel.add(recoveryQuestionAnswer1);</span>
+<span class="nc" id="L235">            recoveryQuestionAnswer1.setBounds(retypepassField.getX(), recoveryQuestionAns.getY()+5, 200, 40);</span>
+<span class="nc" id="L236">            panel.add(recoveryQuestion1);</span>
+<span class="nc" id="L237">            recoveryQuestion1.setBounds(panel.getWidth()/20, retypepass.getY()+retypepass.getHeight()+5, 200, 40);</span>
+<span class="nc" id="L238">            panel.add(recoveryQuestionAns);</span>
+<span class="nc" id="L239">            recoveryQuestionAns.setBounds(panel.getWidth()/20, recoveryQuestion1.getY()+recoveryQuestion1.getHeight()+10, 200, 40);</span>
+<span class="nc" id="L240">            panel.add(createUser);</span>
+<span class="nc" id="L241">            createUser.setBounds(retypepassField.getX()-35, recoveryQuestionAns.getY()+recoveryQuestionAns.getHeight()+15, 110, 30);</span>
+<span class="nc" id="L242">            createUser.addActionListener(this);</span>
+<span class="nc" id="L243">        }</span>
+
+<span class="nc bnc" id="L245" title="All 2 branches missed.">        else if(e.getSource() == exUserButton){</span>
+<span class="nc" id="L246">            ikkuna = 2;</span>
+<span class="nc" id="L247">            panel.removeAll();</span>
+<span class="nc" id="L248">            panel.repaint();</span>
+<span class="nc" id="L249">            panel.add(username);</span>
+<span class="nc" id="L250">            username.setBounds(panel.getWidth()/2-150, panel.getHeight()/2-70, 80, 30);</span>
+<span class="nc" id="L251">            panel.add(usernameField);</span>
+<span class="nc" id="L252">            usernameField.setBounds(username.getX()+username.getWidth()+10, username.getY()-5, 200, 40);</span>
+<span class="nc" id="L253">            panel.add(password);</span>
+<span class="nc" id="L254">            password.setBounds(panel.getWidth()/2-150, panel.getHeight()/2-20, 80, 30);</span>
+<span class="nc" id="L255">            panel.add(passwordField);</span>
+<span class="nc" id="L256">            passwordField.setBounds(password.getX()+password.getWidth()+10, password.getY()-5, 200, 40);</span>
+<span class="nc" id="L257">            panel.add(login);</span>
+<span class="nc" id="L258">            login.setBounds(passwordField.getX(), passwordField.getY()+passwordField.getHeight()+52, 180, 50);</span>
+<span class="nc" id="L259">            login.addActionListener(this);</span>
+<span class="nc" id="L260">            panel.add(backButton);</span>
+<span class="nc" id="L261">            backButton.addActionListener(this);</span>
+<span class="nc" id="L262">            backButton.setBounds(panel.getWidth()-1265, panel.getHeight()-70, 200, 55);</span>
+<span class="nc" id="L263">        }</span>
+
+<span class="nc bnc" id="L265" title="All 2 branches missed.">        else if(e.getSource() == backButton){</span>
+<span class="nc" id="L266">            ikkuna = 0;</span>
+<span class="nc" id="L267">            panel.removeAll();</span>
+<span class="nc" id="L268">            panel.repaint();</span>
+<span class="nc" id="L269">            panel.add(newUserButton);</span>
+<span class="nc" id="L270">            newUserButton.setBounds(panel.getWidth()/2-280, panel.getHeight()/2-40, 300, 80);</span>
+<span class="nc" id="L271">            newUserButton.addActionListener(this);</span>
+<span class="nc" id="L272">            panel.add(exUserButton);</span>
+<span class="nc" id="L273">            exUserButton.setBounds(panel.getWidth()/2+30, panel.getHeight()/2-40, 300, 80);</span>
+<span class="nc" id="L274">            panel.add(securityButton);</span>
+<span class="nc" id="L275">            securityButton.setBounds(panel.getWidth()-315, panel.getHeight()-95, 300, 80);</span>
+<span class="nc" id="L276">        }</span>
+
+<span class="nc bnc" id="L278" title="All 2 branches missed.">        else if(e.getSource() == createUser){</span>
+<span class="nc" id="L279">        	changeChars();</span>
+<span class="nc" id="L280">        	checkUsername();</span>
+        	//emailClass.isValidEmailAddress(emailField.getText());
+<span class="nc bnc" id="L282" title="All 6 branches missed.">            if(Arrays.equals(passwordField.getPassword(), retypepassField.getPassword()) &amp;&amp; Array.getLength(passwordField.getPassword()) &gt;= 6 &amp;&amp; Array.getLength(passwordField.getPassword()) &lt; 25</span>
+<span class="nc bnc" id="L283" title="All 8 branches missed.">                    &amp;&amp; usernameField.getText().length() &gt; 3 &amp;&amp; emailField.getText().contains(&quot;@&quot;) &amp;&amp; emailField.getText().contains(&quot;.&quot;) &amp;&amp; usernameDoesntContainSpecialChars /*&amp;&amp; emailClass.emailOk*/</span>
+<span class="nc bnc" id="L284" title="All 2 branches missed.">                    &amp;&amp; usernameDoesntContainForbiddenWords){</span>
+<span class="nc" id="L285">                warning.setText(&quot;&quot;);</span>
+<span class="nc" id="L286">                System.out.println(usernameDoesntContainForbiddenWords+&quot;-&quot;+usernameDoesntContainSpecialChars);</span>
+<span class="nc" id="L287">                System.out.println(&quot;luotiin user&quot;);</span>
+                //generoidaan salt
+<span class="nc" id="L289">                Password password = new Password();</span>
+<span class="nc" id="L290">                String salt = password.generateSalt();</span>
+<span class="nc" id="L291">                String hashedPassword = &quot;&quot;;</span>
+                //lis�t��n k�ytt�j�n antamaan salasanaan salt
+<span class="nc" id="L293">                String hashThis = (salt+(new String(passwordField.getPassword())));</span>
+                try {
+<span class="nc" id="L295">					hashedPassword = password.hashPassword(hashThis);</span>
+<span class="nc" id="L296">				} catch (NoSuchAlgorithmException e1) {</span>
+<span class="nc" id="L297">					e1.printStackTrace();</span>
+				}
+                //tallennetaan salt ja hashattu password tietokantaan
+<span class="nc" id="L300">                connect = new Connect();</span>
+<span class="nc" id="L301">                connect.addUser(usernameField.getText(), hashedPassword, salt, emailField.getText(), recoveryQuestionArea1.getText(), recoveryQuestionAnswer1.getText());</span>
+<span class="nc" id="L302">                panel.add(warning);</span>
+<span class="nc" id="L303">                warning.setForeground(Color.red);</span>
+<span class="nc" id="L304">                warning.setBounds(400, 300, 400, 50);</span>
+<span class="nc" id="L305">                warning.setText(Connect.errorMessage);</span>
+                //kaynnista peli--&gt;
+                //emailClass.sendEmail(Localization.getBundle().getString(&quot;login_window_welcome_email_1&quot;)+&quot;: &quot;+usernameField.getText()+&quot; &quot;+Localization.getBundle().getString(&quot;login_window_welcome_email_2&quot;)+&quot;: &quot;+new String(passwordField.getPassword()), emailField.getText());
+<span class="nc bnc" id="L308" title="All 2 branches missed.">            }else if(!Arrays.equals(passwordField.getPassword(), retypepassField.getPassword())){</span>
+<span class="nc" id="L309">                panel.add(warning);</span>
+<span class="nc" id="L310">                warning.setForeground(Color.RED);</span>
+<span class="nc" id="L311">                warning.setText(Localization.getBundle().getString(&quot;login_window_password_no_match&quot;)+&quot;!&quot;);</span>
+<span class="nc" id="L312">                warning.setBounds(createUser.getX()-20, createUser.getY()+createUser.getHeight()+10, 400, 30);</span>
+<span class="nc" id="L313">                passwordField.setText(&quot;&quot;);</span>
+<span class="nc" id="L314">                retypepassField.setText(&quot;&quot;);</span>
+<span class="nc" id="L315">                passwordField.requestFocus();</span>
+<span class="nc bnc" id="L316" title="All 2 branches missed.">            }else if(usernameField.getText().length() &lt;= 3){</span>
+<span class="nc" id="L317">                panel.add(warning);</span>
+<span class="nc" id="L318">                warning.setForeground(Color.RED);</span>
+<span class="nc" id="L319">                warning.setText(Localization.getBundle().getString(&quot;login_window_short_username&quot;)+&quot;!&quot;);</span>
+<span class="nc" id="L320">                warning.setBounds(createUser.getX()-20, createUser.getY()+createUser.getHeight()+10, 400, 30);</span>
+<span class="nc bnc" id="L321" title="All 4 branches missed.">            }else if(!emailField.getText().contains(&quot;@&quot;) || !emailField.getText().contains(&quot;.&quot;)){</span>
+<span class="nc" id="L322">                panel.add(warning);</span>
+<span class="nc" id="L323">                warning.setForeground(Color.RED);</span>
+<span class="nc" id="L324">                warning.setText(Localization.getBundle().getString(&quot;login_window_valid_email&quot;)+&quot;.&quot;);</span>
+<span class="nc" id="L325">                warning.setBounds(createUser.getX()-20, createUser.getY()+createUser.getHeight()+10, 400, 30);</span>
+<span class="nc bnc" id="L326" title="All 2 branches missed.">            }else if(Array.getLength(passwordField.getPassword()) &lt; 6){</span>
+<span class="nc" id="L327">                panel.add(warning);</span>
+<span class="nc" id="L328">                warning.setForeground(Color.RED);</span>
+<span class="nc" id="L329">                warning.setText(Localization.getBundle().getString(&quot;login_window_short_password&quot;)+&quot;.&quot;);</span>
+<span class="nc" id="L330">                warning.setBounds(createUser.getX()-20, createUser.getY()+createUser.getHeight()+10, 400, 30);</span>
+<span class="nc" id="L331">                passwordField.setText(&quot;&quot;);</span>
+<span class="nc" id="L332">                retypepassField.setText(&quot;&quot;);</span>
+<span class="nc" id="L333">                passwordField.requestFocus();</span>
+<span class="nc bnc" id="L334" title="All 2 branches missed.">            }else if(Array.getLength(passwordField.getPassword()) &gt;= 25){</span>
+<span class="nc" id="L335">                panel.add(warning);</span>
+<span class="nc" id="L336">                warning.setForeground(Color.RED);</span>
+<span class="nc" id="L337">                warning.setText(Localization.getBundle().getString(&quot;login_window_short_password&quot;)+&quot;.&quot;);</span>
+<span class="nc" id="L338">                warning.setBounds(createUser.getX()-20, createUser.getY()+createUser.getHeight()+10, 400, 30);</span>
+<span class="nc" id="L339">                passwordField.setText(&quot;&quot;);</span>
+<span class="nc" id="L340">                retypepassField.setText(&quot;&quot;);</span>
+<span class="nc" id="L341">                passwordField.requestFocus();</span>
+            }
+
+<span class="nc" id="L344">        }</span>
+
+<span class="nc bnc" id="L346" title="All 2 branches missed.">        else if(e.getSource() == login){</span>
+<span class="nc" id="L347">            String username = usernameField.getText();</span>
+<span class="nc bnc" id="L348" title="All 2 branches missed.">            if(usernameField.getText().length() == 0){</span>
+<span class="nc" id="L349">                panel.add(warning);</span>
+<span class="nc" id="L350">                warning.setForeground(Color.RED);</span>
+<span class="nc" id="L351">                warning.setText(Localization.getBundle().getString(&quot;login_window_enter_username&quot;)+&quot;.&quot;);</span>
+<span class="nc" id="L352">                warning.setBounds(login.getX()-20, login.getY()+login.getHeight()+10, 400, 30);</span>
+<span class="nc bnc" id="L353" title="All 2 branches missed.">            }else if(Array.getLength(passwordField.getPassword()) == 0){</span>
+<span class="nc" id="L354">                panel.add(warning);</span>
+<span class="nc" id="L355">                warning.setForeground(Color.RED);</span>
+<span class="nc" id="L356">                warning.setText(Localization.getBundle().getString(&quot;login_window_enter_password&quot;)+&quot;.&quot;);</span>
+<span class="nc" id="L357">                warning.setBounds(login.getX()-20, login.getY()+login.getHeight()+10, 400, 30);</span>
+<span class="nc" id="L358">            }else{</span>
+                //tarkista onko kyseista pelaajaa olemassa ja onko salasana oikein
+<span class="nc" id="L360">            		connect = new Connect();</span>
+<span class="nc" id="L361">            		username = usernameField.getText();</span>
+                    //String databaseSalt = connect.getDatabaseSalt(&quot;SELECT PasswordSalt FROM Account WHERE Nimi='&quot;+username+&quot;';&quot;);
+<span class="nc" id="L363">                    String databaseSalt = connect.getDatabaseSalt(username);</span>
+<span class="nc" id="L364">                    System.out.println(&quot;Salt on:&quot;+databaseSalt);</span>
+                    //String databaseHash = connect.getDatabaseHash(&quot;SELECT PasswordHash FROM Account WHERE Nimi='&quot;+username+&quot;';&quot;);
+<span class="nc" id="L366">                    String databaseHash = connect.getDatabaseHash(username);</span>
+<span class="nc" id="L367">                    System.out.println(&quot;Hash on:&quot;+databaseHash);</span>
+<span class="nc" id="L368">                    String typedPassword = (new String (passwordField.getPassword()));</span>
+<span class="nc" id="L369">                    String hashThis = databaseSalt+typedPassword;</span>
+<span class="nc" id="L370">                    Password password = new Password();</span>
+                    String hashed;
+					try {
+<span class="nc" id="L373">						hashed = password.hashPassword(hashThis);</span>
+<span class="nc bnc" id="L374" title="All 2 branches missed.">						if(hashed.equals(databaseHash)){</span>
+	                    	//salasana oikein --&gt; käynnistä client
+<span class="nc" id="L376">							System.out.println(Localization.getBundle().getString(&quot;login_window_right_password&quot;)+&quot;.&quot;);</span>
+<span class="nc" id="L377">	                    	Clientside client = new Clientside(usernameField.getText());</span>
+<span class="nc" id="L378">	                    }else{</span>
+<span class="nc" id="L379">	                    	System.out.println(Localization.getBundle().getString(&quot;login_window_wrong&quot;)+&quot;.&quot;);</span>
+	                    }
+<span class="nc" id="L381">					} catch (NoSuchAlgorithmException e1) {</span>
+<span class="nc" id="L382">						e1.printStackTrace();</span>
+					}
+            }
+
+<span class="nc" id="L386">        }</span>
+
+<span class="nc bnc" id="L388" title="All 2 branches missed.">        else if(e.getSource() == securityButton){</span>
+<span class="nc" id="L389">        	ikkuna = 4;</span>
+<span class="nc" id="L390">        	panel.removeAll();</span>
+<span class="nc" id="L391">            panel.repaint();</span>
+<span class="nc" id="L392">            panel.add(backButton);</span>
+<span class="nc" id="L393">            backButton.setBounds(panel.getWidth()-1265, panel.getHeight()-70, 200, 55);</span>
+<span class="nc" id="L394">            panel.add(resetPasswordButton);</span>
+<span class="nc" id="L395">            resetPasswordButton.setBounds(panel.getWidth()-1245, panel.getHeight()-665, 250, 70);</span>
+<span class="nc" id="L396">        }</span>
+
+<span class="nc bnc" id="L398" title="All 2 branches missed.">        else if(e.getSource() == resetPasswordButton){</span>
+<span class="nc" id="L399">        	ikkuna = 6;</span>
+<span class="nc" id="L400">        	panel.removeAll();</span>
+<span class="nc" id="L401">        	panel.repaint();</span>
+<span class="nc" id="L402">        	panel.add(backButton);</span>
+<span class="nc" id="L403">        	 backButton.setBounds(panel.getWidth()-1265, panel.getHeight()-70, 200, 55);</span>
+<span class="nc" id="L404">        	panel.add(emailVerificationButton);</span>
+<span class="nc" id="L405">        	emailVerificationButton.setBounds(panel.getWidth()/2-125, panel.getHeight()/2-25, 250, 50);</span>
+<span class="nc" id="L406">        	panel.add(email);</span>
+<span class="nc" id="L407">        	email.setBounds(emailVerificationButton.getX()-25, emailVerificationButton.getY()-50, 100, 40);</span>
+<span class="nc" id="L408">        	panel.add(emailField);</span>
+<span class="nc" id="L409">        	emailField.setBounds(email.getX()+110, emailVerificationButton.getY()-52, 190, 40);</span>
+<span class="nc" id="L410">        }</span>
+
+<span class="nc bnc" id="L412" title="All 2 branches missed.">        else if(e.getSource() == emailVerificationButton){</span>
+        	//emailClass.emailaddr = emailField.getText();
+<span class="nc" id="L414">        	int x = 999999;</span>
+<span class="nc" id="L415">        	int y = 100001;</span>
+<span class="nc" id="L416">        	securityCode = (int)(Math.random()*x)+y;</span>
+        	//emailClass.sendEmail(Localization.getBundle().getString(&quot;login_window_email_security_code1&quot;)+&quot;: &quot;+securityCode+&quot; &quot;+Localization.getBundle().getString(&quot;login_window_email_security_code2&quot;)+&quot;.&quot;, emailField.getText());
+<span class="nc" id="L418">        	ikkuna = 5;</span>
+<span class="nc" id="L419">        	panel.removeAll();</span>
+<span class="nc" id="L420">        	panel.repaint();</span>
+<span class="nc" id="L421">        	panel.add(securityCodeField);</span>
+<span class="nc" id="L422">        	securityCodeField.setBounds(panel.getWidth()/2-20, panel.getHeight()/2-80, 200, 40);</span>
+<span class="nc" id="L423">        	panel.add(securityCodeText);</span>
+<span class="nc" id="L424">        	securityCodeText.setBounds(panel.getWidth()/2-150, securityCodeField.getY(), 100, 40);</span>
+<span class="nc" id="L425">        	panel.add(passwordField);</span>
+<span class="nc" id="L426">        	passwordField.setBounds(panel.getWidth()/2-20, panel.getHeight()/2-30, 200, 40);</span>
+<span class="nc" id="L427">        	panel.add(retypepassField);</span>
+<span class="nc" id="L428">        	retypepassField.setBounds(panel.getWidth()/2-20, panel.getHeight()/2+20, 200, 40);</span>
+<span class="nc" id="L429">        	panel.add(backButton);</span>
+<span class="nc" id="L430">        	backButton.setBounds(panel.getWidth()/60, panel.getHeight()-60, 100, 40);</span>
+<span class="nc" id="L431">        	panel.add(password);</span>
+<span class="nc" id="L432">        	password.setBounds(panel.getWidth()/2-150, passwordField.getY(), 100, 40);</span>
+<span class="nc" id="L433">        	panel.add(retypepass);</span>
+<span class="nc" id="L434">        	retypepass.setBounds(panel.getWidth()/2-150, retypepassField.getY(), 120, 40);</span>
+<span class="nc" id="L435">        	panel.add(securityPassInfo);</span>
+<span class="nc" id="L436">        	securityPassInfo.setBounds(securityCodeText.getX()-150, securityCodeText.getY()-50, 700, 40);</span>
+<span class="nc" id="L437">        	panel.add(changePasswordButton);</span>
+<span class="nc" id="L438">        	changePasswordButton.setBounds(retypepassField.getX()-20, retypepassField.getY()+50, 150, 40);</span>
+<span class="nc" id="L439">        }</span>
+
+<span class="nc bnc" id="L441" title="All 2 branches missed.">        else if(e.getSource() == changePasswordButton){</span>
+<span class="nc" id="L442">        	panel.remove(passwordFailureText);</span>
+<span class="nc" id="L443">        	panel.remove(passwordSuccessText);</span>
+<span class="nc" id="L444">        	panel.repaint();</span>
+
+<span class="nc bnc" id="L446" title="All 6 branches missed.">        	if(securityCode == Integer.parseInt(securityCodeField.getText()) &amp;&amp; passwordField.getPassword().length &gt;= 6 &amp;&amp; Arrays.equals(passwordField.getPassword(), retypepassField.getPassword())){</span>
+<span class="nc" id="L447">        		panel.remove(password);</span>
+<span class="nc" id="L448">            	panel.remove(retypepass);</span>
+<span class="nc" id="L449">            	panel.remove(securityCodeText);</span>
+<span class="nc" id="L450">            	panel.remove(changePasswordButton);</span>
+<span class="nc" id="L451">            	panel.remove(passwordField);</span>
+<span class="nc" id="L452">            	panel.remove(securityCodeField);</span>
+<span class="nc" id="L453">            	panel.remove(retypepassField);</span>
+<span class="nc" id="L454">            	panel.remove(securityPassInfo);</span>
+<span class="nc" id="L455">            	panel.repaint();</span>
+<span class="nc" id="L456">        		panel.add(passwordSuccessText);</span>
+<span class="nc" id="L457">        		passwordSuccessText.setForeground(Color.green.darker());</span>
+<span class="nc" id="L458">        		passwordSuccessText.setBounds(panel.getWidth()/2-80, panel.getHeight()/2-25, 500, 50);</span>
+<span class="nc" id="L459">        	}</span>
+
+        	else{
+<span class="nc" id="L462">        		panel.add(passwordFailureText);</span>
+<span class="nc" id="L463">        		passwordFailureText.setForeground(Color.red);</span>
+<span class="nc" id="L464">        		passwordFailureText.setBounds(changePasswordButton.getX(), changePasswordButton.getY()+50, 500, 50);</span>
+        	}
+        }
+<span class="nc" id="L467">    }</span>
+
+    //resize metodi joka asettelee komponentit uudelleen panelille kun ruudun kokoa muutetaan
+    public void resize(){
+
+<span class="nc bnc" id="L472" title="All 2 branches missed.">        if(ikkuna == 3){</span>
+<span class="nc" id="L473">            newUserButton.setBounds(panel.getWidth()/2-newUserButton.getWidth()-10, panel.getHeight()/2, 200, 50);</span>
+<span class="nc" id="L474">            exUserButton.setBounds(panel.getWidth()/2+10, panel.getHeight()/2, 200, 50);</span>
+<span class="nc" id="L475">            securityButton.setBounds(panel.getWidth()-160, panel.getHeight()-60, 150, 50);</span>
+<span class="nc" id="L476">        }</span>
+
+<span class="nc bnc" id="L478" title="All 2 branches missed.">        else if(ikkuna == 1){</span>
+<span class="nc" id="L479">            username.setBounds(panel.getWidth()/20, panel.getHeight()/14, 200, 30);</span>
+<span class="nc" id="L480">            email.setBounds(panel.getWidth()/20, username.getY()+username.getHeight()+10, 200, 30);</span>
+<span class="nc" id="L481">            password.setBounds(panel.getWidth()/20, email.getY()+email.getHeight()+10, 200, 30);</span>
+<span class="nc" id="L482">            retypepass.setBounds(panel.getWidth()/20, password.getY()+password.getHeight()+10, 200, 30);</span>
+<span class="nc" id="L483">            usernameField.setBounds(username.getX()+username.getWidth()-55, username.getY(),200, 30);</span>
+<span class="nc" id="L484">            emailField.setBounds(email.getX()+email.getWidth()-55, email.getY(), 200, 30);</span>
+<span class="nc" id="L485">            passwordField.setBounds(password.getX()+password.getWidth()-55, password.getY(), 200, 30);</span>
+<span class="nc" id="L486">            retypepassField.setBounds(retypepass.getX()+retypepass.getWidth()-55, retypepass.getY(), 200, 30);</span>
+<span class="nc" id="L487">            createUser.setBounds(retypepassField.getX()-35, recoveryQuestionAns.getY()+recoveryQuestionAns.getHeight()+15, 110, 30);</span>
+<span class="nc" id="L488">            backButton.setBounds(panel.getWidth()/60, panel.getHeight()-60, 100, 40);</span>
+<span class="nc" id="L489">            recoveryQuestion1.setBounds(panel.getWidth()/20, retypepass.getY()+retypepass.getHeight()+5, 200, 40);</span>
+<span class="nc" id="L490">            recoveryQuestionArea1.setBounds(retypepassField.getX(), recoveryQuestion1.getY()+5, 200, 40);</span>
+<span class="nc" id="L491">            recoveryQuestionAns.setBounds(panel.getWidth()/20, recoveryQuestion1.getY()+recoveryQuestion1.getHeight()+10, 200, 40);</span>
+<span class="nc" id="L492">            recoveryQuestionAnswer1.setBounds(retypepassField.getX(), recoveryQuestionAns.getY()+5, 200, 40);</span>
+
+<span class="nc" id="L494">        }</span>
+
+<span class="nc bnc" id="L496" title="All 2 branches missed.">        else if(ikkuna == 2){</span>
+<span class="nc" id="L497">        	username.setBounds(panel.getWidth()/2-150, panel.getHeight()/2-70, 80, 30);</span>
+<span class="nc" id="L498">        	usernameField.setBounds(username.getX()+username.getWidth()+10, username.getY()-5, 200, 40);</span>
+<span class="nc" id="L499">        	password.setBounds(panel.getWidth()/2-150, panel.getHeight()/2-20, 80, 30);</span>
+<span class="nc" id="L500">        	passwordField.setBounds(password.getX()+password.getWidth()+10, password.getY()-5, 200, 40);</span>
+<span class="nc" id="L501">        	login.setBounds(passwordField.getX(), passwordField.getY()+passwordField.getHeight()+10, 100, 40);</span>
+<span class="nc" id="L502">        	backButton.setBounds(panel.getWidth()/60, panel.getHeight()-60, 100, 40);</span>
+<span class="nc" id="L503">        }</span>
+
+<span class="nc bnc" id="L505" title="All 2 branches missed.">        else if(ikkuna == 5){</span>
+<span class="nc" id="L506">        	securityCodeField.setBounds(panel.getWidth()/2-20, panel.getHeight()/2-80, 200, 40);</span>
+<span class="nc" id="L507">        	securityCodeText.setBounds(panel.getWidth()/2-150, securityCodeField.getY(), 100, 40);</span>
+<span class="nc" id="L508">        	passwordField.setBounds(panel.getWidth()/2-20, panel.getHeight()/2-30, 200, 40);</span>
+<span class="nc" id="L509">        	retypepassField.setBounds(panel.getWidth()/2-20, panel.getHeight()/2+20, 200, 40);</span>
+<span class="nc" id="L510">        	backButton.setBounds(panel.getWidth()/60, panel.getHeight()-60, 100, 40);</span>
+<span class="nc" id="L511">        	password.setBounds(panel.getWidth()/2-150, passwordField.getY(), 100, 40);</span>
+<span class="nc" id="L512">        	retypepass.setBounds(panel.getWidth()/2-150, retypepassField.getY(), 120, 40);</span>
+<span class="nc" id="L513">        	securityPassInfo.setBounds(securityCodeText.getX()-150, securityCodeText.getY()-50, 700, 40);</span>
+<span class="nc" id="L514">        	changePasswordButton.setBounds(retypepassField.getX()-20, retypepassField.getY()+50, 150, 40);</span>
+<span class="nc" id="L515">        	passwordSuccessText.setBounds(changePasswordButton.getX()-15, changePasswordButton.getY()+50, 500, 50);</span>
+<span class="nc" id="L516">        	passwordFailureText.setBounds(changePasswordButton.getX(), changePasswordButton.getY()+50, 500, 50);</span>
+<span class="nc" id="L517">        }</span>
+
+<span class="nc bnc" id="L519" title="All 2 branches missed.">        else if(ikkuna == 4){</span>
+<span class="nc" id="L520">        	backButton.setBounds(panel.getWidth()/60, panel.getHeight()-60, 100, 40);</span>
+<span class="nc" id="L521">        	resetPasswordButton.setBounds(panel.getWidth()/20, panel.getHeight()/13, 200, 50);</span>
+        }/*else if(ikkuna == 0){
+        	newUserButton.setBounds(panel.getWidth()/2-newUserButton.getWidth()-10, panel.getHeight()/2, 200, 50);
+            exUserButton.setBounds(panel.getWidth()/2+10, panel.getHeight()/2, 200, 50);
+        }*/
+<span class="nc" id="L526">    }</span>
+
+    public void limitChars(){
+<span class="nc" id="L529">    	final int MAX_LENGTH = 50;</span>
+
+<span class="nc" id="L531">    	recoveryQuestionArea1.setDocument(new PlainDocument() {</span>
+
+			private static final long serialVersionUID = 1105596992099482664L;
+
+			@Override
+    	    public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
+<span class="nc bnc" id="L537" title="All 4 branches missed.">    	        if (str == null || recoveryQuestionArea1.getText().length() &gt;= MAX_LENGTH) {</span>
+<span class="nc" id="L538">    	            return;</span>
+    	        }
+<span class="nc" id="L540">    	        super.insertString(offs, str, a);</span>
+<span class="nc" id="L541">    	    }</span>
+    	});
+
+<span class="nc" id="L544">    	recoveryQuestionAnswer1.setDocument(new PlainDocument() {</span>
+
+			private static final long serialVersionUID = -5565970091212868473L;
+
+			@Override
+    	    public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
+<span class="nc bnc" id="L550" title="All 4 branches missed.">    	        if (str == null || recoveryQuestionAnswer1.getText().length() &gt;= MAX_LENGTH) {</span>
+<span class="nc" id="L551">    	            return;</span>
+    	        }
+<span class="nc" id="L553">    	        super.insertString(offs, str, a);</span>
+<span class="nc" id="L554">    	    }</span>
+    	});
+
+<span class="nc" id="L557">    }</span>
+
+    public void checkUsername(){
+<span class="nc bnc" id="L560" title="All 2 branches missed.">    	for(int i = 0; i &lt; forbidden.size(); i++){</span>
+<span class="nc bnc" id="L561" title="All 4 branches missed.">    		if(usernameField.getText().toLowerCase().contains(forbidden.get(i)) || text.toLowerCase().contains(forbidden.get(i))){</span>
+<span class="nc" id="L562">    			System.out.println(Localization.getBundle().getString(&quot;login_window_found_user&quot;)+&quot;:&quot;+forbidden.get(i));</span>
+<span class="nc" id="L563">    			panel.add(warning);</span>
+<span class="nc" id="L564">                warning.setForeground(Color.RED);</span>
+<span class="nc" id="L565">                warning.setText(Localization.getBundle().getString(&quot;login_window_unacceptable_username&quot;)+&quot;.&quot;);</span>
+<span class="nc" id="L566">                warning.setBounds(createUser.getX()-20, createUser.getY()+createUser.getHeight()+10, 400, 30);</span>
+<span class="nc" id="L567">                usernameDoesntContainForbiddenWords = false;</span>
+<span class="nc" id="L568">                break;</span>
+
+    		}else{
+<span class="nc" id="L571">    			usernameDoesntContainForbiddenWords = true;</span>
+    		}
+<span class="nc" id="L573">    		System.out.println(&quot;Forbiddenwords=&quot;+usernameDoesntContainForbiddenWords);</span>
+    	}
+
+<span class="nc" id="L576">    	String texte = usernameField.getText();</span>
+<span class="nc" id="L577">    	boolean match = texte.matches(&quot;[a-zA-Z0-9]+&quot;);</span>
+
+<span class="nc bnc" id="L579" title="All 2 branches missed.">    	if(match == false){</span>
+<span class="nc" id="L580">    		usernameDoesntContainSpecialChars = false;</span>
+<span class="nc" id="L581">    		panel.add(warning);</span>
+<span class="nc" id="L582">            warning.setForeground(Color.RED);</span>
+<span class="nc" id="L583">            warning.setText(Localization.getBundle().getString(&quot;login_window_usable_chars&quot;));</span>
+<span class="nc" id="L584">            warning.setBounds(createUser.getX()-20, createUser.getY()+createUser.getHeight()+10, 400, 30);</span>
+<span class="nc" id="L585">    	}else{</span>
+<span class="nc" id="L586">    		usernameDoesntContainSpecialChars = true;</span>
+   		}
+<span class="nc" id="L588">    	System.out.println(&quot;SpecialChars=&quot;+usernameDoesntContainSpecialChars);</span>
+
+<span class="nc" id="L590">    }</span>
+
+    public void changeChars(){
+
+<span class="nc" id="L594">    	text = usernameField.getText();</span>
+
+<span class="nc bnc" id="L596" title="All 10 branches missed.">    	while(text.contains(&quot;1&quot;) || text.contains(&quot;3&quot;) || text.contains(&quot;4&quot;) || text.contains(&quot;5&quot;) || text.contains(&quot;0&quot;)){</span>
+<span class="nc bnc" id="L597" title="All 2 branches missed.">    		if(text.contains(&quot;1&quot;)){</span>
+<span class="nc" id="L598">        		text = text.replace(&quot;1&quot;, &quot;i&quot;);</span>
+<span class="nc bnc" id="L599" title="All 2 branches missed.">        	}else if(text.contains(&quot;3&quot;)){</span>
+<span class="nc" id="L600">        		text = text.replace(&quot;3&quot;, &quot;e&quot;);</span>
+<span class="nc bnc" id="L601" title="All 2 branches missed.">        	}else if(text.contains(&quot;4&quot;)){</span>
+<span class="nc" id="L602">        		text = text.replace(&quot;4&quot;, &quot;a&quot;);</span>
+<span class="nc bnc" id="L603" title="All 2 branches missed.">        	}else if(text.contains(&quot;5&quot;)){</span>
+<span class="nc" id="L604">        		text = text.replace(&quot;5&quot;, &quot;s&quot;);</span>
+<span class="nc bnc" id="L605" title="All 2 branches missed.">        	}else if(text.contains(&quot;0&quot;)){</span>
+<span class="nc" id="L606">        		text = text.replace(&quot;0&quot;, &quot;o&quot;);</span>
+        	}
+    	}
+<span class="nc" id="L609">    	checkUsername();</span>
+<span class="nc" id="L610">    }</span>
+
+    public void addForbidden(){
+<span class="nc" id="L613">    	forbidden.add(&quot;penis&quot;);</span>
+<span class="nc" id="L614">    	forbidden.add(&quot;asshole&quot;);</span>
+<span class="nc" id="L615">    	forbidden.add(&quot;fuck&quot;);</span>
+<span class="nc" id="L616">    	forbidden.add(&quot;shit&quot;);</span>
+<span class="nc" id="L617">    	forbidden.add(&quot;nigger&quot;);</span>
+<span class="nc" id="L618">    	forbidden.add(&quot;nigga&quot;);</span>
+<span class="nc" id="L619">    	forbidden.add(&quot;admin&quot;);</span>
+<span class="nc" id="L620">    	forbidden.add(&quot;moderator&quot;);</span>
+<span class="nc" id="L621">    	forbidden.add(&quot;mod&quot;);</span>
+<span class="nc" id="L622">    	forbidden.add(&quot;vagina&quot;);</span>
+<span class="nc" id="L623">    	forbidden.add(&quot;gay&quot;);</span>
+<span class="nc" id="L624">    	forbidden.add(&quot;homosexual&quot;);</span>
+<span class="nc" id="L625">    	forbidden.add(&quot;dick&quot;);</span>
+<span class="nc" id="L626">    	forbidden.add(&quot;niger&quot;);</span>
+<span class="nc" id="L627">    	forbidden.add(&quot;bastard&quot;);</span>
+<span class="nc" id="L628">    	forbidden.add(&quot;bitch&quot;);</span>
+<span class="nc" id="L629">    	forbidden.add(&quot;crap&quot;);</span>
+<span class="nc" id="L630">    	forbidden.add(&quot;cunt&quot;);</span>
+<span class="nc" id="L631">    	forbidden.add(&quot;whore&quot;);</span>
+<span class="nc" id="L632">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

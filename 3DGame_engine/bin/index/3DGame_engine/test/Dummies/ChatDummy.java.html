@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>ChatDummy.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">test</a> &gt; <a href="index.source.html" class="el_package">Dummies</a> &gt; <span class="el_source">ChatDummy.java</span></div><h1>ChatDummy.java</h1><pre class="source lang-java linenums">package Dummies;
+
+import java.util.ArrayList;
+import Networking.ChatMessage;
+import game.engine.interfaces.ChatControls;
+
+public class ChatDummy {
+<span class="fc" id="L8">	private ArrayList&lt;ChatMessage&gt; messages=new ArrayList&lt;ChatMessage&gt;();</span>
+	public static final int maxmessages=99;
+	private ChatBoxDummy ifce;
+	private MessageBoxDummy msgbox;
+	private ChatControls kb;
+
+<span class="fc" id="L14">	public ChatDummy(){</span>
+<span class="fc" id="L15">		ifce=new ChatBoxDummy(this);</span>
+<span class="fc" id="L16">		msgbox=new MessageBoxDummy(this);</span>
+<span class="fc" id="L17">	}</span>
+
+	public void recieveMessage(ChatMessage message){
+<span class="fc bfc" id="L20" title="All 2 branches covered.">		if(messages.size()&lt;maxmessages){</span>
+<span class="fc" id="L21">			messages.add(0,message);</span>
+<span class="fc" id="L22">		}else{</span>
+<span class="fc" id="L23">			messages.remove(maxmessages-1);</span>
+<span class="fc" id="L24">			messages.add(0,message);</span>
+		}
+<span class="fc" id="L26">		drawMessages();</span>
+<span class="fc" id="L27">	}</span>
+
+	public void sendMessage(String message){
+<span class="nc" id="L30">		ChatMessage msg=new ChatMessage(&quot;testplayer&quot;, message);</span>
+<span class="nc" id="L31">		game.engine.main.Main.connection.send(msg);</span>
+<span class="nc" id="L32">	}</span>
+	public ArrayList&lt;ChatMessage&gt; getMessages(){
+<span class="fc" id="L34">		return messages;</span>
+	}
+	public void drawMessages(){
+<span class="fc" id="L37">		ifce.drawMessages(messages);</span>
+<span class="fc" id="L38">	}</span>
+	public void mute(String player){
+<span class="fc bfc" id="L40" title="All 2 branches covered.">		for(int i=0;i&lt;messages.size();i++){</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">			if(messages.get(i).getName().equals(player)){</span>
+<span class="fc" id="L42">				messages.remove(i);</span>
+<span class="fc" id="L43">				i--;</span>
+			}
+		}
+<span class="fc" id="L46">	}</span>
+	/*public ChatBox getChatbox(){
+		return ifce;
+	}
+	public MessageBox getMessageBox(){
+		return this.msgbox;
+	}*/
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

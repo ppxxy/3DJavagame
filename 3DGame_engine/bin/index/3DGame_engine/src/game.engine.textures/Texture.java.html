@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Texture.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.textures</a> &gt; <span class="el_source">Texture.java</span></div><h1>Texture.java</h1><pre class="source lang-java linenums">package game.engine.textures;
+
+import game.engine.textures.TextureLoader.TextureData;
+
+import java.awt.image.BufferedImage;
+
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+
+public class Texture {
+
+	public final int id, size;
+	private final int type;
+
+	/**
+	 * Creates normal 2D texture with given id and size.
+	 * @param id Id this texture is associated with.
+	 * @param size Size of this texture.
+	 */
+<span class="nc" id="L20">	protected Texture(int id, int size){</span>
+<span class="nc" id="L21">		this.id = id;</span>
+<span class="nc" id="L22">		this.type = GL11.GL_TEXTURE_2D;</span>
+<span class="nc" id="L23">		this.size = size;</span>
+<span class="nc" id="L24">	}</span>
+
+	/**
+	 * Creates normal 2D texture with given id and size.
+	 * @param id Id this texture is associated with.
+	 * @param type Texture type. GL11 has final variables for different texture types.
+	 * @param size Size of this texture.
+	 */
+<span class="nc" id="L32">	protected Texture(int id, int type, int size){</span>
+<span class="nc" id="L33">		this.id = id;</span>
+<span class="nc" id="L34">		this.type = type;</span>
+<span class="nc" id="L35">		this.size = size;</span>
+<span class="nc" id="L36">	}</span>
+
+	/**
+	 * Binds this texture to be used on OpenGL rendering.
+	 * @param unit Unit value to bind this texture to.
+	 */
+	public void bindToUnit(int unit){
+<span class="nc" id="L43">		GL13.glActiveTexture(GL13.GL_TEXTURE0 + unit);</span>
+<span class="nc" id="L44">		GL11.glBindTexture(type, id);</span>
+<span class="nc" id="L45">	}</span>
+
+	/**
+	 * Removes this texture from the memory.
+	 */
+	public void delete(){
+<span class="nc" id="L51">		GL11.glDeleteTextures(id);</span>
+<span class="nc" id="L52">	}</span>
+
+	/**
+	 * Load texture from the given path.
+	 * @param path Path of texture file.
+	 * @return Texture object.
+	 */
+	public static Loader loadTexture(String path){
+<span class="nc" id="L60">		return new Loader(path);</span>
+	}
+
+	public static Loader loadTexture(BufferedImage image){
+<span class="nc" id="L64">		return new Loader(image);</span>
+	}
+
+	public static class Loader{
+
+<span class="nc" id="L69">		private boolean clampEdges = false, mipmap = false, anisotropic = true, nearest = false;</span>
+
+		private String path;
+		private BufferedImage image;
+
+		/**
+		 * Texture loader to load texture from the given path using filters.
+		 * @param path Path to texture file.
+		 */
+<span class="nc" id="L78">		private Loader(String path){</span>
+<span class="nc" id="L79">			this.path = path;</span>
+<span class="nc" id="L80">		}</span>
+
+<span class="nc" id="L82">		private Loader(BufferedImage image){</span>
+<span class="nc" id="L83">			this.image = image;</span>
+<span class="nc" id="L84">		}</span>
+
+		public boolean isClampEdges() {
+<span class="nc" id="L87">			return clampEdges;</span>
+		}
+
+		public boolean isMipmap() {
+<span class="nc" id="L91">			return mipmap;</span>
+		}
+
+		public boolean isAnisotropic() {
+<span class="nc" id="L95">			return anisotropic;</span>
+		}
+
+		public boolean isNearest() {
+<span class="nc" id="L99">			return nearest;</span>
+		}
+
+		/**
+		 * Loads texture data from the path. Saves Texture to OpenGL and makes it into a Texture object.
+		 * @return Texture object containing texture.
+		 */
+		public Texture load(){
+			TextureData data;
+<span class="nc bnc" id="L108" title="All 2 branches missed.">			if(path != null){</span>
+<span class="nc" id="L109">				data = TextureLoader.decodeTextureFile(path);</span>
+<span class="nc" id="L110">			}</span>
+			else{
+<span class="nc" id="L112">				return TextureLoader.loadFromBufferedImage(image, this);</span>
+			}
+<span class="nc" id="L114">			int id = TextureLoader.saveToOpenGL(data, this);</span>
+<span class="nc" id="L115">			return new Texture(id, data.getWidth());</span>
+		}
+
+		/**
+		 * Clamp texture edges.
+		 * @return This loader object with ClampEdges filter.
+		 */
+		public Loader clampEdges(){
+<span class="nc" id="L123">			this.clampEdges = true;</span>
+<span class="nc" id="L124">			return this;</span>
+		}
+
+		/**
+		 * Make textures anisotropic
+		 * @return This loader object with anisotropic filter.
+		 */
+		public Loader anisotropic(){
+<span class="nc" id="L132">			this.mipmap = true;</span>
+<span class="nc" id="L133">			this.anisotropic = true;</span>
+<span class="nc" id="L134">			return this;</span>
+		}
+
+		/**
+		 * Use MipMap to make objects further away look better.
+		 * @return This loader with normal MipMapping activated.
+		 */
+		public Loader normalMipMap(){
+<span class="nc" id="L142">			this.mipmap = true;</span>
+<span class="nc" id="L143">			this.anisotropic = false;</span>
+<span class="nc" id="L144">			return this;</span>
+		}
+
+		/**
+		 * Nearest filtering makes pixels pop out more.
+		 * @return This loader with nearestFiltering activated.
+		 */
+		public Loader nearestFiltering(){
+<span class="nc" id="L152">			this.mipmap = false;</span>
+<span class="nc" id="L153">			this.anisotropic = false;</span>
+<span class="nc" id="L154">			this.nearest = true;</span>
+<span class="nc" id="L155">			return this;</span>
+		}
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

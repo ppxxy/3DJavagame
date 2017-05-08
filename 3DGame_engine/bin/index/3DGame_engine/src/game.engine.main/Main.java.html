@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Main.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.main</a> &gt; <span class="el_source">Main.java</span></div><h1>Main.java</h1><pre class="source lang-java linenums"><span class="nc" id="L1">package game.engine.main;</span>
+
+import java.io.File;
+import java.io.IOException;
+
+import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Vector2f;
+
+import Localization.Localization;
+import Networking.Chat;
+import game.connection.objects.RequestData;
+import game.engine.camera.Camera;
+import game.engine.camera.TargetCamera;
+import game.engine.characters.PlayerFactory;
+import game.engine.connection.Connection;
+import game.engine.interfaces.ChatBox;
+import game.engine.interfaces.ChatControls;
+import game.engine.interfaces.Interface;
+import game.engine.interfaces.Inventory;
+import game.engine.interfaces.InventoryInterface;
+import game.engine.interfaces.Whiteboard;
+import game.engine.rendering.DisplayManager;
+import game.engine.rendering.GameView;
+import game.engine.rendering.RenderEngine;
+import game.engine.textures.Texture;
+import game.engine.view.InterfaceView;
+import javafx.stage.Stage;
+
+public class Main {
+
+	public static Connection connection;
+
+	public static View activeView;
+
+	public static Chat chat;
+
+<span class="nc" id="L37">	public Main(){</span>
+
+<span class="nc" id="L39">	}</span>
+
+	public static void main(String[] args) {
+
+<span class="nc" id="L43">		System.setProperty(&quot;org.lwjgl.librarypath&quot;, new File(&quot;src/lib/jars/natives-win&quot;).getAbsolutePath());</span>
+
+<span class="nc" id="L45">		RenderEngine renderEngine = RenderEngine.init();</span>
+<span class="nc" id="L46">		chat=new Chat();</span>
+<span class="nc" id="L47">		Interface logging = new Interface(Texture.loadTexture(&quot;/res/logging.png&quot;).load(), new Vector2f(0f, 0f), new Vector2f(1f, 1f));</span>
+<span class="nc" id="L48">		activeView = new InterfaceView(logging);</span>
+
+
+<span class="nc" id="L51">		connection = new Connection(&quot;127.0.0.1&quot;, 16304);</span>
+
+		/*
+		 * Login screen here!!
+		 */
+
+<span class="nc bnc" id="L57" title="All 2 branches missed.">		while(!Display.isCloseRequested()){</span>
+<span class="nc" id="L58">			activeView.update();</span>
+<span class="nc" id="L59">			renderEngine.renderView(activeView);</span>
+<span class="nc" id="L60">			DisplayManager.updateDisplay();</span>
+<span class="nc" id="L61">			chat.getChatbox().update();</span>
+<span class="nc" id="L62">			chat.getMessageBox().update();</span>
+		}
+
+<span class="nc" id="L65">		activeView.cleanUp();</span>
+<span class="nc" id="L66">		renderEngine.cleanUp();</span>
+<span class="nc" id="L67">		DisplayManager.closeDiplay();</span>
+<span class="nc" id="L68">	}</span>
+
+	public static void setPlayer(int id){
+<span class="nc" id="L71">		System.out.println(&quot;Setting player.&quot;);</span>
+<span class="nc" id="L72">		game.engine.characters.Character player = PlayerFactory.createPlayer(id);</span>
+<span class="nc" id="L73">		Camera camera = new TargetCamera(player, 100f);</span>
+
+<span class="nc" id="L75">		GameView view = new GameView(camera);</span>
+<span class="nc" id="L76">		view.addEntity(player);</span>
+<span class="nc" id="L77">		activeView = view;</span>
+
+<span class="nc" id="L79">		connection.send(RequestData.REQUEST_PLAYERS);</span>
+
+		/*InventoryInterface testi = new InventoryInterface(Texture.loadTexture(&quot;/res/bag.png&quot;).load(), new Vector2f(-0.70f, 0.5f), new Vector2f(0.05f, 0.1f));
+		view.addInterface(testi);
+
+		//inventory interface
+		try {
+			Inventory inventory = new Inventory(&quot;/res/inventory.jpg&quot;, 0.70f, 0.0f, 0.25f, 0.35f);
+			view.addInterface(inventory);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+
+
+        /*BufferedImage bagButton = null;
+		try {
+			bagButton = ImageIO.read(new File(&quot;C:/Users/Tomi/git/3DJavaGame/3DGame_engine/src/res/bag.png&quot;));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		BufferedImage laukkuKuva = new BufferedImage(bagButton.getWidth(), bagButton.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		Graphics g2 = laukkuKuva.getGraphics();
+		g2.drawImage(bagButton, 0, 0, laukkuKuva.getWidth(), laukkuKuva.getHeight(), null);
+		g.dispose();
+		Interface laukku = new Interface(Texture.loadTexture(bagButton).load(), new Vector2f(0.0f, -0.3f), new Vector2f(0.05f, 0.1f));
+		view.addInterface(laukku);*/
+
+
+
+		/*BufferedImage image = new BufferedImage(11, 11, BufferedImage.TYPE_INT_ARGB);
+		java.awt.Graphics g = image.getGraphics();
+		g.setColor(new Color(0, 255, 0, 255));
+		g.fillRect(0, 0, image.getWidth(), image.getHeight());
+		g.dispose();
+		view.addInterface(new Interface(Texture.loadTexture(image).nearestFiltering().load(), new Vector2f(0.5f, 0.5f), new Vector2f(0.2f, 0.2f)));*/
+<span class="nc" id="L116">		connection.setChat(chat);</span>
+<span class="nc" id="L117">		ChatControls chatcontrols = new ChatControls(chat.getMessageBox(),chat.getChatbox());</span>
+<span class="nc" id="L118">		view.addInterface(chat.getChatbox());</span>
+<span class="nc" id="L119">		view.addInterface(chat.getMessageBox());</span>
+<span class="nc" id="L120">		chatcontrols.start();</span>
+<span class="nc" id="L121">		Localization.setNewLocale(&quot;fi&quot;, &quot;FI&quot;);</span>
+
+<span class="nc" id="L123">		Thread t = new Thread(){</span>
+			@Override
+			public void run(){
+<span class="nc" id="L126">				System.out.println(&quot;thread start&quot;);</span>
+<span class="nc" id="L127">				Whiteboard.launch(Whiteboard.class);</span>
+<span class="nc" id="L128">			}</span>
+		};
+<span class="nc" id="L130">		t.start();</span>
+<span class="nc" id="L131">	}</span>
+	public static GameView getGameView() {
+<span class="nc" id="L133">		return (GameView) activeView;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Animator.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.animation</a> &gt; <span class="el_source">Animator.java</span></div><h1>Animator.java</h1><pre class="source lang-java linenums">package game.engine.animation;
+
+import game.engine.models.AnimatedModel;
+import game.engine.models.Joint;
+import game.engine.rendering.DisplayManager;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.lwjgl.util.vector.Matrix4f;
+
+public class Animator {
+
+<span class="nc" id="L14">	private float animationTime = 0;</span>
+	private Animation animation;
+	
+	private AnimatedModel model;
+	
+<span class="nc" id="L19">	public Animator(AnimatedModel model){</span>
+<span class="nc" id="L20">		this.model = model;</span>
+<span class="nc" id="L21">	}</span>
+	
+	/**
+	 * Makes the entity carry out this animation. Sets the animation timer to 0.
+	 * @param animation Animation to carry out.
+	 */
+	public void doAnimation(Animation animation){
+<span class="nc" id="L28">		this.animationTime = 0;</span>
+<span class="nc" id="L29">		this.animation = animation;</span>
+<span class="nc" id="L30">	}</span>
+	
+	public void update(){
+<span class="nc bnc" id="L33" title="All 2 branches missed.">		if(animation == null){</span>
+<span class="nc" id="L34">			return;</span>
+		}
+<span class="nc" id="L36">		increaseTime();</span>
+<span class="nc" id="L37">		Map&lt;String, Matrix4f&gt; pose = calculateCurrentPose();</span>
+<span class="nc" id="L38">		applyPoseToJoints(pose, model.getRootJoint(), new Matrix4f());</span>
+<span class="nc" id="L39">	}</span>
+	
+	private void increaseTime(){
+<span class="nc" id="L42">		animationTime += DisplayManager.getFrameTime();</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">		if(animationTime &gt; animation.getLength()){</span>
+<span class="nc" id="L44">			this.animationTime %= animation.getLength();</span>
+		}
+<span class="nc" id="L46">	}</span>
+	
+	private Map&lt;String, Matrix4f&gt; calculateCurrentPose(){
+<span class="nc" id="L49">		KeyFrame[] frames = getFrames();</span>
+<span class="nc" id="L50">		float progression = calculateProgression(frames[0], frames[1]);</span>
+<span class="nc" id="L51">		return interpolatePoses(frames[0], frames[1], progression);</span>
+	}
+	
+	/**
+	 * Method to get previous and upcoming KeyFrames.
+	 * @return Previous and upcoming KeyFrames.
+	 */
+	private KeyFrame[] getFrames(){
+<span class="nc" id="L59">		KeyFrame previous = null;</span>
+<span class="nc" id="L60">		KeyFrame next = null;</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">		for(KeyFrame frame : animation.getKeyFrames()){</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">			if(frame.getTimeStamp() &gt; animationTime){</span>
+<span class="nc" id="L63">				next = frame;</span>
+<span class="nc" id="L64">				break;</span>
+			}
+<span class="nc" id="L66">			previous = frame;</span>
+		}
+<span class="nc bnc" id="L68" title="All 2 branches missed.">		previous = previous == null ? next : previous;</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">		next = next == null ? previous : next;</span>
+<span class="nc" id="L70">		return new KeyFrame[]{previous, next};</span>
+	}
+	
+	private void applyPoseToJoints(Map&lt;String, Matrix4f&gt; currentPose, Joint joint, Matrix4f parentTransform) {
+<span class="nc" id="L74">		Matrix4f currentLocalTransform = currentPose.get(joint.name);</span>
+<span class="nc" id="L75">		Matrix4f currentTransform = Matrix4f.mul(parentTransform, currentLocalTransform, null);</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">		for (Joint childJoint : joint.children) {</span>
+<span class="nc" id="L77">			applyPoseToJoints(currentPose, childJoint, currentTransform);</span>
+		}
+<span class="nc" id="L79">		Matrix4f.mul(currentTransform, joint.getInverseBindTransform(), currentTransform);</span>
+<span class="nc" id="L80">		joint.setAnimationTransform(currentTransform);</span>
+<span class="nc" id="L81">	}</span>
+	
+	private float calculateProgression(KeyFrame previous, KeyFrame next){
+<span class="nc" id="L84">		float timeDifference = next.getTimeStamp() - previous.getTimeStamp();</span>
+<span class="nc" id="L85">		return (animationTime - previous.getTimeStamp()) / timeDifference;</span>
+	}
+	
+	private Map&lt;String, Matrix4f&gt; interpolatePoses(KeyFrame previous, KeyFrame next, float progression){
+<span class="nc" id="L89">		Map&lt;String, Matrix4f&gt; currentPose = new HashMap&lt;String, Matrix4f&gt;();</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">		for(String jointName : previous.getJointKeyFrames().keySet()){</span>
+<span class="nc" id="L91">			JointTransform previousTransform = previous.getJointKeyFrames().get(jointName);</span>
+<span class="nc" id="L92">			JointTransform nextTransform = next.getJointKeyFrames().get(jointName);</span>
+<span class="nc" id="L93">			JointTransform interpolatedTransform = JointTransform.intepolate(previousTransform, nextTransform, progression);</span>
+<span class="nc" id="L94">			currentPose.put(jointName, interpolatedTransform.getLocalTransform());</span>
+		}
+<span class="nc" id="L96">		return currentPose;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

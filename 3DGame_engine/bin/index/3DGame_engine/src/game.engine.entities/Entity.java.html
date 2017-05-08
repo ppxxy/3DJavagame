@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Entity.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.entities</a> &gt; <span class="el_source">Entity.java</span></div><h1>Entity.java</h1><pre class="source lang-java linenums">package game.engine.entities;
+
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
+
+import game.engine.models.TexturedModel;
+
+public abstract class Entity {
+
+	protected Vector3f position;
+	protected float rotX, rotY, rotZ;
+	protected float scale;
+
+<span class="nc" id="L14">	public Entity(Vector3f position, float rotX,</span>
+			float rotY, float rotZ, float scale) {
+<span class="nc" id="L16">		this.position = position;</span>
+<span class="nc" id="L17">		this.rotX = rotX;</span>
+<span class="nc" id="L18">		this.rotY = rotY;</span>
+<span class="nc" id="L19">		this.rotZ = rotZ;</span>
+<span class="nc" id="L20">		this.scale = scale;</span>
+<span class="nc" id="L21">	}</span>
+
+	public void increasePosition(float dx, float dy, float dz){
+<span class="nc" id="L24">		this.position.x += dx;</span>
+<span class="nc" id="L25">		this.position.y += dy;</span>
+<span class="nc" id="L26">		this.position.z += dz;</span>
+<span class="nc" id="L27">	}</span>
+
+	public void increaseRotation(float dx, float dy, float dz){
+<span class="nc" id="L30">		this.rotX += dx;</span>
+<span class="nc" id="L31">		this.rotY += dy;</span>
+<span class="nc" id="L32">		this.rotZ += dz;</span>
+<span class="nc" id="L33">	}</span>
+
+	public Vector3f getPosition() {
+<span class="nc" id="L36">		return position;</span>
+	}
+
+	public void setPosition(Vector3f position) {
+<span class="nc" id="L40">		this.position = position;</span>
+<span class="nc" id="L41">	}</span>
+
+	public float getRotX() {
+<span class="nc" id="L44">		return rotX;</span>
+	}
+
+	public void setRotX(float rotX) {
+<span class="nc" id="L48">		this.rotX = rotX;</span>
+<span class="nc" id="L49">	}</span>
+
+	public float getRotY() {
+<span class="nc" id="L52">		return rotY;</span>
+	}
+
+	public void setRotY(float rotY) {
+<span class="nc" id="L56">		this.rotY = rotY;</span>
+<span class="nc" id="L57">	}</span>
+
+	public float getRotZ() {
+<span class="nc" id="L60">		return rotZ;</span>
+	}
+
+	public void setRotZ(float rotZ) {
+<span class="nc" id="L64">		this.rotZ = rotZ;</span>
+<span class="nc" id="L65">	}</span>
+
+	public float getScale() {
+<span class="nc" id="L68">		return scale;</span>
+	}
+
+	public void setScale(float scale) {
+<span class="nc" id="L72">		this.scale = scale;</span>
+<span class="nc" id="L73">	}</span>
+
+	public Matrix4f getTransformationMatrix(){
+<span class="nc" id="L76">		Matrix4f matrix = new Matrix4f();</span>
+<span class="nc" id="L77">		matrix.setIdentity();</span>
+<span class="nc" id="L78">		Matrix4f.translate(position, matrix, matrix);</span>
+<span class="nc" id="L79">		Matrix4f.rotate((float) Math.toRadians(rotX), new Vector3f(1, 0, 0), matrix, matrix);</span>
+<span class="nc" id="L80">		Matrix4f.rotate((float) Math.toRadians(rotY), new Vector3f(0, 1, 0), matrix, matrix);</span>
+<span class="nc" id="L81">		Matrix4f.rotate((float) Math.toRadians(rotZ), new Vector3f(0, 0, 1), matrix, matrix);</span>
+<span class="nc" id="L82">		Matrix4f.scale(new Vector3f(scale, scale, scale), matrix, matrix);</span>
+<span class="nc" id="L83">		return matrix;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

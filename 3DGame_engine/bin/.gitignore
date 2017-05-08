@@ -1,3 +1,14 @@
+/lib/
+/Localization/
+/Ohjeita.txt
 /game/
-/temp_chunk_data/
+/hibernate.cfg.xml
 /res/
+/index/
+/report.dtd
+/test.csv
+/test.xml
+/Dummies/
+/Networking/
+/login/
+/mathgame/

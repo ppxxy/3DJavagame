@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>VAO.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.models</a> &gt; <span class="el_source">VAO.java</span></div><h1>VAO.java</h1><pre class="source lang-java linenums">package game.engine.models;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
+
+public class VAO {
+	
+	private static final int BYTES_PER_FLOAT = 4;
+
+	public final int id;
+<span class="nc" id="L16">	private List&lt;VBO&gt; dataVBOs = new ArrayList&lt;VBO&gt;();</span>
+	private VBO indexVBO;
+	private int indexCount;
+
+	public static VAO create() {
+<span class="nc" id="L21">		int id = GL30.glGenVertexArrays();</span>
+<span class="nc" id="L22">		return new VAO(id);</span>
+	}
+
+<span class="nc" id="L25">	private VAO(int id) {</span>
+<span class="nc" id="L26">		this.id = id;</span>
+<span class="nc" id="L27">	}</span>
+	
+	public int getIndexCount(){
+<span class="nc" id="L30">		return indexCount;</span>
+	}
+
+	public void bind(int... attributes){
+<span class="nc" id="L34">		bind();</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">		for (int i : attributes) {</span>
+<span class="nc" id="L36">			GL20.glEnableVertexAttribArray(i);</span>
+		}
+<span class="nc" id="L38">	}</span>
+
+	public void unbind(int... attributes){
+<span class="nc bnc" id="L41" title="All 2 branches missed.">		for (int i : attributes) {</span>
+<span class="nc" id="L42">			GL20.glDisableVertexAttribArray(i);</span>
+		}
+<span class="nc" id="L44">		unbind();</span>
+<span class="nc" id="L45">	}</span>
+	
+	public void createIndexBuffer(int[] indices){
+<span class="nc" id="L48">		this.indexVBO = VBO.create(GL15.GL_ELEMENT_ARRAY_BUFFER);</span>
+<span class="nc" id="L49">		indexVBO.bind();</span>
+<span class="nc" id="L50">		indexVBO.storeData(indices);</span>
+<span class="nc" id="L51">		this.indexCount = indices.length;</span>
+<span class="nc" id="L52">	}</span>
+
+	public void createAttribute(int attribute, float[] data, int attrSize){
+<span class="nc" id="L55">		VBO dataVBO = VBO.create(GL15.GL_ARRAY_BUFFER);</span>
+<span class="nc" id="L56">		dataVBO.bind();</span>
+<span class="nc" id="L57">		dataVBO.storeData(data);</span>
+<span class="nc" id="L58">		GL20.glVertexAttribPointer(attribute, attrSize, GL11.GL_FLOAT, false, attrSize * BYTES_PER_FLOAT, 0);</span>
+<span class="nc" id="L59">		dataVBO.unbind();</span>
+<span class="nc" id="L60">		dataVBOs.add(dataVBO);</span>
+<span class="nc" id="L61">	}</span>
+	
+	public void createAttribute(int attribute, int[] data, int attrSize){
+<span class="nc" id="L64">		VBO dataVBO = VBO.create(GL15.GL_ARRAY_BUFFER);</span>
+<span class="nc" id="L65">		dataVBO.bind();</span>
+<span class="nc" id="L66">		dataVBO.storeData(data);</span>
+<span class="nc" id="L67">		GL30.glVertexAttribIPointer(attribute, attrSize, GL11.GL_INT, attrSize * BYTES_PER_FLOAT, 0);</span>
+<span class="nc" id="L68">		dataVBO.unbind();</span>
+<span class="nc" id="L69">		dataVBOs.add(dataVBO);</span>
+<span class="nc" id="L70">	}</span>
+	
+	public void delete() {
+<span class="nc" id="L73">		GL30.glDeleteVertexArrays(id);</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">		for(VBO VBO : dataVBOs){</span>
+<span class="nc" id="L75">			VBO.delete();</span>
+		}
+<span class="nc" id="L77">		indexVBO.delete();</span>
+<span class="nc" id="L78">	}</span>
+
+	private void bind() {
+<span class="nc" id="L81">		GL30.glBindVertexArray(id);</span>
+<span class="nc" id="L82">	}</span>
+
+	private void unbind() {
+<span class="nc" id="L85">		GL30.glBindVertexArray(0);</span>
+<span class="nc" id="L86">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

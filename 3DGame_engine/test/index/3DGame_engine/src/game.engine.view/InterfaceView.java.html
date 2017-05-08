@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>InterfaceView.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.view</a> &gt; <span class="el_source">InterfaceView.java</span></div><h1>InterfaceView.java</h1><pre class="source lang-java linenums">package game.engine.view;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import game.engine.interfaces.Interface;
+import game.engine.main.View;
+
+public class InterfaceView extends View {
+
+<span class="nc" id="L12">	private final List&lt;Interface&gt; interfaces = new ArrayList&lt;Interface&gt;();</span>
+
+<span class="nc" id="L14">	public InterfaceView(Interface... inters) {</span>
+<span class="nc" id="L15">		interfaces.addAll(Arrays.asList(inters));</span>
+<span class="nc" id="L16">	}</span>
+
+	@Override
+	public void cleanUp() {
+		// TODO Auto-generated method stub
+
+<span class="nc" id="L22">	}</span>
+
+	@Override
+	public void update() {
+<span class="nc" id="L26">		super.update();</span>
+<span class="nc" id="L27">	}</span>
+
+	public List&lt;Interface&gt; getInterfaces() {
+<span class="nc" id="L30">		return this.interfaces;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

@@ -1,63 +1,163 @@
 package game.engine.main;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.File;
-
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
-import game.engine.animation.Animation;
-import game.engine.entities.AnimatedEntity;
-import game.engine.entities.Camera;
-import game.engine.entities.Entity;
-import game.engine.entities.StableEntity;
+import Localization.Localization;
+import Networking.Chat;
+import game.connection.objects.RequestData;
+import game.engine.camera.Camera;
+import game.engine.camera.TargetCamera;
+import game.engine.characters.PlayerFactory;
+import game.engine.connection.Connection;
+import game.engine.entities.ObjectActivity;
+import game.engine.entities.ObjectActivityHandler;
+import game.engine.entities.ObjectEntity;
+import game.engine.interfaces.ChatControls;
 import game.engine.interfaces.Interface;
-import game.engine.models.RawModel;
+import game.engine.interfaces.Whiteboard;
 import game.engine.models.TexturedModel;
-import game.engine.models.collada.AnimationData;
-import game.engine.models.collada.AnimationData.AnimationLoader;
-import game.engine.models.collada.ModelLoader;
-import game.engine.rendering.AnimatedModelRenderer;
+import game.engine.models.obj.OBJLoader;
 import game.engine.rendering.DisplayManager;
-import game.engine.rendering.Loader;
+import game.engine.rendering.GameView;
 import game.engine.rendering.RenderEngine;
-import game.engine.rendering.Renderer;
-import game.engine.rendering.View;
-import game.engine.shader.StaticShader;
-import game.engine.textures.ModelTexture;
+import game.engine.rendering.ViewRenderer;
 import game.engine.textures.Texture;
+import game.engine.view.InterfaceView;
+import game.minigames.FXHandler;
+import mathgame.MathGUI;
 
 public class Main {
+
+	public static Connection connection;
+
+	public static View activeView;
+
+	public static Chat chat;
+	
+	private static RenderEngine renderEngine;
 
 	public static void main(String[] args) {
 
 		System.setProperty("org.lwjgl.librarypath", new File("src/lib/jars/natives-win").getAbsolutePath());
+		
+		renderEngine = RenderEngine.init();
+
+		chat=new Chat();
+		Interface logging = new Interface(Texture.loadTexture("/res/logging.png").load(), new Vector2f(0f, 0f), new Vector2f(1f, 1f));
+
+		activeView = new InterfaceView(logging);
+
+		connection = new Connection("127.0.0.1", 16304);
 
 		/*
 		 * Login screen here!!
 		 */
 
-		RenderEngine renderEngine = RenderEngine.init();
-
-		Camera camera = new Camera();
-		View view = new View(camera);
-		String modelFile = "/res/model.dae";
-		String textureFile = "/res/diffuse.png";
-		AnimatedEntity e = AnimatedEntity.loadEntity(modelFile, textureFile);
-		Animation animation = ModelLoader.loadColladaAnimation(modelFile);
-		e.getModel().doAnimation(animation);;
-		view.addEntity(e);
-		view.addInterface(new Interface(Texture.loadTexture("/res/icon.png").load(), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f)));
-
 		while(!Display.isCloseRequested()){
-			camera.move();
-			view.updateEntities();
-			renderEngine.renderView(view);
+			activeView.update();
+			renderEngine.renderView(activeView);
 			DisplayManager.updateDisplay();
+			chat.getChatbox().update();
+			chat.getMessageBox().update();
 		}
 
+		activeView.cleanUp();
 		renderEngine.cleanUp();
 		DisplayManager.closeDiplay();
+	}
+
+	public static void setPlayer(int id){
+		System.out.println("Setting player.");
+		game.engine.characters.Character player = PlayerFactory.createPlayer(id);
+		Camera camera = new TargetCamera(player, 100f);
+
+		GameView view = new GameView(camera);
+		player.setPosition(new Vector3f(0, view.getHeightAt(0, 0), 0));
+		view.addEntity(player);
+
+		TexturedModel taulu_model = new TexturedModel(new OBJLoader("/res/whiteboard.obj").loadModel(), Texture.loadTexture("/res/taulu.png").load());
+		ObjectEntity piirtotaulu = new ObjectEntity(taulu_model, new Vector3f(0, 20, -3), 0, 0, 0, 1);
+		ObjectActivityHandler.addActivity(taulu_model.getId(), new ObjectActivity(){
+
+			@Override
+			public boolean activate() {
+				Thread t = new Thread(){
+					@Override
+					public void run(){
+						FXHandler.runFX(Whiteboard.class);
+					}
+				};
+				t.start();
+				return true;
+			}
+
+		});
+
+		TexturedModel tree_model1 = new TexturedModel(new OBJLoader("/res/tree1.obj").loadModel(), Texture.loadTexture("/res/Walnut_L.png").load());
+		ObjectEntity tree1 = new ObjectEntity(tree_model1, new Vector3f(40, view.getHeightAt(40, 40)+3, 40), 0, 0, 0, 60);
+		ObjectEntity tree2 = new ObjectEntity(tree_model1, new Vector3f(60, view.getHeightAt(60, 100)+3, 100), 0, 150f, 0, 54);
+		ObjectEntity tree3 = new ObjectEntity(tree_model1, new Vector3f(160, view.getHeightAt(160, 70)+3, 70), 0, 120f, 0, 62);
+		ObjectEntity tree4 = new ObjectEntity(tree_model1, new Vector3f(80, view.getHeightAt(80, 10)+3, 10), 0, 310f, 0, 60);
+
+		BufferedImage bench_texture = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+		bench_texture.setRGB(0, 0, Color.GRAY.getRGB());
+		TexturedModel bench_model = new TexturedModel(new OBJLoader("/res/bench.obj").loadModel(), Texture.loadTexture(bench_texture).load());
+		ObjectEntity bench = new ObjectEntity(bench_model, new Vector3f(260, 12, 460), 0, 195f, 0, 10);
+		ObjectActivityHandler.addActivity(bench_model.getId(), new ObjectActivity(){
+
+			@Override
+			public boolean activate() {
+				((ViewRenderer) renderEngine).toggleHighPerformance();
+				return true;
+			}
+
+		});
+
+		taulu_model = new TexturedModel(new OBJLoader("/res/whiteboard.obj").loadModel(), Texture.loadTexture("/res/taulu.png").load());
+		ObjectEntity matematiikkataulu = new ObjectEntity(taulu_model, new Vector3f(60, 20, -3), 0, 0, 0, 1);
+		ObjectActivityHandler.addActivity(taulu_model.getId(), new ObjectActivity(){
+
+			@Override
+			public boolean activate() {
+				Thread t = new Thread(){
+					@Override
+					public void run(){
+						FXHandler.runFX(MathGUI.class);
+					}
+				};
+				t.start();
+				return true;
+			}
+
+		});
+
+		view.addEntity(piirtotaulu);
+		view.addEntity(matematiikkataulu);
+		view.addEntity(tree1);
+		view.addEntity(tree2);
+		view.addEntity(tree3);
+		view.addEntity(tree4);
+		view.addEntity(bench);
+
+		activeView = view;
+
+		connection.send(RequestData.REQUEST_PLAYERS);
+
+		connection.setChat(chat);
+		ChatControls chatcontrols = new ChatControls(chat.getMessageBox(),chat.getChatbox());
+		view.addInterface(chat.getChatbox());
+		view.addInterface(chat.getMessageBox());
+		chatcontrols.start();
+		Localization.setNewLocale("ru", "RU");
+	}
+	public static GameView getGameView() {
+		return (GameView) activeView;
 	}
 
 }

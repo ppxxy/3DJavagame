@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>ChatControls.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.interfaces</a> &gt; <span class="el_source">ChatControls.java</span></div><h1>ChatControls.java</h1><pre class="source lang-java linenums">package game.engine.interfaces;
+
+import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Keyboard;
+
+public class ChatControls extends Thread{
+<span class="nc" id="L7">	private boolean active=false;</span>
+	private MessageBox msgbox;
+	private ChatBox chatbox;
+<span class="nc" id="L10">	private boolean[] keys = new boolean[65536];</span>
+<span class="nc" id="L11">	private volatile boolean running=true;</span>
+
+<span class="nc" id="L13">	public ChatControls(MessageBox msgbox,ChatBox chatbox){</span>
+<span class="nc" id="L14">		this.msgbox=msgbox;</span>
+<span class="nc" id="L15">		this.chatbox=chatbox;</span>
+		try {
+<span class="nc" id="L17">			Keyboard.create();</span>
+<span class="nc" id="L18">		} catch (LWJGLException e) {</span>
+			// TODO Auto-generated catch block
+<span class="nc" id="L20">			e.printStackTrace();</span>
+		}
+<span class="nc" id="L22">		Keyboard.enableRepeatEvents(true);</span>
+<span class="nc" id="L23">	}</span>
+
+	public void run(){
+<span class="nc bnc" id="L26" title="All 2 branches missed.">		while(running){</span>
+<span class="nc bnc" id="L27" title="All 2 branches missed.">	while(Keyboard.next()) {</span>
+<span class="nc" id="L28">		checkActive();</span>
+<span class="nc" id="L29">		System.out.println(&quot;a&quot;);</span>
+<span class="nc bnc" id="L30" title="All 2 branches missed.">		if(active){</span>
+<span class="nc bnc" id="L31" title="All 2 branches missed.">		if(Keyboard.getEventKeyState()){</span>
+<span class="nc" id="L32">			keys[Keyboard.getEventKey()]=true;</span>
+<span class="nc bnc" id="L33" title="All 2 branches missed.">				if(keys[Keyboard.KEY_BACK]){</span>
+<span class="nc" id="L34">					msgbox.backspace();</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">				}else if(keys[Keyboard.KEY_UP]){</span>
+<span class="nc" id="L36">					chatbox.scrollUp();</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">				}else if(keys[Keyboard.KEY_DOWN]){</span>
+<span class="nc" id="L38">					chatbox.scrollDown();</span>
+<span class="nc" id="L39">				}else{</span>
+<span class="nc" id="L40">					System.out.println(&quot;a&quot;);</span>
+<span class="nc" id="L41">					msgbox.drawChar(Keyboard.getEventCharacter());</span>
+				}
+<span class="nc" id="L43">		}else {</span>
+<span class="nc" id="L44">			keys[Keyboard.getEventKey()]=false;</span>
+		 }
+
+	}
+	}
+		}
+<span class="nc" id="L50">	}</span>
+	public void checkActive(){
+<span class="nc bnc" id="L52" title="All 2 branches missed.">		if(active){</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">			if(Keyboard.isKeyDown(Keyboard.KEY_RETURN)){</span>
+<span class="nc" id="L54">				msgbox.send();</span>
+<span class="nc" id="L55">				msgbox.deactivate();</span>
+<span class="nc" id="L56">				active=false;</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">			}else if(Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)){</span>
+<span class="nc" id="L58">				active=false;</span>
+<span class="nc" id="L59">				msgbox.deactivate();</span>
+			}
+<span class="nc" id="L61">		}else{</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">			if(Keyboard.isKeyDown(Keyboard.KEY_RETURN)){</span>
+<span class="nc" id="L63">				active=true;</span>
+<span class="nc" id="L64">				msgbox.activate();</span>
+			}
+		}
+<span class="nc" id="L67">	}</span>
+	public void quit(){
+<span class="nc" id="L69">		running=false;</span>
+<span class="nc" id="L70">	}</span>
+	}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

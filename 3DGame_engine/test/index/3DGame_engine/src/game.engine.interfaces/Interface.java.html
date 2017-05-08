@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Interface.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.interfaces</a> &gt; <span class="el_source">Interface.java</span></div><h1>Interface.java</h1><pre class="source lang-java linenums">package game.engine.interfaces;
+
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
+
+import game.engine.textures.Texture;
+
+public class Interface {
+
+	private Texture texture;
+	private Matrix4f matrix;
+
+<span class="nc" id="L14">	public Interface(Texture texture, Vector2f position, Vector2f size){</span>
+<span class="nc" id="L15">		this.texture = texture;</span>
+<span class="nc" id="L16">		this.matrix = new Matrix4f();</span>
+<span class="nc" id="L17">		matrix.setIdentity();</span>
+<span class="nc" id="L18">		Matrix4f.translate(position, matrix, matrix);</span>
+<span class="nc" id="L19">		Matrix4f.scale(new Vector3f(size.x, size.y, 1f), matrix, matrix);</span>
+
+<span class="nc" id="L21">	}</span>
+
+	public Texture getTexture() {
+<span class="nc" id="L24">		return texture;</span>
+	}
+	public void setTexture(Texture texture){
+<span class="nc" id="L27">		this.texture=texture;</span>
+<span class="nc" id="L28">	}</span>
+	public Matrix4f getMatrix(){
+<span class="nc" id="L30">		return this.matrix;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

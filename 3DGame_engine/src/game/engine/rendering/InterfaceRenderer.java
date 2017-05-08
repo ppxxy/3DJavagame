@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
-import game.engine.entities.Camera;
+import game.engine.camera.Camera;
 import game.engine.interfaces.Interface;
 import game.engine.models.VAO;
 import game.engine.shader.ShaderProgram;

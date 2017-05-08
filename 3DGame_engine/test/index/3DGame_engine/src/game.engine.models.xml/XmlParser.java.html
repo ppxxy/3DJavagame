@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>XmlParser.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.models.xml</a> &gt; <span class="el_source">XmlParser.java</span></div><h1>XmlParser.java</h1><pre class="source lang-java linenums">package game.engine.models.xml;
+
+import game.engine.main.Main;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * Reads an XML file and stores all the data in {@link XmlNode} objects,
+ * allowing for easy access to the data contained in the XML file.
+ * 
+ * @author Karl
+ *
+ */
+<span class="nc" id="L18">public class XmlParser {</span>
+
+<span class="nc" id="L20">	private static final Pattern DATA = Pattern.compile(&quot;&gt;(.+?)&lt;&quot;);</span>
+<span class="nc" id="L21">	private static final Pattern START_TAG = Pattern.compile(&quot;&lt;(.+?)&gt;&quot;);</span>
+<span class="nc" id="L22">	private static final Pattern ATTR_NAME = Pattern.compile(&quot;(.+?)=&quot;);</span>
+<span class="nc" id="L23">	private static final Pattern ATTR_VAL = Pattern.compile(&quot;\&quot;(.+?)\&quot;&quot;);</span>
+<span class="nc" id="L24">	private static final Pattern CLOSED = Pattern.compile(&quot;(&lt;/|/&gt;)&quot;);</span>
+
+	/**
+	 * Reads an XML file and stores all the data in {@link XmlNode} objects,
+	 * allowing for easy access to the data contained in the XML file.
+	 * 
+	 * @param file - the XML file
+	 * @return The root node of the XML structure.
+	 */
+	public static XmlNode loadXmlFile(String path) {
+<span class="nc" id="L34">		BufferedReader reader = null;</span>
+		try {
+<span class="nc" id="L36">			reader = new BufferedReader(new InputStreamReader(Main.class.getResourceAsStream(path)));</span>
+<span class="nc" id="L37">			reader.readLine();</span>
+<span class="nc" id="L38">			XmlNode node = loadNode(reader);</span>
+<span class="nc" id="L39">			reader.close();</span>
+<span class="nc" id="L40">			return node;</span>
+<span class="nc" id="L41">		} catch (Exception e) {</span>
+<span class="nc" id="L42">			e.printStackTrace();</span>
+<span class="nc" id="L43">			System.err.println(&quot;Error with XML file format for: &quot; + path);</span>
+<span class="nc" id="L44">			System.exit(0);</span>
+<span class="nc" id="L45">			return null;</span>
+		}
+	}
+
+	private static XmlNode loadNode(BufferedReader reader) throws Exception {
+<span class="nc" id="L50">		String line = reader.readLine().trim();</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">		if (line.startsWith(&quot;&lt;/&quot;)) {</span>
+<span class="nc" id="L52">			return null;</span>
+		}
+<span class="nc" id="L54">		String[] startTagParts = getStartTag(line).split(&quot; &quot;);</span>
+<span class="nc" id="L55">		XmlNode node = new XmlNode(startTagParts[0].replace(&quot;/&quot;, &quot;&quot;));</span>
+<span class="nc" id="L56">		addAttributes(startTagParts, node);</span>
+<span class="nc" id="L57">		addData(line, node);</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">		if (CLOSED.matcher(line).find()) {</span>
+<span class="nc" id="L59">			return node;</span>
+		}
+<span class="nc" id="L61">		XmlNode child = null;</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">		while ((child = loadNode(reader)) != null) {</span>
+<span class="nc" id="L63">			node.addChild(child);</span>
+		}
+<span class="nc" id="L65">		return node;</span>
+	}
+
+	private static void addData(String line, XmlNode node) {
+<span class="nc" id="L69">		Matcher matcher = DATA.matcher(line);</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">		if (matcher.find()) {</span>
+<span class="nc" id="L71">			node.setData(matcher.group(1));</span>
+		}
+<span class="nc" id="L73">	}</span>
+
+	private static void addAttributes(String[] titleParts, XmlNode node) {
+<span class="nc bnc" id="L76" title="All 2 branches missed.">		for (int i = 1; i &lt; titleParts.length; i++) {</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">			if (titleParts[i].contains(&quot;=&quot;)) {</span>
+<span class="nc" id="L78">				addAttribute(titleParts[i], node);</span>
+			}
+		}
+<span class="nc" id="L81">	}</span>
+
+	private static void addAttribute(String attributeLine, XmlNode node) {
+<span class="nc" id="L84">		Matcher nameMatch = ATTR_NAME.matcher(attributeLine);</span>
+<span class="nc" id="L85">		nameMatch.find();</span>
+<span class="nc" id="L86">		Matcher valMatch = ATTR_VAL.matcher(attributeLine);</span>
+<span class="nc" id="L87">		valMatch.find();</span>
+<span class="nc" id="L88">		node.addAttribute(nameMatch.group(1), valMatch.group(1));</span>
+<span class="nc" id="L89">	}</span>
+
+	private static String getStartTag(String line) {
+<span class="nc" id="L92">		Matcher match = START_TAG.matcher(line);</span>
+<span class="nc" id="L93">		match.find();</span>
+<span class="nc" id="L94">		return match.group(1);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

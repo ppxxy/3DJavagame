@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>ModelLoader.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.models.collada</a> &gt; <span class="el_source">ModelLoader.java</span></div><h1>ModelLoader.java</h1><pre class="source lang-java linenums">package game.engine.models.collada;
+
+import game.engine.animation.Animation;
+import game.engine.models.xml.XmlNode;
+import game.engine.models.xml.XmlParser;
+
+<span class="nc" id="L7">public class ModelLoader {</span>
+
+	/**
+	 * Loads collada model data from the given path.
+	 * 
+	 * @param Path to collada file.
+	 * @param maxWeights Amount of maximum number of affecting joints per vertex.
+	 * @return
+	 */
+	public static AnimatedModelData loadColladaModel(String path, int maxWeights){
+<span class="nc" id="L17">		XmlNode node = XmlParser.loadXmlFile(path);</span>
+		
+		//Skinning data of the model
+<span class="nc" id="L20">		SkinningData skinningData = new SkinningData.SkinLoader(node.getChild(&quot;library_controllers&quot;), maxWeights).extractSkinData();</span>
+		
+		//Joint data of the model
+<span class="nc" id="L23">		JointsData jointsData = new JointsData.JointsLoader(node.getChild(&quot;library_visual_scenes&quot;), skinningData.jointOrder).extractBoneData();</span>
+	
+		//Mesh data of the model
+<span class="nc" id="L26">		Mesh mesh = new Mesh.Loader(node.getChild(&quot;library_geometries&quot;), skinningData.verticesSkinData).extractModelData();</span>
+		
+<span class="nc" id="L28">		return new AnimatedModelData(mesh, jointsData);</span>
+	}
+	
+	/**
+	 * Loads animation data from Collada file.
+	 * @param path Path of our Collada file.
+	 * @return AnimationData object containing animation data.
+	 */
+	public static Animation loadColladaAnimation(String path){
+<span class="nc" id="L37">		XmlNode node = XmlParser.loadXmlFile(path);</span>
+<span class="nc" id="L38">		XmlNode animNode = node.getChild(&quot;library_animations&quot;);</span>
+<span class="nc" id="L39">		XmlNode jointsNode = node.getChild(&quot;library_visual_scenes&quot;);</span>
+<span class="nc" id="L40">		Animation animation = new AnimationData.AnimationLoader(animNode, jointsNode).extractAnimation();</span>
+<span class="nc" id="L41">		return animation;</span>
+	}
+	
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

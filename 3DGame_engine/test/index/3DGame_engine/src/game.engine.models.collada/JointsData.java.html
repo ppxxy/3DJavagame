@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>JointsData.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.models.collada</a> &gt; <span class="el_source">JointsData.java</span></div><h1>JointsData.java</h1><pre class="source lang-java linenums">package game.engine.models.collada;
+
+import java.nio.FloatBuffer;
+import java.util.List;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
+
+import game.engine.models.xml.XmlNode;
+
+public class JointsData {
+
+	public final int jointCount;
+	public final JointData rootJoint;
+	
+	/**
+	 * Joint data of the model.
+	 * @param jointCount Number of joints on the model. 
+	 * @param rootJoint Model's root joint.
+	 */
+<span class="nc" id="L22">	public JointsData(int jointCount, JointData rootJoint) {</span>
+<span class="nc" id="L23">		this.jointCount = jointCount;</span>
+<span class="nc" id="L24">		this.rootJoint = rootJoint;</span>
+<span class="nc" id="L25">	}</span>
+
+	public static class JointsLoader{
+		
+		private XmlNode armatureData;
+		private List&lt;String&gt; boneOrder;
+		
+<span class="nc" id="L32">		private int jointCount = 0;</span>
+		
+		/**
+		 * Final value used to translate Y-axis to point upwards. On Blender Z-axis is pointing up.
+		 */
+<span class="nc" id="L37">		private static final Matrix4f CORRECTION = new Matrix4f().rotate((float) Math.toRadians(-90), new Vector3f(1, 0, 0));</span>
+		
+		/**
+		 * JointsLoader is used to load Joint data from XmlNode.
+		 * @param visualSceneNode Node to read data from.
+		 * @param boneOrder List of joint names.
+		 */
+<span class="nc" id="L44">		public JointsLoader(XmlNode visualSceneNode, List&lt;String&gt; boneOrder){</span>
+<span class="nc" id="L45">			this.armatureData = visualSceneNode.getChild(&quot;visual_scene&quot;).getChildWithAttribute(&quot;node&quot;, &quot;id&quot;, &quot;Armature&quot;);</span>
+<span class="nc" id="L46">			this.boneOrder = boneOrder;</span>
+<span class="nc" id="L47">		}</span>
+		
+		/**
+		 * Load joint data of the whole model.
+		 * @return JointsData object containing joint count and root joint.
+		 */
+		public JointsData extractBoneData(){
+<span class="nc" id="L54">			XmlNode headNode = armatureData.getChild(&quot;node&quot;);</span>
+<span class="nc" id="L55">			JointData rootJoint = loadJointData(headNode, true);</span>
+<span class="nc" id="L56">			return new JointsData(jointCount, rootJoint);</span>
+		}
+		
+		/**
+		 * Loads joint data of each joint on this model. Contains recursive structure for easy parenting!
+		 * @param jointNode Xml node containing data to transform into joint object.
+		 * @param isRoot True only if this is the root node. The only one with no parents.
+		 * @return Joint object. (recursive approach)
+		 */
+		private JointData loadJointData(XmlNode jointNode, boolean isRoot){
+<span class="nc" id="L66">			JointData joint = extractMainJointData(jointNode, isRoot);</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">			for(XmlNode childNode : jointNode.getChildren(&quot;node&quot;)){</span>
+<span class="nc" id="L68">				joint.addChild(loadJointData(childNode, false));</span>
+			}
+<span class="nc" id="L70">			return joint;</span>
+		}
+		
+		/**
+		 * Translates XmlNode data into Joint object.
+		 * @param jointNode XmlNode containing joint data.
+		 * @param isRoot Boolean to define root joint.
+		 * @return Joint object that is created using the Xml data.
+		 */
+		private JointData extractMainJointData(XmlNode jointNode, boolean isRoot){
+<span class="nc" id="L80">			String name = jointNode.getAttribute(&quot;id&quot;);</span>
+<span class="nc" id="L81">			int index = boneOrder.indexOf(name);</span>
+<span class="nc" id="L82">			String[] matrixData = jointNode.getChild(&quot;matrix&quot;).getData().split(&quot; &quot;);</span>
+<span class="nc" id="L83">			Matrix4f matrix = new Matrix4f();</span>
+<span class="nc" id="L84">			matrix.load(convertData(matrixData));</span>
+<span class="nc" id="L85">			matrix.transpose();</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">			if(isRoot){</span>
+				//Change Y axis to point upwards. In model data Z axis points upwards.
+<span class="nc" id="L88">				Matrix4f.mul(CORRECTION, matrix, matrix);</span>
+			}
+<span class="nc" id="L90">			jointCount++;</span>
+<span class="nc" id="L91">			return new JointData(index, name, matrix);</span>
+		}
+		
+		/**
+		 * Method used to transform Xml matrix data from String[] to FloatBuffer to use in Matrix4f.
+		 * @param rawData String array containing joint's Transformation, rotation and scale.
+		 * @return FloatBuffer containing joint's matrix data.
+		 */
+		private FloatBuffer convertData(String[] rawData){
+<span class="nc" id="L100">			float[] matrixData = new float[16];</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">			for(int i=0;i&lt;matrixData.length;i++){</span>
+<span class="nc" id="L102">				matrixData[i] = Float.parseFloat(rawData[i]);</span>
+			}
+<span class="nc" id="L104">			FloatBuffer buffer = BufferUtils.createFloatBuffer(16);</span>
+<span class="nc" id="L105">			buffer.put(matrixData);</span>
+<span class="nc" id="L106">			buffer.flip();</span>
+<span class="nc" id="L107">			return buffer;</span>
+		}
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

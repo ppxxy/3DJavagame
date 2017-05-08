@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Loader.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.rendering</a> &gt; <span class="el_source">Loader.java</span></div><h1>Loader.java</h1><pre class="source lang-java linenums">package game.engine.rendering;
+
+import game.engine.models.RawModel;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
+import org.newdawn.slick.opengl.Texture;
+import org.newdawn.slick.opengl.TextureLoader;
+
+<span class="nc" id="L21">public class Loader {</span>
+
+<span class="nc" id="L23">	private List&lt;Integer&gt; vaos = new ArrayList&lt;Integer&gt;();</span>
+<span class="nc" id="L24">	private List&lt;Integer&gt; vbos = new ArrayList&lt;Integer&gt;();</span>
+<span class="nc" id="L25">	private List&lt;Integer&gt; textures = new ArrayList&lt;Integer&gt;();</span>
+	
+	public RawModel loadToVao(float[] positions, float[] textureCoords, int[] indices){
+<span class="nc" id="L28">		int vaoID = createVAO();</span>
+<span class="nc" id="L29">		bindIndicesBuffer(indices);</span>
+<span class="nc" id="L30">		storeDataInAttributeList(0, 3, positions);</span>
+<span class="nc" id="L31">		storeDataInAttributeList(1, 2, textureCoords);</span>
+<span class="nc" id="L32">		unbindVAO();</span>
+<span class="nc" id="L33">		return new RawModel(vaoID, indices.length);</span>
+	}
+	
+	public int loadTexture(String fileName){
+<span class="nc" id="L37">		Texture texture = null;</span>
+		try {
+<span class="nc" id="L39">			texture = TextureLoader.getTexture(&quot;PNG&quot;, new FileInputStream(&quot;res/&quot; +fileName +&quot;.png&quot;));</span>
+<span class="nc" id="L40">		} catch (FileNotFoundException e) {</span>
+<span class="nc" id="L41">			e.printStackTrace();</span>
+<span class="nc" id="L42">		} catch (IOException e) {</span>
+<span class="nc" id="L43">			e.printStackTrace();</span>
+		}
+<span class="nc" id="L45">		int textureID = texture.getTextureID();</span>
+<span class="nc" id="L46">		textures.add(textureID);</span>
+<span class="nc" id="L47">		return textureID;</span>
+	}
+	
+	public void cleanUp(){
+<span class="nc bnc" id="L51" title="All 2 branches missed.">		for(int vao : vaos){</span>
+<span class="nc" id="L52">			GL30.glDeleteVertexArrays(vao);</span>
+		}
+<span class="nc bnc" id="L54" title="All 2 branches missed.">		for(int vbo : vbos){</span>
+<span class="nc" id="L55">			GL15.glDeleteBuffers(vbo);</span>
+		}
+<span class="nc bnc" id="L57" title="All 2 branches missed.">		for(int texture : textures){</span>
+<span class="nc" id="L58">			GL11.glDeleteTextures(texture);</span>
+		}
+<span class="nc" id="L60">	}</span>
+	
+	private int createVAO(){
+<span class="nc" id="L63">		int vaoID = GL30.glGenVertexArrays();</span>
+<span class="nc" id="L64">		vaos.add(vaoID);</span>
+<span class="nc" id="L65">		GL30.glBindVertexArray(vaoID);</span>
+<span class="nc" id="L66">		return vaoID;</span>
+	}
+	
+	private void storeDataInAttributeList(int attributeNumber, int coordinateSize, float[] data){
+<span class="nc" id="L70">		int vboID = GL15.glGenBuffers();</span>
+<span class="nc" id="L71">		vbos.add(vboID);</span>
+<span class="nc" id="L72">		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);</span>
+<span class="nc" id="L73">		FloatBuffer buffer = storeData(data);</span>
+<span class="nc" id="L74">		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);</span>
+<span class="nc" id="L75">		GL20.glVertexAttribPointer(attributeNumber, coordinateSize, GL11.GL_FLOAT, false, 0, 0);</span>
+<span class="nc" id="L76">		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);</span>
+<span class="nc" id="L77">	}</span>
+	
+	private void unbindVAO(){
+<span class="nc" id="L80">		GL30.glBindVertexArray(0);</span>
+<span class="nc" id="L81">	}</span>
+	
+	private void bindIndicesBuffer(int[] indices){
+<span class="nc" id="L84">		int vboID = GL15.glGenBuffers();</span>
+<span class="nc" id="L85">		vbos.add(vboID);</span>
+<span class="nc" id="L86">		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vboID);</span>
+<span class="nc" id="L87">		IntBuffer buffer = storeData(indices);</span>
+<span class="nc" id="L88">		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);</span>
+<span class="nc" id="L89">	}</span>
+	
+	private IntBuffer storeData(int[] data){
+<span class="nc" id="L92">		IntBuffer buffer = BufferUtils.createIntBuffer(data.length);</span>
+<span class="nc" id="L93">		buffer.put(data);</span>
+<span class="nc" id="L94">		buffer.flip();</span>
+<span class="nc" id="L95">		return buffer;</span>
+	}
+	
+	private FloatBuffer storeData(float[] data){
+<span class="nc" id="L99">		FloatBuffer buffer = BufferUtils.createFloatBuffer(data.length);</span>
+<span class="nc" id="L100">		buffer.put(data);</span>
+<span class="nc" id="L101">		buffer.flip();</span>
+<span class="nc" id="L102">		return buffer;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

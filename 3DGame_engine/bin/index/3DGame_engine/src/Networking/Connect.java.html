@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Connect.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">Networking</a> &gt; <span class="el_source">Connect.java</span></div><h1>Connect.java</h1><pre class="source lang-java linenums">package Networking;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import login.Userdata;
+import login.Window;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+
+public class Connect {
+
+	Window window;
+
+	/*ResultSet myRs;
+	Statement myStmt;
+	PreparedStatement myStmt2;*/
+
+	private static Connection myConn;
+	public static String errorMessage;
+
+<span class="nc" id="L29">	SessionFactory istuntotehdas= null;</span>
+
+<span class="nc" id="L31">	public Connect() {</span>
+
+<span class="nc" id="L33">		final StandardServiceRegistry registry = new StandardServiceRegistryBuilder().configure().build();</span>
+
+		try{
+<span class="nc" id="L36">			istuntotehdas = new MetadataSources(registry).buildMetadata().buildSessionFactory();</span>
+<span class="nc" id="L37">		}</span>
+<span class="nc" id="L38">		catch(Exception e){</span>
+<span class="nc" id="L39">			System.out.println(&quot;Oh no&quot;);</span>
+<span class="nc" id="L40">			StandardServiceRegistryBuilder.destroy( registry );</span>
+<span class="nc" id="L41">			e.printStackTrace();</span>
+		}
+<span class="nc" id="L43">        }</span>
+
+	/*public void executeUpdate(String query){
+		try {
+			myStmt = myConn.createStatement();
+			myStmt.executeUpdate(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void executeQuery(String query){
+		try {
+			myStmt = myConn.createStatement();
+			myRs = myStmt.executeQuery(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}*/
+
+	public String getDatabaseSalt(String query){
+
+<span class="nc" id="L65">            Session istunto = istuntotehdas.openSession();</span>
+
+		try{
+<span class="nc" id="L68">			istunto.beginTransaction();</span>
+<span class="nc" id="L69">			Userdata user = new Userdata();</span>
+<span class="nc" id="L70">			istunto.load(user, query);</span>
+<span class="nc" id="L71">			istunto.getTransaction().commit();</span>
+<span class="nc" id="L72">			istunto.close();</span>
+<span class="nc" id="L73">			return user.getSalt();</span>
+
+		}
+<span class="nc" id="L76">		catch(Exception e){</span>
+
+<span class="nc" id="L78">			e.printStackTrace();</span>
+<span class="nc" id="L79">			return null;</span>
+		}
+
+		/*String salt = &quot;&quot;;
+
+		try{
+			myStmt = myConn.createStatement();
+			myRs = myStmt.executeQuery(query);
+			if(myRs.next()){
+				salt = myRs.getString(&quot;PasswordSalt&quot;);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return salt;*/
+	}
+
+	public String getDatabaseHash(String query){
+
+<span class="nc" id="L98">            Session istunto = istuntotehdas.openSession();</span>
+
+                try{
+<span class="nc" id="L101">			istunto.beginTransaction();</span>
+<span class="nc" id="L102">			Userdata user = new Userdata();</span>
+<span class="nc" id="L103">			istunto.load(user, query);</span>
+<span class="nc" id="L104">			istunto.getTransaction().commit();</span>
+<span class="nc" id="L105">			istunto.close();</span>
+<span class="nc" id="L106">			return user.getHash();</span>
+
+		}
+<span class="nc" id="L109">		catch(Exception e){</span>
+<span class="nc" id="L110">			e.printStackTrace();</span>
+<span class="nc" id="L111">			return null;</span>
+		}
+
+		/*String hash = &quot;&quot;;
+
+		try{
+			myStmt = myConn.createStatement();
+			myRs = myStmt.executeQuery(query);
+			if(myRs.next()){
+				hash = myRs.getString(&quot;PasswordHash&quot;);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return hash;*/
+	}
+
+
+	public void addUser(String username, String hash, String salt, String email, String recq, String reca){
+<span class="nc" id="L130">                Userdata user = new Userdata(username, hash, salt, email, recq, reca);</span>
+
+<span class="nc" id="L132">                Session istunto = istuntotehdas.openSession();</span>
+<span class="nc" id="L133">		Transaction transaktio = null;</span>
+
+		try{
+<span class="nc" id="L136">			transaktio = istunto.beginTransaction();</span>
+<span class="nc" id="L137">			istunto.saveOrUpdate(user);</span>
+<span class="nc" id="L138">			transaktio.commit();</span>
+<span class="nc" id="L139">		}</span>
+<span class="nc" id="L140">		catch(Exception e){</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">			if (transaktio!=null) transaktio.rollback();</span>
+<span class="nc" id="L142">			e.printStackTrace();</span>
+		}
+<span class="nc" id="L144">		finally{</span>
+<span class="nc" id="L145">			istunto.close();</span>
+<span class="nc" id="L146">		}</span>
+		/*String sql = &quot;INSERT INTO Account &quot;
+				+ &quot; (Nimi, PasswordHash, PasswordSalt, Email, SecurityQ, SecurityA)&quot;
+				+ &quot; VALUES (?, ?, ?, ?, ?, ?)&quot;;
+
+		try {
+			myStmt2 = myConn.prepareStatement(sql);
+			myStmt2.setString(1, username);
+			myStmt2.setString(2, hash);
+			myStmt2.setString(3, salt);
+			myStmt2.setString(4, email);
+			myStmt2.setString(5, recq);
+			myStmt2.setString(6, reca);
+			myStmt2.executeUpdate();
+		} catch (SQLException e) {
+            e.printStackTrace();
+            if(e.toString().contains(&quot;Email_UNIQUE&quot;)){
+            	errorMessage= &quot;Account with this email already exists.&quot;;
+            }else if(e.toString().contains(&quot;Nimi_UNIQUE&quot;)){
+            	errorMessage=&quot;Account with this name already exists.&quot;;
+            }
+            }*/
+<span class="nc" id="L168">		}</span>
+	}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

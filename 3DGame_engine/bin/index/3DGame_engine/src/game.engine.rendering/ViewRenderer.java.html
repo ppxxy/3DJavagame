@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>ViewRenderer.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.rendering</a> &gt; <span class="el_source">ViewRenderer.java</span></div><h1>ViewRenderer.java</h1><pre class="source lang-java linenums">package game.engine.rendering;
+
+import game.engine.entities.AnimatedEntity;
+import game.engine.main.View;
+import game.engine.models.AnimatedModel;
+import game.engine.view.InterfaceView;
+
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
+
+public class ViewRenderer {
+
+	private AnimatedModelRenderer animatedModelRenderer;
+	private TerrainRenderer terrainRenderer;
+	private InterfaceRenderer interfaceRenderer;
+
+<span class="nc" id="L17">	protected ViewRenderer(){</span>
+<span class="nc" id="L18">		animatedModelRenderer = new AnimatedModelRenderer();</span>
+<span class="nc" id="L19">		terrainRenderer = new TerrainRenderer();</span>
+<span class="nc" id="L20">		interfaceRenderer = new InterfaceRenderer();</span>
+<span class="nc" id="L21">	}</span>
+
+	public void renderView(View view){
+<span class="nc" id="L24">		prepare();</span>
+<span class="nc bnc" id="L25" title="All 2 branches missed.">		if(view instanceof GameView){</span>
+<span class="nc" id="L26">			GameView game = (GameView) view;</span>
+<span class="nc" id="L27">			terrainRenderer.render(game.getTerrain(), game.getCamera());</span>
+<span class="nc bnc" id="L28" title="All 2 branches missed.">			for(AnimatedEntity e : game.getAnimatedEntities()){</span>
+<span class="nc" id="L29">				animatedModelRenderer.render(e, game.getCamera(), game.getLightDirection());</span>
+			}
+<span class="nc" id="L31">			interfaceRenderer.render(game.getInterfaces(), game.getCamera());</span>
+			//After normal rendering, render depth buffer.
+<span class="nc" id="L33">			game.depthBuffer.bind(Display.getWidth(), Display.getHeight());</span>
+<span class="nc" id="L34">			renderDepth(game);</span>
+<span class="nc" id="L35">			game.depthBuffer.unbind();</span>
+<span class="nc" id="L36">			game.useMousePicker();</span>
+<span class="nc" id="L37">		}</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">		else if(view instanceof InterfaceView){</span>
+<span class="nc" id="L39">			InterfaceView inter = (InterfaceView) view;</span>
+<span class="nc" id="L40">			interfaceRenderer.render(inter.getInterfaces(), inter.getCamera());</span>
+		}
+<span class="nc" id="L42">	}</span>
+
+	public void renderDepth(GameView view){
+<span class="nc" id="L45">		prepare();</span>
+<span class="nc" id="L46">		terrainRenderer.render(view.getTerrain(), view.getCamera());</span>
+		/*for(AnimatedEntity e : view.getAnimatedEntities()){
+			animatedModelRenderer.render(e, view.getCamera(), view.getLightDirection());
+		}*/
+<span class="nc" id="L50">	}</span>
+
+	public void cleanUp(){
+<span class="nc" id="L53">		animatedModelRenderer.cleanUp();</span>
+<span class="nc" id="L54">		terrainRenderer.cleanUp();</span>
+<span class="nc" id="L55">		interfaceRenderer.cleanUp();</span>
+<span class="nc" id="L56">	}</span>
+
+	private void prepare(){
+<span class="nc" id="L59">		GL11.glClearColor(1, 1, 1, 1);</span>
+<span class="nc" id="L60">		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);</span>
+<span class="nc" id="L61">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

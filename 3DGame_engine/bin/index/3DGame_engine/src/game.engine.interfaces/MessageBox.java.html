@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>MessageBox.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.interfaces</a> &gt; <span class="el_source">MessageBox.java</span></div><h1>MessageBox.java</h1><pre class="source lang-java linenums">package game.engine.interfaces;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+
+import org.lwjgl.util.vector.Vector2f;
+
+import Networking.Chat;
+import Networking.ChatMessage;
+import game.engine.textures.Texture;
+
+public class MessageBox extends Interface {
+	private Vector2f position;
+	private Vector2f size;
+	private Interface ifce;
+    private BufferedImage messagebox;
+    private String message;
+    private Chat chat;
+    private Color fontcolor;
+    private Font font;
+    private Color backgroundcolor;
+    private Color bordercolor;
+<span class="nc" id="L26">    private final int messagemaxsize=300;</span>
+
+
+    public MessageBox(Chat chat){
+<span class="nc" id="L30">    	super(Texture.loadTexture(new BufferedImage(1000,300,BufferedImage.TYPE_INT_ARGB)).load(),new Vector2f(0.0f,-0.95f),new Vector2f(0.4f,0.05f));</span>
+<span class="nc" id="L31">    	this.chat=chat;</span>
+<span class="nc" id="L32">    	this.message=&quot;&quot;;</span>
+<span class="nc" id="L33">    	this.position=new Vector2f(0.0f,-0.90f);</span>
+<span class="nc" id="L34">    	this.size=new Vector2f(0.4f,0.05f);</span>
+<span class="nc" id="L35">    	this.messagebox=new BufferedImage(1000,300,BufferedImage.TYPE_INT_ARGB);</span>
+<span class="nc" id="L36">    	initialize();</span>
+
+<span class="nc" id="L38">    }</span>
+    public String cutDisplayedMessage(String string, FontMetrics fm){
+<span class="nc bnc" id="L40" title="All 2 branches missed.">    	while(fm.stringWidth(string)&gt;messagebox.getWidth()){</span>
+<span class="nc" id="L41">    		string=string.substring(1,string.length());</span>
+    	}
+<span class="nc" id="L43">    	return string;</span>
+    }
+    public void initialize(){
+<span class="nc" id="L46">    	Graphics g=messagebox.getGraphics();</span>
+<span class="nc" id="L47">    	this.backgroundcolor=new Color(0,0,0,150);</span>
+<span class="nc" id="L48">    	this.fontcolor=new Color(0,0,0);</span>
+<span class="nc" id="L49">    	this.font = new Font(&quot;TAHOMA&quot;,Font.PLAIN,40);</span>
+<span class="nc" id="L50">    	this.bordercolor=new Color(0,0,0,100);</span>
+<span class="nc" id="L51">		g.setColor(backgroundcolor);</span>
+<span class="nc" id="L52">		g.fillRect(0, 0, messagebox.getWidth(), messagebox.getHeight());</span>
+<span class="nc" id="L53">		g.setColor(bordercolor);</span>
+<span class="nc" id="L54">		g.fillRect(0, 0, messagebox.getWidth(), 20);</span>
+<span class="nc" id="L55">    	g.dispose();</span>
+<span class="nc" id="L56">    }</span>
+    public void drawChar(char character){
+<span class="nc bnc" id="L58" title="All 2 branches missed.">    	if(message.length()&lt;messagemaxsize){</span>
+<span class="nc" id="L59">    		message+=character;</span>
+<span class="nc" id="L60">    		clearInput();</span>
+<span class="nc" id="L61">    		drawString(message+&quot;*&quot;,0,70);</span>
+    	}
+<span class="nc" id="L63">    }</span>
+    public void activate(){;
+<span class="nc" id="L65">		this.backgroundcolor=new Color(119,136,153,150);</span>
+<span class="nc" id="L66">    	drawString(&quot;*&quot;,0,70);</span>
+<span class="nc" id="L67">    }</span>
+    public void deactivate(){
+<span class="nc" id="L69">    	this.backgroundcolor=new Color(0,0,0,150);</span>
+<span class="nc" id="L70">    	message=&quot;&quot;;</span>
+<span class="nc" id="L71">    	clearInput();</span>
+<span class="nc" id="L72">    }</span>
+    //testausta varten
+    public void setMessage(String msg){
+<span class="nc" id="L75">    	this.message=msg;</span>
+<span class="nc" id="L76">    }</span>
+    public void backspace(){
+<span class="nc bnc" id="L78" title="All 2 branches missed.">    	if(message.length()&gt;1){</span>
+<span class="nc" id="L79">    		message=message.substring(0, message.length()-1);</span>
+<span class="nc" id="L80">    		clearInput();</span>
+<span class="nc" id="L81">    		drawString(message+&quot;*&quot;,0,70);</span>
+    	}
+<span class="nc" id="L83">    }</span>
+    public void send(){
+<span class="nc bnc" id="L85" title="All 2 branches missed.">    	if(message.length()&gt;1){</span>
+<span class="nc" id="L86">    		chat.sendMessage(message.substring(1,message.length()));</span>
+<span class="nc" id="L87">    		message=&quot;&quot;;</span>
+<span class="nc" id="L88">    		clearInput();</span>
+    	}
+<span class="nc" id="L90">    }</span>
+
+    public void clearInput(){
+<span class="nc" id="L93">    	messagebox.flush();</span>
+<span class="nc" id="L94">    	messagebox=new BufferedImage(1000,120,BufferedImage.TYPE_INT_ARGB);</span>
+<span class="nc" id="L95">    	Graphics g=messagebox.getGraphics();</span>
+<span class="nc" id="L96">    	g.setColor(backgroundcolor);</span>
+<span class="nc" id="L97">		g.fillRect(0, 0, messagebox.getWidth(), messagebox.getHeight());</span>
+<span class="nc" id="L98">		g.setColor(bordercolor);</span>
+<span class="nc" id="L99">		g.fillRect(0, 0, messagebox.getWidth(), 20);</span>
+<span class="nc" id="L100">    	g.dispose();</span>
+<span class="nc" id="L101">    }</span>
+    public void drawString(String string, int x, int y){
+<span class="nc" id="L103">    	Graphics g=messagebox.getGraphics();</span>
+<span class="nc" id="L104">    	g.setColor(fontcolor);</span>
+<span class="nc" id="L105">    	g.setFont(font);</span>
+<span class="nc" id="L106">    	FontMetrics fm = g.getFontMetrics();</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">    	if(fm.stringWidth(string)&gt;messagebox.getWidth()){</span>
+<span class="nc" id="L108">    		string=cutDisplayedMessage(string,fm);</span>
+    	}
+<span class="nc" id="L110">    	g.drawString(string ,x ,y);</span>
+<span class="nc" id="L111">    	g.dispose();</span>
+<span class="nc" id="L112">    }</span>
+    public void update(){
+<span class="nc" id="L114">    	super.getTexture().delete();</span>
+<span class="nc" id="L115">    	super.setTexture(Texture.loadTexture(messagebox).nearestFiltering().load());</span>
+<span class="nc" id="L116">    }</span>
+    public BufferedImage getImage(){
+<span class="nc" id="L118">    	return this.messagebox;</span>
+    }
+    public Vector2f getSize(){
+<span class="nc" id="L121">    	return this.size;</span>
+    }
+    public Vector2f getPosition(){
+<span class="nc" id="L124">    	return this.position;</span>
+    }
+    public Interface getInterface(){
+<span class="nc" id="L127">    	return this.ifce;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

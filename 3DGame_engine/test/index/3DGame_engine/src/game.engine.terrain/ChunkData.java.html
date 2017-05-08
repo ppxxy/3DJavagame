@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>ChunkData.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.terrain</a> &gt; <span class="el_source">ChunkData.java</span></div><h1>ChunkData.java</h1><pre class="source lang-java linenums">package game.engine.terrain;
+
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.Serializable;
+
+import javax.imageio.ImageIO;
+
+/**
+ *
+ * @author Kim
+ *
+ */
+public class ChunkData implements Serializable{
+	private static final long serialVersionUID = 4250045384077626235L;
+
+
+	public static final int WIDTH = 64, HEIGHT = 64;
+	private final int x, y;
+	private final float[][] points;
+	private int[] texture;
+
+<span class="nc" id="L23">	public ChunkData(int x, int y){</span>
+<span class="nc" id="L24">		this.x = x;</span>
+<span class="nc" id="L25">		this.y = y;</span>
+<span class="nc" id="L26">		this.points = new float[WIDTH][HEIGHT];</span>
+<span class="nc" id="L27">	}</span>
+
+	public void addPoint(int x, int y, float value){
+<span class="nc" id="L30">		this.points[x][y] = 100f*value;</span>
+<span class="nc" id="L31">	}</span>
+
+	public float getHeight(int x, int z) {
+<span class="nc" id="L34">		return points[x][z];</span>
+	}
+
+	public int[] getTexture(){
+<span class="nc" id="L38">		return this.texture;</span>
+	}
+
+	public void loadTexture(){
+<span class="nc" id="L42">		int[] image = new int[WIDTH*HEIGHT];</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">		for(int y = 0; y &lt; HEIGHT; y++){</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">			for(int x = 0; x &lt; WIDTH; x++){</span>
+<span class="nc" id="L45">				image[x+y*WIDTH] = new Color(0f, 0f, 0f, 1f).getRGB();</span>
+			}
+		}
+<span class="nc" id="L48">		this.texture = image;</span>
+<span class="nc" id="L49">	}</span>
+
+	public void loadTexture(BufferedImage img){
+<span class="nc" id="L52">		int[] image = new int[WIDTH*HEIGHT];</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">		for(int y = 0; y &lt; HEIGHT; y++){</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">			for(int x = 0; x &lt; WIDTH; x++){</span>
+<span class="nc" id="L55">				image[x+y*WIDTH] = img.getRGB(x+this.x*WIDTH, y+this.y*HEIGHT);</span>
+			}
+		}
+<span class="nc" id="L58">		this.texture = image;</span>
+<span class="nc" id="L59">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>

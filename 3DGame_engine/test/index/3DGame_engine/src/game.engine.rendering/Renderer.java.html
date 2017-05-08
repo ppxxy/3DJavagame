@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Renderer.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">3DGame_engine (May 4, 2017 11:31:51 AM)</a> &gt; <a href="../../index.html" class="el_group">3DGame_engine</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">game.engine.rendering</a> &gt; <span class="el_source">Renderer.java</span></div><h1>Renderer.java</h1><pre class="source lang-java linenums">package game.engine.rendering;
+
+import game.engine.entities.Entity;
+import game.engine.entities.StableEntity;
+import game.engine.models.RawModel;
+import game.engine.models.TexturedModel;
+import game.engine.shader.Shader;
+import game.engine.shader.ShaderProgram;
+import game.engine.shader.StaticShader;
+import game.engine.tools.Maths;
+
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
+import org.lwjgl.util.vector.Matrix4f;
+
+public abstract class Renderer {
+
+	private static final float FIELD_OF_VIEW = 70, NEAR_PLANE = 0.1f, FAR_PLANE = 1000;
+
+	private Matrix4f projectionMatrix;
+	protected ShaderProgram shader;
+
+<span class="nc" id="L26">	public Renderer(){</span>
+
+<span class="nc" id="L28">	}</span>
+
+	/*public Renderer(StaticShader shader){
+		createProjectionMatrix();
+		shader.start();
+		shader.loadProjectionMatrix(projectionMatrix);
+		shader.stop();
+	}*/
+
+	public void prepare(){
+<span class="nc" id="L38">		GL11.glEnable(GL11.GL_DEPTH_TEST);</span>
+<span class="nc" id="L39">		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);</span>
+<span class="nc" id="L40">		GL11.glClearColor(1, 0, 0, 1);</span>
+<span class="nc" id="L41">	}</span>
+
+	protected void finish(){
+<span class="nc" id="L44">		shader.stop();</span>
+<span class="nc" id="L45">	}</span>
+
+	/*public void render(StableEntity entity, StaticShader shader){
+		TexturedModel texturedModel = entity.getModel();
+		RawModel model = texturedModel.getRawModel();
+		GL30.glBindVertexArray(model.getVaoID());
+		GL20.glEnableVertexAttribArray(0);
+		GL20.glEnableVertexAttribArray(1);
+		Matrix4f transformationMatrix = Maths.createTransformationMatrix(entity.getPosition(), entity.getRotX(), entity.getRotY(), entity.getRotZ(), entity.getScale());
+		shader.loadTransformationMatrix(transformationMatrix);
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texturedModel.getTexture().getID());
+		GL11.glDrawElements(GL11.GL_TRIANGLES, model.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
+		GL20.glDisableVertexAttribArray(0);
+		GL20.glDisableVertexAttribArray(1);
+		GL30.glBindVertexArray(0);
+	}*/
+
+	private void createProjectionMatrix(){
+<span class="nc" id="L64">        float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();</span>
+<span class="nc" id="L65">        float y_scale = (float) ((1f / Math.tan(Math.toRadians(FIELD_OF_VIEW / 2f))) * aspectRatio);</span>
+<span class="nc" id="L66">        float x_scale = y_scale / aspectRatio;</span>
+<span class="nc" id="L67">        float frustum_length = FAR_PLANE - NEAR_PLANE;</span>
+
+<span class="nc" id="L69">        projectionMatrix = new Matrix4f();</span>
+<span class="nc" id="L70">        projectionMatrix.m00 = x_scale;</span>
+<span class="nc" id="L71">        projectionMatrix.m11 = y_scale;</span>
+<span class="nc" id="L72">        projectionMatrix.m22 = -((FAR_PLANE + NEAR_PLANE) / frustum_length);</span>
+<span class="nc" id="L73">        projectionMatrix.m23 = -1;</span>
+<span class="nc" id="L74">        projectionMatrix.m32 = -((2 * NEAR_PLANE * FAR_PLANE) / frustum_length);</span>
+<span class="nc" id="L75">        projectionMatrix.m33 = 0;</span>
+<span class="nc" id="L76">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>3DGame_engine (May 4, 2017 11:31:51 AM)</div></body></html>
