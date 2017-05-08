@@ -18,6 +18,7 @@ public class ViewRenderer {
 	private TerrainRenderer terrainRenderer;
 	private InterfaceRenderer interfaceRenderer;
 	private SkyboxRenderer skyboxRenderer;
+	private boolean highperformance = false;
 
 	protected ViewRenderer(){
 		objectRenderer = new ObjectRenderer();
@@ -37,16 +38,19 @@ public class ViewRenderer {
 				if(e instanceof AnimatedEntity){
 					animatedModelRenderer.render((AnimatedEntity)e, game.getCamera(), game.getLightDirection());
 				}
-				else{
+				else if(!highperformance){
 					objectRenderer.render((ObjectEntity)e, game.getCamera());
 				}
 			}
+			if(!highperformance)
 			skyboxRenderer.render(game.getCamera());
 			interfaceRenderer.render(game.getInterfaces(), game.getCamera());
 			//After normal rendering, render object buffer.
-			game.objectBuffer.bind(Display.getWidth(), Display.getHeight());
-			renderObjects(game);
-			game.objectBuffer.unbind();
+			if(!highperformance){
+				game.objectBuffer.bind(Display.getWidth(), Display.getHeight());
+				renderObjects(game);
+				game.objectBuffer.unbind();
+			}
 			//and after that render depth buffer.
 			game.depthBuffer.bind(Display.getWidth(), Display.getHeight());
 			renderDepth(game);
@@ -57,6 +61,15 @@ public class ViewRenderer {
 		else if(view instanceof InterfaceView){
 			InterfaceView inter = (InterfaceView) view;
 			interfaceRenderer.render(inter.getInterfaces(), inter.getCamera());
+		}
+	}
+	
+	public void toggleHighPerformance(){
+		if(highperformance){
+			highperformance = false;
+		}
+		else{
+			highperformance = true;
 		}
 	}
 

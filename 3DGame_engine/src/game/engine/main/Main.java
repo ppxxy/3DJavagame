@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -25,6 +26,7 @@ import game.engine.models.obj.OBJLoader;
 import game.engine.rendering.DisplayManager;
 import game.engine.rendering.GameView;
 import game.engine.rendering.RenderEngine;
+import game.engine.rendering.ViewRenderer;
 import game.engine.textures.Texture;
 import game.engine.view.InterfaceView;
 import game.minigames.FXHandler;
@@ -37,12 +39,14 @@ public class Main {
 	public static View activeView;
 
 	public static Chat chat;
+	
+	private static RenderEngine renderEngine;
 
 	public static void main(String[] args) {
 
 		System.setProperty("org.lwjgl.librarypath", new File("src/lib/jars/natives-win").getAbsolutePath());
-
-		RenderEngine renderEngine = RenderEngine.init();
+		
+		renderEngine = RenderEngine.init();
 
 		chat=new Chat();
 		Interface logging = new Interface(Texture.loadTexture("/res/logging.png").load(), new Vector2f(0f, 0f), new Vector2f(1f, 1f));
@@ -78,7 +82,7 @@ public class Main {
 		view.addEntity(player);
 
 		TexturedModel taulu_model = new TexturedModel(new OBJLoader("/res/whiteboard.obj").loadModel(), Texture.loadTexture("/res/taulu.png").load());
-		ObjectEntity piirtotaulu = new ObjectEntity(taulu_model, new Vector3f(0, 15, -3), 0, 0, 0, 1);
+		ObjectEntity piirtotaulu = new ObjectEntity(taulu_model, new Vector3f(0, 20, -3), 0, 0, 0, 1);
 		ObjectActivityHandler.addActivity(taulu_model.getId(), new ObjectActivity(){
 
 			@Override
@@ -96,18 +100,27 @@ public class Main {
 		});
 
 		TexturedModel tree_model1 = new TexturedModel(new OBJLoader("/res/tree1.obj").loadModel(), Texture.loadTexture("/res/Walnut_L.png").load());
-		ObjectEntity tree1 = new ObjectEntity(tree_model1, new Vector3f(40, 12, 40), 0, 0, 0, 60);
-		ObjectEntity tree2 = new ObjectEntity(tree_model1, new Vector3f(60, 16, 100), 0, 150f, 0, 54);
-		ObjectEntity tree3 = new ObjectEntity(tree_model1, new Vector3f(160, 20, 70), 0, 120f, 0, 62);
-		ObjectEntity tree4 = new ObjectEntity(tree_model1, new Vector3f(80, 12, 10), 0, 310f, 0, 60);
+		ObjectEntity tree1 = new ObjectEntity(tree_model1, new Vector3f(40, view.getHeightAt(40, 40)+3, 40), 0, 0, 0, 60);
+		ObjectEntity tree2 = new ObjectEntity(tree_model1, new Vector3f(60, view.getHeightAt(60, 100)+3, 100), 0, 150f, 0, 54);
+		ObjectEntity tree3 = new ObjectEntity(tree_model1, new Vector3f(160, view.getHeightAt(160, 70)+3, 70), 0, 120f, 0, 62);
+		ObjectEntity tree4 = new ObjectEntity(tree_model1, new Vector3f(80, view.getHeightAt(80, 10)+3, 10), 0, 310f, 0, 60);
 
 		BufferedImage bench_texture = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
 		bench_texture.setRGB(0, 0, Color.GRAY.getRGB());
-		TexturedModel house_model = new TexturedModel(new OBJLoader("/res/bench.obj").loadModel(), Texture.loadTexture(bench_texture).load());
-		ObjectEntity house = new ObjectEntity(house_model, new Vector3f(260, 12, 460), 0, 195f, 0, 10);
+		TexturedModel bench_model = new TexturedModel(new OBJLoader("/res/bench.obj").loadModel(), Texture.loadTexture(bench_texture).load());
+		ObjectEntity bench = new ObjectEntity(bench_model, new Vector3f(260, 12, 460), 0, 195f, 0, 10);
+		ObjectActivityHandler.addActivity(bench_model.getId(), new ObjectActivity(){
+
+			@Override
+			public boolean activate() {
+				((ViewRenderer) renderEngine).toggleHighPerformance();
+				return true;
+			}
+
+		});
 
 		taulu_model = new TexturedModel(new OBJLoader("/res/whiteboard.obj").loadModel(), Texture.loadTexture("/res/taulu.png").load());
-		ObjectEntity matematiikkataulu = new ObjectEntity(taulu_model, new Vector3f(60, 15, -3), 0, 0, 0, 1);
+		ObjectEntity matematiikkataulu = new ObjectEntity(taulu_model, new Vector3f(60, 20, -3), 0, 0, 0, 1);
 		ObjectActivityHandler.addActivity(taulu_model.getId(), new ObjectActivity(){
 
 			@Override
@@ -130,7 +143,7 @@ public class Main {
 		view.addEntity(tree2);
 		view.addEntity(tree3);
 		view.addEntity(tree4);
-		view.addEntity(house);
+		view.addEntity(bench);
 
 		activeView = view;
 

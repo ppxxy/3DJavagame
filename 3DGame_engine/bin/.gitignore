@@ -1,5 +1,14 @@
-/game/
+/lib/
 /Localization/
-/Networking/
+/Ohjeita.txt
+/game/
+/hibernate.cfg.xml
 /res/
+/index/
+/report.dtd
+/test.csv
+/test.xml
+/Dummies/
+/Networking/
+/login/
 /mathgame/
